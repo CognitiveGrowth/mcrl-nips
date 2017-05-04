@@ -1,0 +1,32 @@
+function VPI=valueOfPerfectInformationBernoulli(alpha,beta)
+%mu: vector of expected values of the returns of all possible actions
+%sigma: corresponding standard deviations
+%c: index of the action about which perfect information is being obtained
+
+E_correct=[alpha,beta]/(alpha+beta);
+[max_val,max_pos]=max(E_correct);
+
+
+VPI = integral(@(x) betapdf(x,alpha,beta).*(max(x,1-x)-x),lb,ub);    
+
+
+if max_pos==1
+    %information is valuable if it reveals that action c is suboptimal
+    ub=secondbest_val;
+    lb=mu(c)-5*sigma(c);
+    
+    VPI = integral(@(x) normpdf(x,mu(c),sigma(c)).*(secondbest_val-x),lb,ub);    
+else
+    %information is valuable if it reveals that action is optimal
+    ub=mu(c)+5*sigma(c);
+    lb=max_val;
+    
+    if ub>lb
+        VPI = integral(@(x) normpdf(x,mu(c),sigma(c)).*(x-max_val),lb,ub);
+    else
+        VPI=0;
+    end
+end
+
+
+end
