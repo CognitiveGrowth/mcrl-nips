@@ -1,5 +1,7 @@
 %evaluate and tune Bayesian-SARSAQ with the features identified by linear
 %regression
+clear
+
 addpath('../MatlabTools/') %change to your directory for MatlabTools
 addpath('../metaMDP/')
 addpath('../Supervised/')
@@ -61,6 +63,9 @@ valid_states=and(sum(lightbulb_problem.mdp.states,2)<=30,...
     sum(lightbulb_problem.mdp.states,2)>0);
 
 Q_hat(:,1)=F*w;
+Q_hat(:,2)=F(:,3);
+V_hat=max(Q_hat,[],2);
+
 R2=corr(Q_hat(valid_states,1),lightbulb_problem.fit.Q_star(valid_states,1))
 
 fig_Q=figure()
@@ -72,3 +77,14 @@ ylabel('$Q^\star$','FontSize',16,'Interpreter','LaTeX')
 title(['Bayesian SARSA learns Q-function of 1-lightbulb meta-MDP, R^2=',num2str(roundsd(R2,4))],'FontSize',16)
 saveas(fig_Q,'../../results/figures/QFitToyProblemBayesianSARSA.fig')
 saveas(fig_Q,'../../results/figures/QFitToyProblemBayesianSARSA.png')
+
+%% Compute approximate PRs
+observe=1; guess=2;
+for s=1:nr_states-1
+    approximate_PR(s,observe)=Q_hat(s,observe)-V_hat(s);
+    approximate_PR(s,guess)=Q_hat(s,guess)-V_hat(s);
+end
+
+lightbulb_problem.approximate_PRs=approximate_PR;
+
+save('../../results/lightbulb_fit.mat','lightbulb_problem')

@@ -1,4 +1,8 @@
 clear all;
+
+tmp = matlab.desktop.editor.getActive;
+cd(fileparts(tmp.Filename));
+
 host = getenv('USER');
 if strcmp(host(1:4),'paul')
     cd ~/Desktop/Tom_Griffiths/collapsingBoundsExp/matlab_code/
@@ -54,7 +58,7 @@ lightbulb_mdp.pi_star=policy(:,1);
 lightbulb_mdp.states=S;
 lightbulb_mdp.T=P;
 lightbulb_mdp.R=R;
-save('../results/lightbulb_problem.mat','lightbulb_mdp') 
+
 
 pseudoR_matrix = get_pseudoreward_matrix(S,values,min_trial,discount,R);
 save('mdp_pseudorewards','values','policy','P','R','S','pseudoR_matrix','discount','nTrials','min_trial')
@@ -65,3 +69,7 @@ save(['mdp_pseudorewards_compareSARSA_',num2str(nTrials),'trials'],'values','pol
 PR_observe = pseudoR_matrix(:,1:nTrials,1);
 PR_bet = pseudoR_matrix(:,1:nTrials,2);
 save(['TverskyEdwards_pseudorewards_',num2str(nTrials),'trials'],'PR_observe','PR_bet','S')
+
+lightbulb_mdp.optimal_PR=[PR_observe(:,1),PR_bet(:,1)];
+
+save('../results/lightbulb_problem.mat','lightbulb_mdp') 

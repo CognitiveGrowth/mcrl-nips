@@ -1,5 +1,8 @@
 addpath('../MatlabTools/')
 
+tmp = matlab.desktop.editor.getActive;
+cd(fileparts(tmp.Filename));
+
 cost = 0.001;
 voc1 = zeros(s,1);
 voc2 = zeros(s,1);
@@ -75,5 +78,6 @@ lightbulb_problem.fit.Q_hat=Q_hat;
 lightbulb_problem.fit.R2=R2;
 lightbulb_problem.fit.feature_names=feature_names;
 lightbulb_problem.fit.features=X;
+lightbulb_problem.optimal_PR=lightbulb_problem.mdp.optimal_PR;
 
 save('../../results/lightbulb_fit.mat','lightbulb_problem')
