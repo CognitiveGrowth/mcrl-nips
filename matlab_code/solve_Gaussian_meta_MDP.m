@@ -1,7 +1,7 @@
 %solve Gaussian meta-level MDP with backwards induction
 
-problem='MouselabMDP';
-%problem='GaussianMetaMDP';
+%problem='MouselabMDP';
+problem='GaussianMetaMDP';
 
 %1. Define meta-level MDP
 
@@ -9,13 +9,18 @@ if strcmp(problem,'MouselabMDP')
     start_state.delta_mu=0;
     start_state.sigma=1;
     cost=0.01;
-    [T,R,states]=GaussianSamplingMetaMDP(start_state,cost);
+    
+    [T,R,states]=oneArmedMouselabMDP(nr_cells,mu_reward,sigma_reward,cost);
+    meta_MDP=MouselabMDPMetaMDP(add_pseudorewards,pseudoreward_type,mean_payoff,std_payoff,object_level_MDPs);
+    
 elseif strcmp(problem,'GaussianMetaMDP')
     nr_cells=4;
     mu_reward=5;
     sigma_reward=10;
     cost=0.01;
-    [T,R,states]=oneArmedMouselabMDP(nr_cells,mu_reward,sigma_reward,cost);    
+    [T,R,states]=GaussianSamplingMetaMDP(start_state,cost);
+    
+    meta_MDP=GaussianMetaMDP(0,1);
 end
 
 nr_states=size(T,1);
@@ -137,3 +142,17 @@ for m=1:numel(mu_plot)
             num2str(sigma_plot(s)),', VPI=',num2str(roundsd(VPI,2))],'FontSize',16)
     end
 end
+
+%% evaluate the policy suggested by the weights
+nr_regressors=3;
+sigma=0.001;
+glm=BayesianGLM(nr_regressors,sigma)
+glm.mu_0=beta;
+glm.mu_n=beta'
+policy=@(state,mdp) contextualThompsonSampling(state,GaussianSamplingMetaMDP,glm(best_run))
+
+[R_total,problems,states,chosen_actions,indices]=...
+    inspectPolicyGeneral(GaussianSamplingMetaMDP,policy,nr_episodes)
+
+%% try learning the policy
+

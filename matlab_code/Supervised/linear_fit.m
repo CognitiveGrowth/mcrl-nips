@@ -32,6 +32,15 @@ end
 % X = cat(2,vpi,voc1,bias)
 X = cat(2,vpi,voc2,bias);
 [w,wint,r,rint,stats] = regress(voc30,X);
+voc_hat=X*w;
 figure();
-scatter(voc30,X*w);
+scatter(voc_hat,voc30);
 title(num2str(stats(1)));
+
+sign_disagreement=find(sign(voc_hat).*sign(voc30)==-1)
+numel(sign_disagreement)/numel(voc30)
+
+figure()
+hist(voc30(sign_disagreement))
+max(voc30(sign_disagreement))
+

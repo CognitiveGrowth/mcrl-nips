@@ -31,16 +31,16 @@ for from=1:(nr_states-1)
         %twice as high as the current precision.
         
         posterior_means  = (current_mu + sample_values - mu_reward );
-        posterior_sigmas = sqrt(current_sigma^2-sigma_reward^2);
+        posterior_sigmas = sqrt(current_sigma^2-sigma_reward^2)*ones(size(posterior_means));
         
-        [discrepancy_mu, mu_index] = min(abs(repmat(posterior_means,[numel(delta_mu_values),1])-...
-            repmat(delta_mu_values',[1,numel(posterior_means)])));
+        [discrepancy_mu, mu_index] = min(abs(repmat(posterior_means,[numel(mu_values),1])-...
+            repmat(mu_values',[1,numel(posterior_means)])));
         
         [discrepancy_sigma, sigma_index] = min(abs(repmat(posterior_sigmas,[numel(sigma_values),1])-...
             repmat(sigma_values',[1,numel(posterior_sigmas)])));
         
-        to=struct('mu',delta_mu_values(mu_index),'sigma',sigma_values(sigma_index),...
-            'index',sub2ind([numel(sigma_values),numel(delta_mu_values)],sigma_index,mu_index));
+        to=struct('mu',mu_values(mu_index),'sigma',sigma_values(sigma_index),...
+            'index',sub2ind([numel(sigma_values),numel(mu_values)],sigma_index,mu_index));
         
         %sum the probabilities of all samples that lead to the same state
         T(from,unique(to.index),1)=grpstats(p_samples,to.index,{@sum});
@@ -57,11 +57,11 @@ T(:,:,2)=repmat([zeros(1,nr_states-1),1],[nr_states,1]);
 T(end,:,:)=repmat([zeros(1,nr_states-1),1],[1,1,2]);
 
 start_state.index=sub2ind(size(MUs),find(sigma_values==start_state.sigma),...
-    find(delta_mu_values==start_state.delta_mu));
+    find(mu_values==start_state.delta_mu));
 
 states.MUs=MUs;
 states.SIGMAs=SIGMAs;
 states.start_state=start_state;
-states.delta_mu_values=delta_mu_values;
+states.mu_values=mu_values;
 states.sigma_values=sigma_values;
 end
