@@ -54,10 +54,10 @@ V_hat=max(Q_hat,[],2);
 valid_states=and(sum(S,2)<=30,sum(S,2)>0);
 
 Q_star=getQFromV(values(:,1),P,R)
-R2=corr(Q_star(valid_states,1),Q_hat(valid_states))^2
+R2=corr(Q_star(1:end-1,1),Q_hat)^2
 
 fig=figure()
-scatter(Q_hat(valid_states),Q_star(valid_states,1))
+scatter(Q_hat(valid_states),Q_star(1:end-1,1))
 set(gca,'FontSize',16)
 xlabel('$\sum_i w_i*f_i$','FontSize',16,'Interpreter','LaTex')
 ylabel('$Q^\star$','FontSize',16,'Interpreter','LaTeX')
