@@ -1,11 +1,11 @@
-function [ action ] = contextualThompsonSampling(state, mdp, glm)
+function [ action ] = contextualThompsonSampling(state, mdp, glm,actionFeatures)
 
 %Thompson sampling for contextual bandit problems
 w_hat=glm.sampleCoefficients();
 
 [actions,mdp]=mdp.getActions(state);
-parfor a=1:numel(actions)
-    action_features=mdp.extractActionFeatures(state,actions(a));
+for a=1:numel(actions) %used to be parfor
+    action_features=actionFeatures(state,actions(a),mdp);
     Q_hat(a)=dot(w_hat(mdp.action_features),action_features);
 end
 %a_max=argmaxWithRandomTieBreak(Q_hat);

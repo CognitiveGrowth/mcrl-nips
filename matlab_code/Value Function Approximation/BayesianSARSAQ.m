@@ -34,7 +34,7 @@ for i=1:nr_episodes
     [s,mdp]=mdp.newEpisode();
     
     t=0; %time step within episode
-    a_next=contextualThompsonSampling(s,mdp,glm);
+    a_next=contextualThompsonSampling(s,mdp,glm,feature_extractor);
     features_next=feature_extractor(s,a_next,mdp);
     while not(mdp.isTerminalState(s))
         t=t+1;
@@ -53,7 +53,7 @@ for i=1:nr_episodes
         else
             %choose next action by contextual Thompson sampling
             [~,mdp]=mdp.getActions(s_next);
-            a_next=contextualThompsonSampling(s_next,mdp,glm);
+            a_next=contextualThompsonSampling(s_next,mdp,glm,feature_extractor);
             next_features=feature_extractor(s_next,a_next,mdp);
             value_estimate=r+PR+mdp.gamma*dot(next_features,glm.mu_n);
         end

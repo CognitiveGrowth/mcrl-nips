@@ -50,11 +50,7 @@ min_trial(s+1) = 30;
 [values, policy] = mdp_finite_horizon (P, R, discount, nTrials);
 
 lightbulb_mdp.v_star=values(:,1);
-lightbulb_mdp.pi_star=policy(:,1);
-lightbulb_mdp.states=S;
-lightbulb_mdp.T=P;
-lightbulb_mdp.R=R;
-save('../results/lightbulb_problem.mat','lightbulb_mdp') 
+lightbulb_mdp.pi_star=policy;
 
 pseudoR_matrix = get_pseudoreward_matrix(S,values,min_trial,discount,R);
 save('mdp_pseudorewards','values','policy','P','R','S','pseudoR_matrix','discount','nTrials','min_trial')

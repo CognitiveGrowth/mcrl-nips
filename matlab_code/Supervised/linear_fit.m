@@ -67,14 +67,13 @@ title(['Linear Fit to Q-function of 1-lightbulb meta-MDP, R^2=',num2str(R2)],'Fo
 saveas(fig_Q,'../../results/figures/QFitToyProblem.fig')
 saveas(fig_Q,'../../results/figures/QFitToyProblem.png')
 
+load ../../results/lightbulb_problem
+lightbulb_problem.mdp=lightbulb_mdp;
 lightbulb_problem.fit.w=w;
 lightbulb_problem.fit.Q_star=Q_star;
 lightbulb_problem.fit.Q_hat=Q_hat;
 lightbulb_problem.fit.R2=R2;
 lightbulb_problem.fit.feature_names=feature_names;
 lightbulb_problem.fit.features=X;
-lightbulb_problem.fit.T=P;
-lightbulb_problem.fit.R=R;
-lightbulb_problem.fit.states=s;
 
-save('../../results/lightbulb_problem.mat','lightbulb_problem')
+save('../../results/lightbulb_fit.mat','lightbulb_problem')

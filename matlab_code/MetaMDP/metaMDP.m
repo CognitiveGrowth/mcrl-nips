@@ -1,7 +1,7 @@
 classdef metaMDP < MDP
     
     properties
-        action_features = 5;
+        action_features = [];
         rewardCorrect = 1;
         rewardIncorrect = 0;
         cost = 0.001;
@@ -9,12 +9,12 @@ classdef metaMDP < MDP
         
     end
     methods
-        function mdp=metaMDP(nr_actions,gamma)
+        function mdp=metaMDP(nr_actions,gamma,nr_features)
             mdp.nr_actions=nr_actions;
             mdp.actions = 1:nr_actions;
             mdp.gamma=gamma;
             mdp.actions=1:mdp.nr_actions;
-            mdp.action_features=1:5;
+            mdp.action_features=1:nr_features;
         end
         
         function [s,mdp]=sampleS0(mdp)
@@ -22,7 +22,7 @@ classdef metaMDP < MDP
         end
         
         function [s0,mdp]=newEpisode(mdp)
-            mdp=metaMDP(mdp.nr_actions,mdp.gamma);
+            %mdp=metaMDP(mdp.nr_actions,mdp.gamma);
             s0=mdp.sampleS0();
         end
         
@@ -53,6 +53,7 @@ classdef metaMDP < MDP
                     s_next = [s(1),s(2) + 1];
                 end
             elseif a == 2
+                %{
                 if heads
                     if s(1) > s(2)
                         r = mdp.rewardCorrect;
@@ -66,6 +67,10 @@ classdef metaMDP < MDP
                         r = 0;
                     end
                 end
+                %}
+                
+                r = max(s)/sum(s);
+                
                 s_next = [-1,-1];
             end 
             PR = 0;
