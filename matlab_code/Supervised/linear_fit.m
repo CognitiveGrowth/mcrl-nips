@@ -1,3 +1,5 @@
+addpath('../MatlabTools/')
+
 cost = 0.001;
 voc1 = zeros(s,1);
 voc2 = zeros(s,1);
@@ -30,7 +32,7 @@ for i=1:s
 end
 % X = cat(2,voc2,bias);
 % X = cat(2,vpi,voc1,bias)
-X = cat(2,vpi,voc2,bias);
+X = cat(2,vpi,voc2,bias); feature_names={'VPI','VOC_2','1'};
 [w,wint,r,rint,stats] = regress(voc30,X);
 voc_hat=X*w;
 figure();
@@ -59,7 +61,9 @@ R2=corr(Q_star(valid_states,1),Q_hat(valid_states))^2
 fig=figure()
 scatter(Q_hat(valid_states),Q_star(valid_states,1))
 set(gca,'FontSize',16)
-xlabel('$\sum_i w_i*f_i$','FontSize',16,'Interpreter','LaTex')
+xlabel(modelEquation(feature_names,w),'FontSize',16)
 ylabel('$Q^\star$','FontSize',16,'Interpreter','LaTeX')
 title(['Linear Fit to Q-function of 1-lightbulb meta-MDP, R^2=',num2str(R2)],'FontSize',16)
+saveas(fig,'../../results/figures/QFitToyProblem.fig')
+saveas(fig,'../../results/figures/QFitToyProblem.png')
 
