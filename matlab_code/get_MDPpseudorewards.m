@@ -14,14 +14,14 @@ end
 nTrials = 30;
 rewardCorrect = 1;
 rewardIncorrect = 0;
-cost = 0.01;
+cost = 0.001;
 discount = 1;
 s = nTrials*(nTrials+1)/2; % size of state space
-S = nan(s,2); % the states
-R = nan(s,2); % rewards
-P1 = zeros(s); % transition matrix for action 1
-P2 = eye(s); % transition matrix for action 2 (state doesn't change)
-min_trial = nan(s,1); % the minimum possible trial number for a given state
+S = nan(s+1,2); % the states
+R = nan(s+1,2); % rewards
+P1 = zeros(s+1); % transition matrix for action 1
+P2 = zeros(s+1); % transition matrix for action 2 (state doesn't change)
+min_trial = nan(s+1,1); % the minimum possible trial number for a given state
 
 s = 0; % state index
 for t = 1:nTrials
@@ -34,9 +34,18 @@ for t = 1:nTrials
     end
     s = s + t;
 end
-P1 = P1(1:s,1:s);
+
+P2(:,s+1) = 1;
+l = (nTrials-1)*nTrials/2;
+P1(l+1:s+1,s+1) = 1;
+P1 = P1(1:s+1,1:s+1);
+
 P = cat(3,P1,P2);
-R = [cost*ones(s,1), max(R,[],2)]; % zero reward for action 1
+R = [-cost*ones(s+1,1), max(R,[],2)]; % zero reward for action 1
+R(s+1,:) = [0,0];
+S(s+1,:) = [-1,-1];
+min_trial(s+1) = 30;
+
 
 [values, policy] = mdp_finite_horizon (P, R, discount, nTrials);
 
