@@ -100,7 +100,7 @@ load MouselabMDPMetaMDPTestFeb-17-2017
 nr_training_episodes=100;
 nr_reps=2;
 first_episode=1; last_rep=nr_training_episodes;
-for rep=2:nr_reps
+for rep=1:nr_reps
     glm(rep)=glm0;
     tic()
     [glm(rep),MSE(first_episode:nr_training_episodes,rep),...
