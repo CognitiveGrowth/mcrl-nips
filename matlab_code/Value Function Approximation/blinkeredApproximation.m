@@ -1,4 +1,4 @@
-function [V_blinkered,Q_blinkered,pi_blinkered]=blinkeredApproximation(T,R,h,c,bot)
+function [VOC_blinkered,V_blinkered,Q_blinkered,pi_blinkered]=blinkeredApproximation(T,R,h,c,bot,cost)
 %blinkered approximation the value function of a meta-level MDP as proposed
 %by Hay et al. (2012).
 
@@ -14,5 +14,7 @@ R_blinkered=R(:,:,[c,bot]);
 [V_blinkered, pi_blinkered] = mdp_finite_horizon (T_blinkered, R_blinkered, 1, h);
 
 Q_blinkered = getQFromV(V_blinkered,T_blinkered,R_blinkered,1);
+
+VOC_blinkered=T(:,:,c)*V_blinkered-cost-R(:,end,bot);
 
 end
