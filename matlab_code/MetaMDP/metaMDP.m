@@ -9,10 +9,16 @@ classdef metaMDP < MDP
         
     end
     methods
-        function mdp=metaMDP(nr_actions,gamma,nr_features)
+        function mdp=metaMDP(nr_actions,gamma,nr_features,cost)
+            
+            if not(exist('cost','var'))
+                cost=0.001;
+            end
+            
             mdp.nr_actions=nr_actions;
             mdp.actions = 1:nr_actions;
             mdp.gamma=gamma;
+            mdp.cost=cost;
             mdp.actions=1:mdp.nr_actions;
             mdp.action_features=1:nr_features;
         end
