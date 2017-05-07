@@ -1,0 +1,7 @@
+function [V_blinkered,Q_blinkered,pi_blinkered]=blinkeredApproximation(T,R,h,a,)
+
+
+
+[V_blinkered, pi_blinkered] = mdp_finite_horizon (T_blinkered, R_blinkered, 1, h);
+
+end
