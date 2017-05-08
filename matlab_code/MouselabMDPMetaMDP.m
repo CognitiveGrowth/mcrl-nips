@@ -3,8 +3,8 @@ classdef MouselabMDPMetaMDP < MDP
     properties
         min_payoff;
         max_payoff;
-        mean_payoff=1;
-        std_payoff=2;
+        mean_payoff=4.5;
+        std_payoff=10.6;
         nr_cells;
         nr_possible_payoffs;
         payoff_values;
@@ -20,7 +20,7 @@ classdef MouselabMDPMetaMDP < MDP
         object_level_MDPs;
         object_level_MDP;
         episode=0;
-        action_features=7:16;
+        action_features=1:3;%7:16;
         feature_names;
         next_states;
         p_next_states;
@@ -66,7 +66,7 @@ action_feature_names={'Expected regret','regret reduction','VOC',...
                 'uncertainty reduction','sigma(R)','p(best action)','sigma(best action)',...
                 'underplanning','complete planning','cost'};
             
-            feature_names={state_feature_names{:}, action_feature_names{:}};
+            feature_names={'VPI','VOC','E[R|guess]'};%{state_feature_names{:}, action_feature_names{:}};
             
             meta_MDP.feature_names=feature_names;
         end
@@ -705,10 +705,11 @@ action_feature_names={'Expected regret','regret reduction','VOC',...
         end
         
         function state_action_features=extractStateActionFeatures(meta_MDP,state,action)
-            state_features=meta_MDP.extractStateFeatures(state);
+            %state_features=meta_MDP.extractStateFeatures(state);
             action_features=meta_MDP.extractActionFeatures(state,action);
             
-            state_action_features=[state_features;action_features];
+            %state_action_features=[state_features;action_features];
+            state_action_features=action_features;
             
             if any(isnan(state_action_features))
                 throw(MException('MException:isNaN','features are NaN'))
@@ -757,6 +758,7 @@ action_feature_names={'Expected regret','regret reduction','VOC',...
                         
             if c.is_decision_mechanism
                 
+                %{
                 [state,decision]=meta_MDP.decide(state,c);
                 location=state.s;
                 
@@ -779,18 +781,22 @@ action_feature_names={'Expected regret','regret reduction','VOC',...
                 underplanning=max(0,remaining_steps-c.planning_horizon);
                 
                 complete_planning=c.planning_horizon==remaining_steps;
-                
-                VOC=0;
-                %nr_cells_uninspected=sum(isnan(state.observations(:)));
-                
+
                 regret_reduction=0;
                 
                 cost=meta_MDP.costOfPlanning(state,c);
                 uncertainty_reduction=0;
+                                
+                %}
+                VOC=0;
+                %nr_cells_uninspected=sum(isnan(state.observations(:)));
+                
+                VPI=0;
             else
+                %{
                 expected_regret=0;
                 [regret_reduction,meta_MDP]=expectedRegretReduction(meta_MDP,state,c);
-                [VOC,meta_MDP]=meta_MDP.myopicVOC(state,c);
+                
                 [uncertainty_reduction,meta_MDP]=meta_MDP.expectedUncertaintyReduction(state,c);
                 sigma_R=0;
                 p_best_action=0;
@@ -798,12 +804,37 @@ action_feature_names={'Expected regret','regret reduction','VOC',...
                 underplanning=0;
                 complete_planning=0;
                 cost=meta_MDP.cost_per_click;
+                %}
+                VPI=meta_MDP.computeVPI(state,c);                
+                [VOC,meta_MDP]=meta_MDP.myopicVOC(state,c);
             end
             
+            ER_act=max(state.mu_Q(state.s,:));
+            
+            %{
             action_features=[expected_regret;regret_reduction;VOC;...
                 uncertainty_reduction; sigma_R;p_best_action;sigma_best_action;...
                 underplanning;complete_planning;cost];
+            %}
+            action_features=[VPI; VOC; ER_act];
+        end
+        
+        function VPI=computeVPI(meta_MDP,state,c)
             
+            [~,downstream_states_by_action]=meta_MDP.getDownStreamStates(state);
+            
+            corresponding_action=NaN;
+            for a=1:numel(downstream_states_by_action)
+                if ismember(c.state,downstream_states_by_action{a})
+                    corresponding_action=a;
+                end        
+            end
+            
+            if isnan(corresponding_action)
+                VPI=0;
+            else
+                VPI=valueOfPerfectInformation(state.mu_Q(state.s,:),state.sigma_Q(state.s,:),corresponding_action);
+            end
         end
         
         function V_deliberate=VfullDeliberation(meta_MDP,state)
@@ -833,8 +864,9 @@ action_feature_names={'Expected regret','regret reduction','VOC',...
                                     
         end
         
-        function downstream=getDownStreamStates(meta_MDP,state)
+        function [downstream,downstream_by_action]=getDownStreamStates(meta_MDP,state)
                 downstream=[];
+                downstream_by_action=cell(4,1);
                 
                 states=state.S;
                 current_path=states(state.s).path;
@@ -847,6 +879,10 @@ action_feature_names={'Expected regret','regret reduction','VOC',...
                         if length(states(s).path)>length(current_path)
                             if all(states(s).path(steps)==current_path)
                                 downstream=[downstream; s];
+                                
+                                downstream_by_action{states(s).path(length(current_path)+1)}=...
+                                    [downstream_by_action{states(s).path(length(current_path)+1)},s];
+                                
                             end
                         end
                     end

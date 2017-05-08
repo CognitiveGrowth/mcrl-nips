@@ -14,20 +14,20 @@ secondbest_pos=pos_sorted(2);
 if c==max_pos
     %information is valuable if it reveals that action c is suboptimal
     ub=secondbest_val;
-    lb=mu(c)-5*sigma(c);
+    lb=mu(c)-3*sigma(c);
     
-    VPI = integral(@(x) normpdf(x,mu(c),sigma(c)).*(secondbest_val-x),lb,ub);    
+    VPI = integral(@(x) normpdf(x,mu(c),sigma(c)).*(secondbest_val-x),lb,ub,'AbsTol',0.01,'RelTol',0.01);
+    %todo: replace numerical integration by the analytic solution
 else
     %information is valuable if it reveals that action is optimal
-    ub=mu(c)+5*sigma(c);
+    ub=mu(c)+3*sigma(c);
     lb=max_val;
     
     if ub>lb
-        VPI = integral(@(x) normpdf(x,mu(c),sigma(c)).*(x-max_val),lb,ub);
+        VPI = integral(@(x) normpdf(x,mu(c),sigma(c)).*(x-max_val),lb,ub,'AbsTol',0.01,'RelTol',0.01);
     else
         VPI=0;
     end
 end
-
 
 end
