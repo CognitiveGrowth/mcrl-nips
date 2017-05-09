@@ -36,7 +36,7 @@ def dist(branch, depth):
     else:
         return 2 ** (depth/2 - 0.5)
     
-def build(branch, depth, first='all', **kwargs):
+def build(branch, depth, first='up', **kwargs):
     """Returns graph and layout to be used in Mouselab-MDP."""
     graph = {}
     layout = {}
