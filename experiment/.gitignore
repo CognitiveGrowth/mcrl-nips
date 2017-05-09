@@ -1,0 +1,8 @@
+.ipynb_checkpoints/
+__pycache__/
+experiment/participants.db
+experiment/server.log
+experiment/.psiturk_history
+archive/
+experiment/static/json/
+paper/
