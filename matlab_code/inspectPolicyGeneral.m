@@ -31,15 +31,21 @@ for i=1:nr_episodes
         chosen_actions{i}(t)=action;
         
         if action.is_decision_mechanism
-            [state,decision]=mdp.decide(s,action);            
+            [state,decision]=mdp.decide(s,action); 
+            chosen_actions{i}(t).move=decision;
+            chosen_actions{i}(t).from_state=state.s;
         end
             
         %2. Observe outcome
         [r,s_next,PR]=mdp.simulateTransition(s,action);
+        if action.is_decision_mechanism
+            chosen_actions{i}(t).state=s_next.s;
+        end
+        
         R_total(i)=R_total(i)+r;
         nr_observations=nr_observations+1;
         
-        s=s_next;
+        s=s_next;        
         
     end
     

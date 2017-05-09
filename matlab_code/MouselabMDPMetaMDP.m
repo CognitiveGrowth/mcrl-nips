@@ -1,4 +1,4 @@
-classdef MouselabMDPMetaMDP < MDP
+classdef MouselabMDPMetaMDPNIPS < MDP
     
     properties
         min_payoff;
@@ -371,7 +371,7 @@ action_feature_names={'Expected regret','regret reduction','VOC',...
             if c.is_computation
                 if isnan(state.observations(c.state)) %not observed yet
                     
-                    state.observations(c.state)=meta_MDP.object_level_MDP.rewards(c.from_state,c.state,c.move);
+                    state.observations(c.state)=meta_MDP.rewards(c.state);%meta_MDP.object_level_MDP.rewards(c.from_state,c.state,c.move);
                     next_state=meta_MDP.updateBelief(state,c.state);
                     
                 else %the box had already been opened before
@@ -390,8 +390,8 @@ action_feature_names={'Expected regret','regret reduction','VOC',...
                 next_state.s=meta_MDP.object_level_MDP.nextState(state.s,...
                     c.decision);                
                 
-                r=meta_MDP.object_level_MDP.rewards(state.s,next_state.s,c.decision)-...
-                    meta_MDP.costOfPlanning(state,c);
+                r=meta_MDP.rewards(next_state.s);%meta_MDP.object_level_MDP.rewards(state.s,next_state.s,c.decision)-...
+                  %  meta_MDP.costOfPlanning(state,c);
                 
                 
                 if isnan(next_state.s)
@@ -439,7 +439,13 @@ action_feature_names={'Expected regret','regret reduction','VOC',...
         end
         
         function [state,decision]=decide(meta_MDP,state,c)
-            %determine a move according to the decision mechanism c
+            %determine a move according to the current belief state
+            
+            location=meta_MDP.object_level_MDP.states(state.s);
+            [ER,d_index]=max(state.mu_Q(state.s,location.available_actions));
+            decision=location.available_actions(d_index);
+            
+            %{
             if c.planning_horizon==0
                 if not(state.has_plan)
                     location=meta_MDP.object_level_MDP.states(state.s);
@@ -502,8 +508,8 @@ action_feature_names={'Expected regret','regret reduction','VOC',...
                     state.planned_nr_steps=0;
                 end
             end
-
-            decision=c.decision;
+            %}
+            
         end
         
         function cost_of_planning=costOfPlanning(meta_MDP,state,c)
@@ -830,7 +836,7 @@ action_feature_names={'Expected regret','regret reduction','VOC',...
                 end        
             end
             
-            if isnan(corresponding_action)
+            if or(isnan(corresponding_action),not(isnan(state.observations(c.state))))
                 VPI=0;
             else
                 VPI=valueOfPerfectInformation(state.mu_Q(state.s,:),state.sigma_Q(state.s,:),corresponding_action);
@@ -874,6 +880,16 @@ action_feature_names={'Expected regret','regret reduction','VOC',...
                 
                 if isempty(current_path)
                     downstream=1:numel(states);
+
+                    for s=2:numel(states)
+                        
+                        downstream_by_action{states(s).path(1)}=...
+                            [downstream_by_action{states(s).path(1)},s];
+                        
+                    end
+                    
+                    
+                    
                 else                    
                     for s=1:numel(states)
                         if length(states(s).path)>length(current_path)
@@ -920,9 +936,42 @@ action_feature_names={'Expected regret','regret reduction','VOC',...
         function [VOC,meta_MDP]=myopicVOC(meta_MDP,state,c)
                         
              if c.is_computation  
-                if isnan(state.observations(c.state))
-                    location=state.s;
+                if and(isnan(state.observations(c.state)),c.state>1)
                     
+                    if ismember(c.state,meta_MDP.getDownStreamStates(state))
+                        location=state.s;
+                        %actions=meta_MDP.object_level_MDP.actions_by_state{c.state};
+                        path=meta_MDP.object_level_MDP.states(c.state).path;
+                        
+                        a=path(state.step);                        
+                        mu_prior=state.mu_Q(state.s,:);
+                        
+                        
+                        %if hallway state
+                        if ismember(c.state,meta_MDP.object_level_MDP.hallway_states)
+                            VOC=myopicVOCAdditive(meta_MDP,mu_prior,a);
+                        end
+                                                
+                        if ismember(c.state,meta_MDP.object_level_MDP.leafs)
+                            
+                            parent=meta_MDP.object_level_MDP.parent_by_state(c.state);
+                            siblings=setdiff([state.S(parent).actions.state],c.state);
+                            
+                            if any(isnan(state.observations(siblings)))
+                                %if leaf node with unknown sibling(s)
+                                VOC=myopicVOCMaxUnknown(meta_MDP,mu_prior,a);
+                            else
+                                %if leaf node with known sibling(s)
+                                alternative=max(state.observations(siblings));
+                                VOC=myopicVOCMaxKnown(meta_MDP,mu_prior,a,alternative);
+                            end
+                        end
+
+                    else
+                        VOC=0-meta_MDP.cost_per_click;
+                    end
+                    
+                    %{
                     [~,a_old]=max(state.mu_Q(location,:));
                     
                     [next_states,p_next_states,meta_MDP]=meta_MDP.predictNextState(state,c);
@@ -934,6 +983,7 @@ action_feature_names={'Expected regret','regret reduction','VOC',...
                     end
                     
                     VOC=dot(p_next_states,delta_EV)-meta_MDP.cost_per_click;
+                    %}
                 else
                     VOC=0-meta_MDP.cost_per_click;
                 end
@@ -1018,7 +1068,9 @@ action_feature_names={'Expected regret','regret reduction','VOC',...
                 lb=mu_alpha-mu_prior(a)+E_max;
                 
                 VOC=meta_MDP.std_payoff^2*normpdf(lb,meta_MDP.mean_payoff,meta_MDP.std_payoff)-...
-                    (mu_alpha-mu_prior(a)-E_max-meta_MDP.mu_payoff)*(1-normcdf(lb,meta_MDP.mean_payoff,meta_MDP.std_payoff))-cost;
+                    (mu_alpha-mu_prior(a)-E_max-meta_MDP.mean_payoff)*...
+                    (1-normcdf(lb,meta_MDP.mean_payoff,meta_MDP.std_payoff))-...
+                    meta_MDP.cost_per_click;
             end
             
         end        

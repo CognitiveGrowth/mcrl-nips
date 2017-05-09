@@ -4,7 +4,7 @@ function [ action ] = contextualThompsonSampling(state, mdp, glm)
 w_hat=glm.sampleCoefficients();
 
 [actions,mdp]=mdp.getActions(state);
-parfor a=1:numel(actions)
+for a=1:numel(actions) %parfor made it extremely slow for some reason
     action_features=mdp.extractActionFeatures(state,actions(a));
     Q_hat(a)=dot(w_hat(mdp.action_features),action_features);
 end
