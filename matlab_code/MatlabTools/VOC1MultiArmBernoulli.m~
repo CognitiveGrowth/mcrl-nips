@@ -11,25 +11,24 @@ E_correct=alphas(:)./(alphas(:)+betas(:));
 mu_alpha=sorted_values(1);
 mu_beta=sorted_values(2);
 alpha=arm_numbers(1);
-beta=arm_numbers(2);
 
+p_reward=
 
 if c==alpha %information can only be valuable by revealing that alpha is actually suboptimal
-    if (alphas(c)/(alphas(c)+betas(c)+1))<mu_beta %decison could change
-        delta_EU=(mu_beta-alphas(c)/(alphas(c)+betas(c)+1);
-    else
-        delta_EU=0;
-    end
+        
+        EU_after=p_reward*(alphas(c)+1)/(alphas(c)+betas(c)+1)+...
+            (1-p_reward)*max(mu_beta,alphas(c)/(alphas(c)+betas(c)+1));        
+
 else
     %information can only be valuable by revealing that c is actually
     %better than alpha
-    if ((1+alphas(c))/(alphas(c)+betas(c)+1))>mu_alpha %decison could change
-        delta_u=((1+alphas(c))/(alphas(c)+betas(c)+1))-mu_alpha;
-    else
-        delta_u=0;
-    end
+    
+    EU_after=p_reward*max(mu_alpha,alphas(c)+1)/(alphas(c)+betas(c)+1)+...
+        (1-p_reward)*mu_alpha;
 end
 
-VOC1=delta_u-cost;
+delta_EU=EU_after - mu_alpha;
+
+VOC1=delta_EU-cost;
 
 end

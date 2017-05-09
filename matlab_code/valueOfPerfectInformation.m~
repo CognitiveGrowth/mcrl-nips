@@ -20,7 +20,7 @@ if c==max_pos
     
     a=(lb-mu(c))/sigma(c);
     b=(ub-mu(c))/sigma(c);
-    VPI = (secondbest_val-mu(c))*(normcdf(b)-normcdf(a))+...
+    VPI = (secondbest_val-mu(c)*sigma(c)^2)*(normcdf(b)-normcdf(a))+...
         sigma(c)^2*(normpdf(b)-normpdf(a));
     %todo: replace numerical integration by the analytic solution
 else
@@ -32,7 +32,7 @@ else
         %VPI = integral(@(x) normpdf(x,mu(c),sigma(c)).*(x-max_val),lb,ub,'AbsTol',0.01,'RelTol',0.01);
         %a=(lb-mu(c))/sigma(c);
         %b=(ub-mu(c))/sigma(c);
-        VPI = (mu(c)-max_val)*(normcdf(ub,mu(c),sigma(c))-normcdf(lb,mu(c),sigma(c)))-...
+        VPI = (mu(c)*sigma(c)^2-max_val)*(normcdf(ub,mu(c),sigma(c))-normcdf(lb,mu(c),sigma(c)))-...
             sigma(c)^2*(normpdf(ub,mu(c),sigma(c))-normpdf(lb,mu(c),sigma(c)));
 
     else
