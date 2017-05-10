@@ -126,7 +126,7 @@ def main():
                 'depth': depth,
             }
             savemat('env_data/{}.mat'.format(name), mdict=mat_dict)
-            paths[name] = get_paths(graph)
+            paths[branch][depth] = get_paths(graph)
     
     os.makedirs('env_data', exist_ok=True)
     with open('experiment/static/json/paths.json', 'w+') as f:
