@@ -6,6 +6,8 @@ import os
 import json
 from collections import defaultdict
 
+
+
 # ---------- Constructing environments ---------- #
 BRANCH_DIRS = {
     2: {'up': ('right', 'left'),
@@ -19,6 +21,7 @@ BRANCH_DIRS = {
         'left': ('up', 'down', 'left'),
         'all': ('up', 'right', 'down', 'left')}
 }
+ACTIONS = dict(zip(BRANCH_DIRS[3]['all'], it.count()))
 
 def move_xy(x, y, direction, dist=1):
     return {
@@ -69,6 +72,20 @@ def n_step(graph):
     search('0', 0)
     return result
 
+def get_paths(graph):
+    """The sequences of actions and states that lead to each state."""
+
+    state_paths = {}
+    action_paths = {}
+    def search(s, spath, apath):
+        state_paths[s] = spath
+        action_paths[s] = apath
+        for a, (_, s1) in graph[s].items():
+            search(s1, spath + [s1], apath + [a])
+    search('0', ['0'], [])
+    return {'state_paths': state_paths, 'action_paths': action_paths}
+
+
 def transition_matrix(graph):
     """X[s0, s1] is 1 if there is an edge from s0 to s1, else 0."""
     X = np.zeros((len(graph), len(graph)))
@@ -77,20 +94,43 @@ def transition_matrix(graph):
             X[int(s0), int(s1)] = 1
     return X
 
+def terminal(graph):
+    x = np.zeros(len(graph))
+    for s, actions in graph.items():
+        if not actions:
+            x[int(s)] = 1
+    return x
+
+def available_actions(graph):
+    X = np.zeros((len(graph), len(ACTIONS)))
+    for s0, actions in graph.items():
+        for a in actions:
+            X[int(s0), ACTIONS[a]] = 1
+    return X
+
+
+
 def main():
-    transition = {}
-    nsteps = defaultdict(dict)
+    paths = defaultdict(dict)
     for branch in (2, 3):
         for depth in range(1, 6):
             graph, layout = build(branch, depth)
             name = 'b{}d{}'.format(branch, depth)
-            transition[name] = transition_matrix(graph)
-            nsteps[branch][depth] = n_step(graph)
+
+            mat_dict = {
+                'transition': transition_matrix(graph),
+                'initial': 0,
+                'terminal': terminal(graph),
+                'actions': available_actions(graph),
+                'branch': branch,
+                'depth': depth,
+            }
+            savemat('env_data/{}.mat'.format(name), mdict=mat_dict)
+            paths[name] = get_paths(graph)
     
     os.makedirs('env_data', exist_ok=True)
-    savemat('env_data/transition.mat', mdict=transition)
-    with open('experiment/static/json/nsteps.json', 'w+') as f:
-        json.dump(nsteps, f)
+    with open('experiment/static/json/paths.json', 'w+') as f:
+        json.dump(paths, f)
 
 
 if __name__ == '__main__':
