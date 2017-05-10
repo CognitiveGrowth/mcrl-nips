@@ -1,22 +1,4 @@
-%{
-add_pseudorewards=false;
-pseudoreward_type='none';
-mean_payoff=1;
-std_payoff=2;
-
-load MouselabMDPExperiment
-
-meta_MDP=MouselabMDPMetaMDP(add_pseudorewards,pseudoreward_type,mean_payoff,std_payoff,experiment(1));
-
-[state,meta_MDP]=newEpisode(meta_MDP)
-
-nr_episodes=2;
-policy=@(state,mdp) drawSample(mdp.actions)
-[R_total,problems,states,chosen_actions,indices]=inspectPolicyGeneral(meta_MDP,policy,nr_episodes)
-%}
-
 %%
-clear
 addpath([pwd,'/MatlabTools/'])
 %create meta-level MDP
 
@@ -52,8 +34,13 @@ for e=1:numel(experiment)
     experiment(e).parent_by_state=[1,1,1,1,1,2,3,4,5,6,6,7,7,8,8,9,9];
 end
 
+costs=[0.05,0.10,0.20,0.40,0.80,1.60];
+
+c=6;
+
 meta_MDP=MouselabMDPMetaMDPNIPS(add_pseudorewards,pseudoreward_type,mean_payoff,std_payoff,experiment);
-            
+meta_MDP.cost_per_click=costs(c);
+
 mu0=[1;1;1];
 nr_features=numel(mu0);
 sigma0=0.1;

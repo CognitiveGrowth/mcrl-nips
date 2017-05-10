@@ -1,23 +1,6 @@
-%{
-add_pseudorewards=false;
-pseudoreward_type='none';
-mean_payoff=1;
-std_payoff=2;
+function solve_MouselabMDP_SAVIO(c)
 
-load MouselabMDPExperiment
-
-meta_MDP=MouselabMDPMetaMDP(add_pseudorewards,pseudoreward_type,mean_payoff,std_payoff,experiment(1));
-
-[state,meta_MDP]=newEpisode(meta_MDP)
-
-nr_episodes=2;
-policy=@(state,mdp) drawSample(mdp.actions)
-[R_total,problems,states,chosen_actions,indices]=inspectPolicyGeneral(meta_MDP,policy,nr_episodes)
-%}
-
-%%
-clear
-addpath([pwd,'/MatlabTools/'])
+addpath('/global/home/users/flieder/matlab_code/MatlabTools/')
 %create meta-level MDP
 
 add_pseudorewards=false;
@@ -26,7 +9,7 @@ pseudoreward_type='none';
 mean_payoff=4.5;
 std_payoff=10.6;
 
-load('MouselabMDPExperiment_normalized')
+load('/global/home/users/flieder/matlab_code/MouselabMDPExperiment_normalized')
 
 actions_by_state{1}=[];
 actions_by_state{2}=[1];
@@ -53,7 +36,8 @@ for e=1:numel(experiment)
 end
 
 meta_MDP=MouselabMDPMetaMDPNIPS(add_pseudorewards,pseudoreward_type,mean_payoff,std_payoff,experiment);
-            
+meta_MDP.cost_per_click=c;
+
 mu0=[1;1;1];
 nr_features=numel(mu0);
 sigma0=0.1;
@@ -94,6 +78,7 @@ episode_nrs=bin_width:bin_width:nr_episodes;
 [avg_RMSE,sem_RMSE]=binnedAverage(sqrt(avg_MSE),bin_width);
 [avg_R,sem_R]=binnedAverage(R_total,bin_width);
 
+%{
 figure()
 subplot(2,1,1)
 errorbar(episode_nrs,avg_R,sem_R,'g-o','LineWidth',2), hold on
@@ -118,10 +103,11 @@ ylabel('RMSE','FontSize',16),
 %plot(smooth(R_total,100),'r-')
 %legend('RMSE','R_{total}')
 xlabel('#Episodes','FontSize',16)
-
+%}
 feature_names=meta_MDP.feature_names;
 
 weights=[glm(1:nr_reps).mu_n];
+%{
 figure()
 bar(weights),
 %bar(w)
@@ -130,7 +116,7 @@ set(gca,'XTick',1:numel(feature_names),'XTickLabel',feature_names)
 set(gca,'XTickLabelRotation',45,'FontSize',16)
 ylabel('Learned Weights','FontSize',16)
 title(['Bayesian SARSA without PR, ',int2str(nr_episodes),' episodes'],'FontSize',18)
-
+%}
 nr_episodes_evaluation=20000;
 meta_MDP.object_level_MDP=meta_MDP.object_level_MDPs(1);
 policy=@(state,mdp) contextualThompsonSampling(state,meta_MDP,glm(best_run))
@@ -147,14 +133,15 @@ result.weights=weights;
 result.features={'VPI','VOC','E[R|act,b]'};
 result.nr_observations=nr_observations_learned_policy;
 result.returns=R_total_evaluation;
+result.cost_per_click=c;
 
 do_save=true;
 if do_save
-    save ../results/MouselabMDPFitBayesianSARSA result
+    save(['/global/home/users/flieder/results/MouselabMDPFitBayesianSARSA',...
+        int2str(round(100*c)),'.mat'],'result')
 end
 %% benchmark policy: observing everything before the first move
 
-rmpath('/Users/Falk/Dropbox/PhD/Metacognitive RL/')
 
 add_pseudorewards=false;
 pseudoreward_type='none';
@@ -162,7 +149,7 @@ pseudoreward_type='none';
 mean_payoff=4.5;
 std_payoff=10.6;
 
-load('MouselabMDPExperiment_normalized')
+load('/global/home/users/flieder/matlab_code/MatlabTools/MouselabMDPExperiment_normalized')
 
 meta_MDP=MouselabMDPMetaMDPNIPS(add_pseudorewards,pseudoreward_type,mean_payoff,std_payoff,experiment)
 
@@ -180,12 +167,14 @@ full_observation_benchmark.policy=policy;
 full_observation_benchmark.reward=reward_full_observation_policy;
 full_observation_benchmark.nr_observations=nr_observations_full_observation_policy;
 full_observation_benchmark.returns=R_total;
+full_observation_benchmark.cost_per_click=c;
 
-save ../results/full_observation_benchmark full_observation_benchmark
+save(['/global/home/users/flieder/results/','full_observation_benchmark',...
+    int2str(round(100*c)),'.mat'],'full_observation_benchmark')
 
 %% comparison of learned policy against full-observation policy
-load('../results/full_observation_benchmark')
-load('../results/MouselabMDPFitBayesianSARSA')
+load('/global/home/users/flieder/matlab_code/MatlabTools/results/full_observation_benchmark')
+load('/global/home/users/flieder/matlab_code/MatlabTools//results/MouselabMDPFitBayesianSARSA')
 
 [result.reward;full_observation_benchmark.reward]
 
@@ -195,5 +184,6 @@ t=(result.reward(1)-full_observation_benchmark.reward(1))/...
 p=1-normcdf(t)
 
 %The policy learned by Bayesian SARSA algorithm achieved a significantly
-%higher average return than the full-observation policy ($\$36.73 \pm 0.09$ vs. 
-%\$36.41 \pm 0.09 , Z=2.66, p=0.004$).
+%higher average return than the full-observation policy ($36.73 \pm 0.09$ vs. 
+%36.41 \pm 0.09 points per trial, Z=2.66, p=0.004$).
+end
