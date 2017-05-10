@@ -72,6 +72,20 @@ def n_step(graph):
     search('0', 0)
     return result
 
+def get_paths(graph):
+    """The sequences of actions and states that lead to each state."""
+
+    state_paths = {}
+    action_paths = {}
+    def search(s, spath, apath):
+        state_paths[s] = spath
+        action_paths[s] = apath
+        for a, (_, s1) in graph[s].items():
+            search(s1, spath + [s1], apath + [a])
+    search('0', ['0'], [])
+    return {'state_paths': state_paths, 'action_paths': action_paths}
+
+
 def transition_matrix(graph):
     """X[s0, s1] is 1 if there is an edge from s0 to s1, else 0."""
     X = np.zeros((len(graph), len(graph)))
@@ -95,8 +109,9 @@ def available_actions(graph):
     return X
 
 
+
 def main():
-    nsteps = defaultdict(dict)
+    paths = defaultdict(dict)
     for branch in (2, 3):
         for depth in range(1, 6):
             graph, layout = build(branch, depth)
@@ -111,11 +126,11 @@ def main():
                 'depth': depth,
             }
             savemat('env_data/{}.mat'.format(name), mdict=mat_dict)
-            nsteps[branch][depth] = n_step(graph)
+            paths[name] = get_paths(graph)
     
     os.makedirs('env_data', exist_ok=True)
-    with open('experiment/static/json/nsteps.json', 'w+') as f:
-        json.dump(nsteps, f)
+    with open('experiment/static/json/paths.json', 'w+') as f:
+        json.dump(paths, f)
 
 
 if __name__ == '__main__':
