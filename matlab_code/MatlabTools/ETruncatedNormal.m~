@@ -1,8 +1,0 @@
-function EV=ETruncatedNormal(mu,sigma,x_min,x_max)
-    
-    int_below=normcdf(x_min,mu,sigma)*x_min;
-    int_above=(1-normcdf(x_max,mu,sigma))*x_max;
-    int_middle=
-    
-    
-end

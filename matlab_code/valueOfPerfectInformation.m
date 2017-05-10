@@ -16,12 +16,9 @@ if c==max_pos
     ub=secondbest_val;
     lb=mu(c)-3*sigma(c);
     
-    %VPI = integral(@(x) normpdf(x,mu(c),sigma(c)).*(secondbest_val-x),lb,ub,'AbsTol',0.01,'RelTol',0.01);
-    
-    a=(lb-mu(c))/sigma(c);
-    b=(ub-mu(c))/sigma(c);
-    VPI = (secondbest_val-mu(c))*(normcdf(b)-normcdf(a))+...
-        sigma(c)^2*(normpdf(b)-normpdf(a));
+    %VPI = integral(@(x) normpdf(x,mu(c),sigma(c)).*(secondbest_val-x),lb,ub,'AbsTol',0.01,'RelTol',0.01);    
+    VPI = (secondbest_val-mu(c))*(normcdf(ub,mu(c),sigma(c))-normcdf(lb,mu(c),sigma(c)))+...
+        sigma(c)^2*(normpdf(ub,mu(c),sigma(c))-normpdf(lb,mu(c),sigma(c)));
     %todo: replace numerical integration by the analytic solution
 else
     %information is valuable if it reveals that action is optimal
