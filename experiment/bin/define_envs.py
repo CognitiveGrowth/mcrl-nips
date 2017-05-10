@@ -6,6 +6,8 @@ import os
 import json
 from collections import defaultdict
 
+
+
 # ---------- Constructing environments ---------- #
 BRANCH_DIRS = {
     2: {'up': ('right', 'left'),
@@ -19,6 +21,7 @@ BRANCH_DIRS = {
         'left': ('up', 'down', 'left'),
         'all': ('up', 'right', 'down', 'left')}
 }
+ACTIONS = dict(zip(BRANCH_DIRS[3]['all'], it.count()))
 
 def move_xy(x, y, direction, dist=1):
     return {
@@ -77,18 +80,40 @@ def transition_matrix(graph):
             X[int(s0), int(s1)] = 1
     return X
 
+def terminal(graph):
+    x = np.zeros(len(graph))
+    for s, actions in graph.items():
+        if not actions:
+            x[int(s)] = 1
+    return x
+
+def available_actions(graph):
+    X = np.zeros((len(graph), len(ACTIONS)))
+    for s0, actions in graph.items():
+        for a in actions:
+            X[int(s0), ACTIONS[a]] = 1
+    return X
+
+
 def main():
-    transition = {}
     nsteps = defaultdict(dict)
     for branch in (2, 3):
         for depth in range(1, 6):
             graph, layout = build(branch, depth)
             name = 'b{}d{}'.format(branch, depth)
-            transition[name] = transition_matrix(graph)
+
+            mat_dict = {
+                'transition': transition_matrix(graph),
+                'initial': 0,
+                'terminal': terminal(graph),
+                'actions': available_actions(graph),
+                'branch': branch,
+                'depth': depth,
+            }
+            savemat('env_data/{}.mat'.format(name), mdict=mat_dict)
             nsteps[branch][depth] = n_step(graph)
     
     os.makedirs('env_data', exist_ok=True)
-    savemat('env_data/transition.mat', mdict=transition)
     with open('experiment/static/json/nsteps.json', 'w+') as f:
         json.dump(nsteps, f)
 
