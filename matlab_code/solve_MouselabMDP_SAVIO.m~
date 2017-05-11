@@ -123,9 +123,9 @@ policy=@(state,mdp) contextualThompsonSampling(state,meta_MDP,glm(best_run))
 [R_total_evaluation,problems_evaluation,states_evaluation,chosen_actions_evaluation,indices_evaluation]=...
     inspectPolicyGeneral(meta_MDP,policy,nr_episodes_evaluation)
 
-reward_learned_policy=[mean(R_total_evaluation),sem(R_total_evaluation)];
+reward_learned_policy=[mean(R_total_evaluation),sem(R_total_evaluation)]
 nr_observations_learned_policy=[mean(indices_evaluation.nr_acquisitions),...
-    sem(indices_evaluation.nr_acquisitions(:))];
+    sem(indices_evaluation.nr_acquisitions(:))]
 
 result.policy=policy;
 result.reward=reward_learned_policy;
@@ -151,12 +151,11 @@ std_payoff=10.6;
 
 load('/global/home/users/flieder/matlab_code/MatlabTools/MouselabMDPExperiment_normalized')
 
-meta_MDP=MouselabMDPMetaMDPNIPS(add_pseudorewards,pseudoreward_type,mean_payoff,std_payoff,experiment);
-meta_mdp.cost_per_click=c;
+meta_MDP=MouselabMDPMetaMDPNIPS(add_pseudorewards,pseudoreward_type,mean_payoff,std_payoff,experiment)
 
 policy=@(state,mdp) fullObservationPolicy(state,mdp)
 
-nr_episodes_evaluation=2000;
+nr_episodes_evaluation=20000;
 [R_total,problems,states,chosen_actions,indices]=...
     inspectPolicyGeneral(meta_MDP,policy,nr_episodes_evaluation)
 
