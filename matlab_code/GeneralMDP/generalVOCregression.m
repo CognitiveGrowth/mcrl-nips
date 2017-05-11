@@ -3,8 +3,8 @@ addpath('./MatlabTools/')
 addpath('../')
 exact
 
-tmp = matlab.desktop.editor.getActive;
-cd(fileparts(tmp.Filename));
+% tmp = matlab.desktop.editor.getActive;
+% cd(fileparts(tmp.Filename));
 
 costs=0.01;
 
@@ -12,7 +12,7 @@ nr_states=size(states,1)-1;
 S=states(1:nr_states,:);
 nr_arms = size(states(1,:),2)/2;
 
-load ../../results/nlightbulb_problem
+load ../results/nlightbulb_problem
 
 %% Fill in the regressors
 for c=1:numel(costs)
@@ -34,7 +34,7 @@ for c=1:numel(costs)
             state_action(i,j) = count;
             ers(i,j) = er;
             vpi(i,j) = valueOfPerfectInformationMultiArmBernoulli(st_m(:,1),st_m(:,2),j);
-            voc1(i,j) = VOC1MultiArmBernoulli(st_m(:,1),st_m(:,2),j,cost);
+            voc1(i,j) = VOC1MultiArmBernoulli(st_m(:,1),st_m(:,2),j,cost)-er;
             voc(i,j) = Q_star(i,j) - cost - er; %fix this by getting q_from_v
         end
     end
@@ -69,9 +69,9 @@ for c=1:numel(costs)
     Q_hat=[Q_hat,ers(1,:)'];
     V_hat=max(Q_hat,[],2);
     
-%     valid_states=and(sum(S,2)<=14,sum(S,2)>0);
+    valid_states=and(sum(S,2)<=10,sum(S,2)>0);
     
-%     R2=corr(Q_star(valid_states,1),Q_hat(valid_states))^2;
+    R2=corr(Q_star(valid_states),Q_hat(valid_states))^2;
     qs = Q_star(1:nr_states,:);
     R2 = corr(qs(:),Q_hat(:))^2;
     
