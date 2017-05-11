@@ -5,61 +5,72 @@ addpath('./MatlabTools/')
 
 costs=0.01;
 
-nr_states=size(states,1);
-S=states;
+nr_states=size(states,1)-1;
+S=states(1:nr_states,:);
 nr_arms = size(states(1,:),2)/2;
 
 load ../results/nlightbulb_problem
 
+%% Fill in the regressors
 for c=1:numel(costs)
+    Q_star=getQFromV(nlightbulb_mdp(c).v_star,nlightbulb_mdp(c).T,nlightbulb_mdp(c).R);
     cost = costs(c);
     voc1 = zeros(nr_states,nr_arms);
     vpi = zeros(nr_states,nr_arms);
-    voc30 = zeros(nr_states,1);
-    bias = ones(nr_states,1);
-    disp('here')
+    voc = zeros(nr_states,nr_arms);
+    ers = zeros(nr_states,nr_arms);
+    bias = ones(nr_states*nr_arms,1);
+    state_action = zeros(nr_states,nr_arms);
+    count = 0;
     for i=1:nr_states
         st = S(i,:);  
-        st_m = reshape(st,nr_arms,2); 
-        
-        for j=1:nr_arms
-            vpi(i,j) = valueOfPerfectInformationMultiArmBernoulli(st_m(:,1),st_m(:,2),j);
-            voc1(i,j) = VOC1MultiArmBernoulli(st_m(:,1),st_m(:,2),j,cost);
-        end
-               
+        st_m = reshape(st,2,nr_arms)';
         er = max(st_m(:,1) ./ sum(st_m,2));
-        voc30(i) = values(i,1) - er;
+        for j=1:nr_arms
+            count = count +1;
+            state_action(i,j) = count;
+            ers(i,j) = er;
+            vpi(i,j) = valueOfPerfectInformationMultiArmBernoulli(st_m(:,1),st_m(:,2),j);
+            voc1(i,j) = VOC1MultiArmBernoulli(st_m(:,1),st_m(:,2),j,cost)-er;
+            voc(i,j) = Q_star(i,j) - cost - er; %fix this by getting q_from_v
+        end
     end
-    % X = cat(2,voc2,bias);
-    % X = cat(2,vpi,voc1,bias)
-    X = cat(2,vpi,voc1,bias); feature_names={'VPI','VOC_1','1'};
-    [w,wint,r,rint,stats] = regress(voc30,X);
+    
+%% Regression
+    vpi = vpi';
+    voc1 = voc1';
+    ers = ers';
+    X = cat(2,voc1(:),vpi(:),ers(:),bias); feature_names={'VOC1','VPI','1'};
+%     X = cat(2,voc1(:),vpi(:),bias);
+    
+    vocl = voc';
+    vocl = vocl(:);
+    
+    [w,wint,r,rint,stats] = regress(vocl,X);
     voc_hat=X*w;
     figure();
-    scatter(voc_hat,voc30);
+    scatter(voc_hat,vocl);
     title(num2str(stats(1)));
     
-    sign_disagreement=find(sign(voc_hat).*sign(voc30)==-1)
-    numel(sign_disagreement)/numel(voc30)
+    sign_disagreement=find(sign(voc_hat).*sign(vocl)==-1);
+    numel(sign_disagreement)/numel(vocl);
     
-    max(voc30(sign_disagreement))
-    
-    E_guess=max(S,[],2)./sum(S,2);
-    
+    max(vocl(sign_disagreement));
     
     %% Plot fit to Q-function
     
-    Q_hat(:,1)=voc_hat+E_guess;
-    Q_hat(:,2)=E_guess;
+    Q_hat=reshape(voc_hat,nr_arms,nr_states)' + ers' + cost;
+    Q_hat=[Q_hat,ers(1,:)'];
     V_hat=max(Q_hat,[],2);
     
-    valid_states=and(sum(S,2)<=30,sum(S,2)>0);
+%     valid_states=and(sum(S,2)<=14,sum(S,2)>0);
     
-    Q_star=getQFromV(nlightbulb_mdp(c).v_star,nlightbulb_mdp(c).T,nlightbulb_mdp(c).R);
-    R2=corr(Q_star(valid_states,1),Q_hat(valid_states))^2;
+%     R2=corr(Q_star(valid_states,1),Q_hat(valid_states))^2;
+    qs = Q_star(1:nr_states,:);
+    R2 = corr(qs(:),Q_hat(:))^2;
     
-    fig_Q=figure()
-    scatter(Q_hat(valid_states),Q_star(valid_states,1))
+    fig_Q=figure();
+    scatter(Q_hat(:),qs(:))
     set(gca,'FontSize',16)
     xlabel(modelEquation(feature_names,w),'FontSize',16)
     ylabel('$Q^\star$','FontSize',16,'Interpreter','LaTeX')
@@ -70,7 +81,7 @@ for c=1:numel(costs)
     load ../results/nlightbulb_problem
     nlightbulb_problem(c).mdp=lightbulb_mdp(c);
     nlightbulb_problem(c).fit.w=w;
-    nlightbulb_problem(c).fit.Q_star=Q_star;
+    nlightbulb_problem(c).fit.Q_star=qs;
     nlightbulb_problem(c).fit.Q_hat=Q_hat;
     nlightbulb_problem(c).fit.R2=R2;
     nlightbulb_problem(c).fit.feature_names=feature_names;
