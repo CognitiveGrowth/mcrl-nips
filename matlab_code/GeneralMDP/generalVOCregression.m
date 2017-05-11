@@ -35,7 +35,8 @@ for c=1:numel(costs)
     bias = ones(nr_states*nr_arms,1);
     state_action = zeros(nr_states,nr_arms);
     count = 0;
-    for i=1:nr_states
+    for k=1:numel(valid_states)
+        i = valid_states(k);
         st = S(i,:);  
         st_m = reshape(st,2,nr_arms)';
         er = max( st_m(:,1) ./ sum(st_m,2));
@@ -54,8 +55,8 @@ for c=1:numel(costs)
     voc1v = voc1(valid_states,:)';
     ersv = ers(valid_states,:)';
     bias_size = nr_arms*n_vstates;
-    X = cat(2,voc1v(:),bias(1:bias_size));
-    feature_names={'VOC1','1'};
+    X = cat(2,voc1v(:),vpiv(:),bias(1:bias_size));
+    feature_names={'VOC1','VPI','1'};
 %     X = cat(2,voc1(:),vpi(:),bias);
     
 %     vocl = voc';
@@ -81,8 +82,6 @@ for c=1:numel(costs)
     Q_hat=[Q_hat,ersv(1,:)'];
     V_hat=max(Q_hat,[],2);
     
-    valid_states=and(sum(S,2)<=10,sum(S,2)>0);
-    
 %     R2=corr(Q_star(valid_states,:),Q_hat(valid_states,:))^2;
 %     qs = Q_star(1:nr_states,:);
 %     R2 = corr(qs(:),Q_hat(:))^2;
@@ -100,13 +99,13 @@ for c=1:numel(costs)
     saveas(fig_Q,'../results/figures/QFitNBulbs.png')
     
     load ../results/nlightbulb_problem
-    nlightbulb_problem(c).mdp=lightbulb_mdp(c);
+    nlightbulb_problem(c).mdp=nlightbulb_mdp(c);
     nlightbulb_problem(c).fit.w=w;
     nlightbulb_problem(c).fit.Q_star=qs;
     nlightbulb_problem(c).fit.Q_hat=Q_hat;
     nlightbulb_problem(c).fit.R2=R2;
     nlightbulb_problem(c).fit.feature_names=feature_names;
     nlightbulb_problem(c).fit.features=X;
-    nlightbulb_problem(c).optimal_PR=nlightbulb_problem(c).mdp.optimal_PR;
+%     nlightbulb_problem(c).optimal_PR=nlightbulb_problem(c).mdp.optimal_PR;
 end
 save('../results/nlightbulb_fit.mat','nlightbulb_problem')
