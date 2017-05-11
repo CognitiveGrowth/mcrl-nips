@@ -40,7 +40,7 @@ for c=1:numel(costs)
     vpi = vpi';
     voc1 = voc1';
     ers = ers';
-    X = cat(2,voc1(:),vpi(:),ers(:),bias); feature_names={'VOC1','VPI','1'};
+    X = cat(2,voc1(:),vpi(:),ers(:),bias); feature_names={'VOC1','VPI','E[R|S,guess]','1'};
 %     X = cat(2,voc1(:),vpi(:),bias);
     
     vocl = voc';
