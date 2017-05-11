@@ -18,9 +18,11 @@ max_nr_observations=max(nr_observations);
 
 valid_states=find(and(nr_observations<max_nr_observations,...
     nr_observations>=0));
+s_vstates = size(valid_states);
+n_vstates = s_vstates(1);
 
 
-load ../../results/nlightbulb_problem
+load ../results/nlightbulb_problem
 
 %% Fill in the regressors
 for c=1:numel(costs)
@@ -42,50 +44,54 @@ for c=1:numel(costs)
             state_action(i,j) = count;
             ers(i,j) = er;
             vpi(i,j) = valueOfPerfectInformationMultiArmBernoulli(st_m(:,1),st_m(:,2),j);
-            voc1(i,j) = VOC1MultiArmBernoulli(st_m(:,1),st_m(:,2),j,cost)-er;
+            voc1(i,j) = VOC1MultiArmBernoulli(st_m(:,1),st_m(:,2),j,cost);
             voc(i,j) = Q_star(i,j) - cost - er; %fix this by getting q_from_v
         end
     end
     
 %% Regression
-    vpi = vpi';
-    voc1 = voc1';
-    ers = ers';
-    X = cat(2,voc1(:),vpi(:),ers(:),bias);
-    feature_names={'VOC1','VPI','E[R|S,guess]','1'};
+    vpiv = vpi(valid_states,:)';
+    voc1v = voc1(valid_states,:)';
+    ersv = ers(valid_states,:)';
+    bias_size = nr_arms*n_vstates;
+    X = cat(2,voc1v(:),bias(1:bias_size));
+    feature_names={'VOC1','1'};
 %     X = cat(2,voc1(:),vpi(:),bias);
     
-    vocl = voc';
-    voc_valid_states = vocl(valid_states);
+%     vocl = voc';
+    voc_valid_states = voc(valid_states,:)';
+    voc_valid_states = voc_valid_states(:);
     
-    
-    [w,wint,r,rint,stats] = regress(voc_valid_states(:),X(valid_states(:),:));
-    voc_hat=X(valid_states,:)*w;
+    [w,wint,r,rint,stats] = regress(voc_valid_states,X);
+    voc_hat=X*w;
     figure();
     scatter(voc_hat,voc_valid_states);
     title(['R^2=',num2str(stats(1))]);
     xlabel('Predicted VOC','FontSize',16)
     ylabel('VOC','FontSize',16)
     
-    sign_disagreement=find(sign(voc_hat).*sign(vocl)==-1);
-    numel(sign_disagreement)/numel(vocl);
+    sign_disagreement=find(sign(voc_hat).*sign(voc_valid_states)==-1);
+    numel(sign_disagreement)/numel(voc_valid_states);
     
-    max(vocl(sign_disagreement));
+    max(voc_valid_states(sign_disagreement));
     
     %% Plot fit to Q-function
     
-    Q_hat=reshape(voc_hat,nr_arms,nr_states)' + ers' + cost;
-    Q_hat=[Q_hat,ers(1,:)'];
+    Q_hat=reshape(voc_hat,nr_arms,n_vstates)' + ersv' + cost;
+    Q_hat=[Q_hat,ersv(1,:)'];
     V_hat=max(Q_hat,[],2);
     
     valid_states=and(sum(S,2)<=10,sum(S,2)>0);
     
-    R2=corr(Q_star(valid_states),Q_hat(valid_states))^2;
-    qs = Q_star(1:nr_states,:);
-    R2 = corr(qs(:),Q_hat(:))^2;
+%     R2=corr(Q_star(valid_states,:),Q_hat(valid_states,:))^2;
+%     qs = Q_star(1:nr_states,:);
+%     R2 = corr(qs(:),Q_hat(:))^2;
+    qh = Q_hat(valid_states,:);
+    qs = Q_star(valid_states,:);
+    R2=corr(qs(:),qh(:))^2;
     
     fig_Q=figure();
-    scatter(Q_hat(:),qs(:))
+    scatter(qh(:),qs(:))
     set(gca,'FontSize',16)
     xlabel(modelEquation(feature_names,w),'FontSize',16)
     ylabel('$Q^\star$','FontSize',16,'Interpreter','LaTeX')
