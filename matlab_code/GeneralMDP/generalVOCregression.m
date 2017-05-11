@@ -1,6 +1,7 @@
 addpath('./MatlabTools/')
 
 addpath('../')
+
 exact
 
 % tmp = matlab.desktop.editor.getActive;
@@ -12,7 +13,14 @@ nr_states=size(states,1)-1;
 S=states(1:nr_states,:);
 nr_arms = size(states(1,:),2)/2;
 
-load ../results/nlightbulb_problem
+nr_observations=sum(states,2)-2*nr_arms;
+max_nr_observations=max(nr_observations); 
+
+valid_states=find(and(nr_observations<max_nr_observations,...
+    nr_observations>=0));
+
+
+load ../../results/nlightbulb_problem
 
 %% Fill in the regressors
 for c=1:numel(costs)
@@ -48,12 +56,13 @@ for c=1:numel(costs)
 %     X = cat(2,voc1(:),vpi(:),bias);
     
     vocl = voc';
-    vocl = vocl(:);
+    voc_valid_states = vocl(valid_states);
     
-    [w,wint,r,rint,stats] = regress(vocl,X);
-    voc_hat=X*w;
+    
+    [w,wint,r,rint,stats] = regress(voc_valid_states(:),X(valid_states(:),:));
+    voc_hat=X(valid_states,:)*w;
     figure();
-    scatter(voc_hat,vocl);
+    scatter(voc_hat,voc_valid_states);
     title(['R^2=',num2str(stats(1))]);
     xlabel('Predicted VOC','FontSize',16)
     ylabel('VOC','FontSize',16)

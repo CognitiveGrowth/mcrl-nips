@@ -1,10 +1,11 @@
 addpath('./MatlabTools/')
 
 addpath('../')
+
 exact
 
-tmp = matlab.desktop.editor.getActive;
-cd(fileparts(tmp.Filename));
+% tmp = matlab.desktop.editor.getActive;
+% cd(fileparts(tmp.Filename));
 
 costs=0.01;
 
@@ -34,7 +35,7 @@ for c=1:numel(costs)
             state_action(i,j) = count;
             ers(i,j) = er;
             vpi(i,j) = valueOfPerfectInformationMultiArmBernoulli(st_m(:,1),st_m(:,2),j);
-            voc1(i,j) = VOC1MultiArmBernoulli(st_m(:,1),st_m(:,2),j,cost);
+            voc1(i,j) = VOC1MultiArmBernoulli(st_m(:,1),st_m(:,2),j,cost)-er;
             voc(i,j) = Q_star(i,j) - cost - er; %fix this by getting q_from_v
         end
     end
@@ -43,13 +44,18 @@ for c=1:numel(costs)
     vpi = vpi';
     voc1 = voc1';
     ers = ers';
-    X = cat(2,voc1(:),vpi(:),ers(:),bias); feature_names={'VOC1','VPI','E[R|S,guess]','1'};
+    X = cat(2,voc1(:),vpi(:),ers(:),bias);
+    feature_names={'VOC1','VPI','E[R|S,guess]','1'};
 %     X = cat(2,voc1(:),vpi(:),bias);
     
     vocl = voc';
     vocl = vocl(:);
     
-    [w,wint,r,rint,stats] = regress(vocl,X);
+    nr_observations=sum(states,2)-2*nr_arms;
+    valid_states=find(and(nr_observations<max_nr_observations,...
+        nr_observations>=0));
+    
+    [w,wint,r,rint,stats] = regress(vocl(valid_states(:)),X(valid_states(:),:));
     voc_hat=X*w;
     figure();
     scatter(voc_hat,vocl);
@@ -68,9 +74,9 @@ for c=1:numel(costs)
     Q_hat=[Q_hat,ers(1,:)'];
     V_hat=max(Q_hat,[],2);
     
-%     valid_states=and(sum(S,2)<=14,sum(S,2)>0);
+    valid_states=and(sum(S,2)<=10,sum(S,2)>0);
     
-%     R2=corr(Q_star(valid_states,1),Q_hat(valid_states))^2;
+    R2=corr(Q_star(valid_states),Q_hat(valid_states))^2;
     qs = Q_star(1:nr_states,:);
     R2 = corr(qs(:),Q_hat(:))^2;
     

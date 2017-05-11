@@ -28,4 +28,4 @@ for c=1:numel(costs)
     nlightbulb_mdp(c).R=rewards;
     nlightbulb_mdp(c).cost=cost;
 end
-save('../results/nlightbulb_problem.mat','nlightbulb_mdp') 
+save('../../results/nlightbulb_problem.mat','nlightbulb_mdp') 
