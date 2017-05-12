@@ -179,7 +179,6 @@ for c=1:length(costs)
     load(['../results/full_observation_benchmark',int2str(100*cost),'.mat'])
     load(['../results/MouselabMDPFitBayesianSARSA',int2str(100*cost),'.mat'])
     
-    weights(:,c)=result.weights;
     performance(:,c)=[result.reward(1);full_observation_benchmark.reward(1)];
     sem_performance(:,c)=[result.reward(2);full_observation_benchmark.reward(2)];
     
@@ -192,12 +191,11 @@ for c=1:length(costs)
 end
 
 figure(),
-errorbar(costs',performance(1,:),sem_performance(1,:),'LineWidth',3),hold on
-errorbar(costs',performance(2,:),sem_performance(2,:),'LineWidth',3),hold on
-set(gca,'FontSize',16)
+errorbar(costs',performance',repmat(sem_performance'),'LineWidth',3)
 xlabel('Cost per Click','FontSize',16)
 ylabel('Expected return','FontSize',16)
 legend('Feature-Based PR','Full-Observation Policy')
+
 
 %The policy learned by Bayesian SARSA algorithm achieved a significantly
 %higher average return than the full-observation policy ($36.73 \pm 0.09$ vs. 

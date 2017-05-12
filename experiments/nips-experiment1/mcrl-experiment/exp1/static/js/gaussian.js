@@ -164,6 +164,19 @@ function integral(a, b, dx, f) {
 	} 
 	return Area;
 }
+
+function ETruncatedNormal(mu,sigma,x_min,x_max){
+    
+    realmax=1000000;
+    
+    int_below=normCDF(x_min,mu,sigma)*_.max([-realmax,x_min]);
+    int_above=(1-normCDF(x_max,mu,sigma))*_.min([realmax,x_max]);
+
+    int_middle=mu*(normCDF(x_max,mu,sigma)-normCDF(x_min,mu,sigma))-sigma**2*(normPDF(x_max,mu,sigma)-normPDF(x_min,mu,sigma));
+    
+    EV=int_below+int_middle+int_above;
+    
+}
                      
                      
 function getMaxOfArray(numArray) {

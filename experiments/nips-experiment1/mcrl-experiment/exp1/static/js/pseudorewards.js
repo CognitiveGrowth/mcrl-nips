@@ -629,7 +629,17 @@ function predictQValue(state,computation){
 }
 
 function computeExpectedRewardOfActing(state){
-    return _.max(state.mu_Q[state.s-1])
+    
+    if (state.mu_Q[state.s-1] == null){
+        return 0
+    }
+    
+    if (state.mu_Q[state.s-1].length==0){
+        return 0
+    }
+    else{
+        return _.max(state.mu_Q[state.s-1])
+    }
 }
 
 function computeMyopicVOC(state,c){
@@ -655,9 +665,9 @@ function computeMyopicVOC(state,c){
                     siblings=meta_MDP.object_level_MDP.siblings_by_state[c.cell];                    
                     sibling_rewards= new Array()
                     for (s in siblings){
-                        if (!isNaN(state.observations[siblings[s]])){
-                            sibling_rewards.push(state.observations[siblings[s]])
-                        }
+                        //if (!isNaN(state.observations[siblings[s]])){
+                        sibling_rewards.push(state.observations[siblings[s]])
+                        //}
                     }
                     
                     if (sibling_rewards.some(function(x) {return isNaN(x)})){
@@ -720,13 +730,77 @@ return VOC
 }
 
 function myopicVOCMaxUnknown(mu_prior,a){
-    //placeholder
-    return 10
+    
+//This function evaluates the VOC of inspecting a leaf cell
+//downstream of the current state where the values of the other leaf(s) is/are known.
+//mu_prior: prior means of returns of available actions            
+//a: action about which more information is being collected
+//known_alternative: maximum of the other known leafs
+
+mu_sorted = mu_prior.slice(0).sort(function(a, b){return b - a})
+mu_alpha = mu_sorted[0]
+mu_beta = mu_sorted[1]
+
+appears_best = mu_prior[a-1] == mu_alpha
+
+E_max=EVOfMaxOfGaussians([meta_MDP.mean_payoff,meta_MDP.mean_payoff],
+[meta_MDP.std_payoff,meta_MDP.std_payoff]);
+
+if (appears_best){
+    //information is valuable if it reveals that action c is suboptimal
+
+    lb=meta_MDP.mean_payoff-3*meta_MDP.std_payoff;
+    ub=meta_MDP.mean_payoff;
+    delta_x=meta_MDP.std_payoff/20.0;
+    VOC=integral(lb,ub,delta_x,function(x){return normPDF(x,meta_MDP.mean_payoff,meta_MDP.std_payoff)*_.max([0,  mu_beta - (mu_alpha-E_max+ETruncatedNormal(meta_MDP.mean_payoff,meta_MDP.std_payoff, x,meta_MDP.mean_payoff+5*meta_MDP.std_payoff))])})-meta_MDP.cost_per_click; 
+}
+else{
+    //information is valuable if it reveals that action is optimal                
+    lb=meta_MDP.mean_payoff;
+    ub=meta_MDP.mean_payoff+3*meta_MDP.std_payoff;
+    delta_x=meta_MDP.std_payoff/20.0;
+    
+    VOC=integral(lb,ub,delta_x,function(x){return normpdf(x,meta_MDP.mean_payoff,meta_MDP.std_payoff)*_.max([0, (mu_prior[a-1]-E_max+ETruncatedNormal(meta_MDP.mean_payoff,meta_MDP.std_payoff,x,meta_MDP.mean_payoff+5*meta_MDP.std_payoff))-mu_alpha])})-meta_MDP.cost_per_click;                                
 }
 
-function myopicVOCMaxKnown(mu_prior,a){
-    //placeholder
-    return 10
+return VOC
+
+}
+
+function myopicVOCMaxKnown(mu_prior,a,known_alternative){
+    
+    mu_sorted = mu_prior.slice(0).sort(function(a, b){return b - a})
+    mu_alpha = mu_sorted[0]
+    mu_beta = mu_sorted[1]
+
+    appears_best = mu_prior[a-1] == mu_alpha
+
+    E_max= EVOfMaxOfGaussians([meta_MDP.mean_payoff,known_alternative],[meta_MDP.std_payoff,0]);
+
+    if (appears_best){
+        //information is valuable if it reveals that action c is suboptimal
+
+        //The decision can only change if E[max{known_alternative,x}]-k>mu_alpha-mu_beta
+
+        if (E_max-known_alternative<= mu_alpha-mu_beta){
+            VOC=0-meta_MDP.cost_per_click;
+        }
+        else{
+            //to change the decision x would have to be less than the known alternative
+            ub=known_alternative;                    
+            VOC=normCDF(ub,meta_MDP.mean_payoff,meta_MDP.std_payoff) * (mu_beta-(mu_alpha-E_max+known_alternative))-meta_MDP.cost_per_click;                    
+        }                                                
+    }
+    else{
+        //information is valuable if it reveals that action is optimal                
+
+        //To change the decision, the sampled value would have to be larger than lb
+        lb=mu_alpha-mu_prior[a-1]+E_max;
+
+        VOC=meta_MDP.std_payoff^2*normPDF(lb,meta_MDP.mean_payoff,meta_MDP.std_payoff)-(mu_alpha-mu_prior[a-1]-E_max-meta_MDP.mean_payoff)*(1-normCDF(lb,meta_MDP.mean_payoff,meta_MDP.std_payoff))-meta_MDP.cost_per_click;
+    }
+
+    return VOC
 }
 
 
