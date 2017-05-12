@@ -48,7 +48,7 @@ feature_extractor=@(s,c,meta_MDP) meta_MDP.extractStateActionFeatures(s,c);
 
 %load MouselabMDPMetaMDPTestFeb-17-2017
 
-nr_training_episodes=2000;
+nr_training_episodes=2000;%2000;
 nr_reps=1;
 first_episode=1; last_rep=nr_training_episodes;
 for rep=1:nr_reps
@@ -117,7 +117,7 @@ set(gca,'XTickLabelRotation',45,'FontSize',16)
 ylabel('Learned Weights','FontSize',16)
 title(['Bayesian SARSA without PR, ',int2str(nr_episodes),' episodes'],'FontSize',18)
 %}
-nr_episodes_evaluation=2000;
+nr_episodes_evaluation=2000;%2000;
 meta_MDP.object_level_MDP=meta_MDP.object_level_MDPs(1);
 policy=@(state,mdp) contextualThompsonSampling(state,meta_MDP,glm(best_run))
 [R_total_evaluation,problems_evaluation,states_evaluation,chosen_actions_evaluation,indices_evaluation]=...
@@ -127,7 +127,7 @@ reward_learned_policy=[mean(R_total_evaluation),sem(R_total_evaluation)];
 nr_observations_learned_policy=[mean(indices_evaluation.nr_acquisitions),...
     sem(indices_evaluation.nr_acquisitions(:))];
 
-result.policy=policy;
+%result.policy=policy;
 result.reward=reward_learned_policy;
 result.weights=weights;
 result.features={'VPI','VOC','E[R|act,b]'};
@@ -138,7 +138,7 @@ result.cost_per_click=c;
 do_save=true;
 if do_save
     save(['/global/home/users/flieder/results/MouselabMDPFitBayesianSARSA',...
-        int2str(round(100*c)),'.mat'],'result')
+        int2str(round(100*c)),'.mat'],'result','-v7.3')
 end
 %% benchmark policy: observing everything before the first move
 
@@ -149,14 +149,14 @@ pseudoreward_type='none';
 mean_payoff=4.5;
 std_payoff=10.6;
 
-load('/global/home/users/flieder/matlab_code/MatlabTools/MouselabMDPExperiment_normalized')
+load('/global/home/users/flieder/matlab_code/MouselabMDPExperiment_normalized')
 
 meta_MDP=MouselabMDPMetaMDPNIPS(add_pseudorewards,pseudoreward_type,mean_payoff,std_payoff,experiment);
 meta_mdp.cost_per_click=c;
 
 policy=@(state,mdp) fullObservationPolicy(state,mdp)
 
-nr_episodes_evaluation=2000;
+nr_episodes_evaluation=2000;%2000;
 [R_total,problems,states,chosen_actions,indices]=...
     inspectPolicyGeneral(meta_MDP,policy,nr_episodes_evaluation)
 
@@ -164,18 +164,18 @@ reward_full_observation_policy=[mean(R_total),sem(R_total)];
 nr_observations_full_observation_policy=...
     [mean(indices.nr_acquisitions),sem(indices.nr_acquisitions(:))];
 
-full_observation_benchmark.policy=policy;
+%full_observation_benchmark.policy=policy;
 full_observation_benchmark.reward=reward_full_observation_policy;
 full_observation_benchmark.nr_observations=nr_observations_full_observation_policy;
 full_observation_benchmark.returns=R_total;
 full_observation_benchmark.cost_per_click=c;
 
 save(['/global/home/users/flieder/results/','full_observation_benchmark',...
-    int2str(round(100*c)),'.mat'],'full_observation_benchmark')
+    int2str(round(100*c)),'.mat'],'full_observation_benchmark','-v7.3')
 
 %% comparison of learned policy against full-observation policy
-load('/global/home/users/flieder/matlab_code/MatlabTools/results/full_observation_benchmark')
-load('/global/home/users/flieder/matlab_code/MatlabTools//results/MouselabMDPFitBayesianSARSA')
+load('/global/home/users/flieder/results/full_observation_benchmark')
+load('/global/home/users/flieder/results/MouselabMDPFitBayesianSARSA')
 
 [result.reward;full_observation_benchmark.reward]
 

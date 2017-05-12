@@ -1,0 +1,59 @@
+"""
+You will receive feedback about your planning. This feedback
+will help you learn how to make better decisions.</b> After each
+flight, if you did not plan optimally, a feedback message will
+apear. This message will tell you two things: 
+
+1. Whether you observed too few relevant values or if you observed
+   irrelevant values (values of locations that you can't fly to).
+2. Whether you flew along the best route given your current location and
+   the information you had about the values of other locations.
+
+  In the example below, not enough relevant values
+  were observed, and as a result there is a 15 second timeout
+  penalty. <b>The duration of the timeout penalty is proportional to
+  how poorly you planned your route:</b> the more money you could
+  have earned from observing more values and/or choosing a better
+  route, the longer the delay. The second feedback in the example
+  below indicates the plane was flown along the best route, given
+  the limited information available. If you perform optimally, no
+  feedback will be shown and you can proceed immediately.
+
+<div align="center"><img src="static/js/images/instruction_images/Slide4.png" width=600></div>
+"""  
+
+"""
+You will receive feedback about your planning. This feedback
+will help you learn how to make better decisions.</b> After each
+flight, if you did not plan optimally, a feedback message will
+apear. 
+
+In the example below, planning was suboptimal, and as a
+result there is a 15 second timeout penalty. <b>The duration of
+the timeout penalty is proportional to how poorly you planned your
+route:</b> the more money you could have earned from observing
+more values and/or choosing a better route, the longer the delay.
+If you perform optimally, no feedback will be shown and you can
+proceed immediately.
+
+<div align="center"><img src="static/js/images/instruction_images/Slide5.png" width=600></div>
+
+"""          
+
+"""
+You will receive feedback about your planning. This feedback will help you
+learn how to make better decisions.</b> After each flight, if you did not plan
+optimally, a feedback message will apear. This message will tell you two
+things:
+
+1. Whether you observed too few relevant values or if you observed irrelevant
+   values (values of locations that you can't fly to).
+2. Whether you flew along the best route given your current location and the
+   information you had about the values of other locations.The second feedback
+   in the example below indicates the plane was flown along the best route,
+   given the limited information available. If you perform optimally, no
+   feedback will be shown and you can proceed immediately.
+
+<div align="center"><img src="static/js/images/instruction_images/Slide6.png" width=600></div>
+"""          
+
