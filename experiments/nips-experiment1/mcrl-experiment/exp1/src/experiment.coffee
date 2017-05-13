@@ -56,6 +56,14 @@ do ->  # big closure to prevent polluting global namespace
   if condition>=6
     params.PR_type = 2 #feature-based approximation
   
+if condition<=6
+    params.time_cost_is_low = true
+    params.time_cost_is_high = false
+
+if condition>6
+    params.time_cost_is_low = false
+    params.time_cost_is_high = true
+
     
     
   psiturk.recordUnstructuredData 'params', params

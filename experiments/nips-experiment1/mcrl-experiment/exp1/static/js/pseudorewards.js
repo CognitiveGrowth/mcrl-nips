@@ -47,11 +47,6 @@ Object.defineProperty(Array.prototype, "diff", {enumerable: false});
 
 meta_MDP=metaMDP()
 
-feature_weights = {
- VPI : 1.2014,
- VOC1 : 0.3003,
- ER : 0.5854
-}
 
 PRs = new Array()
 action_was_click = new Array()
@@ -619,6 +614,24 @@ function valueFunction(state,environment_model){
 }
 
 function predictQValue(state,computation){
+    
+    if (params.time_cost_is_low){
+        feature_weights = {
+            VPI : 1.2014,
+            VOC1 : 0.3003,
+            ER : 0.5854
+        }
+    }
+
+    if (params.time_cost_is_high){
+        //TODO: updated these weights with the learned values
+        feature_weights = {
+            VPI : 0,
+            VOC1 : 1,
+            ER : 1
+        }
+    }
+
     
     VPI = computeVPI(state,computation)
     VOC1 = computeMyopicVOC(state,computation)
