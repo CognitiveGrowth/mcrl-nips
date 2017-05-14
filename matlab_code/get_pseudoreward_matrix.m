@@ -33,8 +33,10 @@ for i = 1:size(values,1) %second_to_last_state % loop over states
     prob_next_state1 = S(i,1)/sum(S(i,:)); % probability of sampling heads
     prob_next_state2 = S(i,2)/sum(S(i,:)); % probability of sampling tails
 
+    expected_reward = R(i,2);
+    
     % loop over trials-- only trials that are possible for a given state
-    for j = min_trial(i):size(values,2)-1
+    for j = 1:size(values,2)-1 %min_trial(i):size(values,2)-1
 
         value_this_state = values(i,j);
         if i > second_to_last_state
@@ -46,7 +48,7 @@ for i = 1:size(values,1) %second_to_last_state % loop over states
         end
         expected_value_sample = value_next_state1*prob_next_state1 + ...
             value_next_state2*prob_next_state2;
-        pseudoR_matrix1(i,j) = discount*expected_value_sample - value_this_state;
+        pseudoR_matrix1(i,j) = discount*expected_value_sample - value_this_state + expected_reward;
     end
     
 end
@@ -61,7 +63,7 @@ for i = 1:size(values,1) %second_to_last_state % loop over states
     expected_reward = R(i,2);
     
     % loop over trials-- only trials that are possible for a given state
-    for j = min_trial(i):size(values,2)-1
+    for j = 1:size(values,2)-1 %min_trial(i):size(values,2)-1
 
         value_this_state = values(i,j);
         if i > second_to_last_state

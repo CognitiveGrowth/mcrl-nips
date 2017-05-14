@@ -3,13 +3,10 @@ function R_tot = simulate_1lightbulb(horizon,nEpisodes,S,T,R,PRs,epsilon,alpha,g
 Q = zeros(size(S));
 nStates = size(T,1);
 R_tot = zeros(1,nEpisodes);
-% cc=[];
 for e = 1:nEpisodes
     sp = 1;
     r_cum = 0;
-%     c=0;
     while true
-%         c=c+1;
         s = sp;
         a = e_greedy_selection( Q , s, epsilon );
         r = R(s,a) + PRs(s,a);
@@ -17,7 +14,6 @@ for e = 1:nEpisodes
         sp = randsample(nStates,1,true,T(s,:,a));
         [Q, TD_error] = UpdateQLearning( s, a, r, sp, Q , alpha, gamma );
         if a == 2
-%             cc=[cc,c];
             break
         end
     end
