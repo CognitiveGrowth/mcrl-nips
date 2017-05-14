@@ -171,7 +171,7 @@ full_observation_benchmark.returns=R_total;
 save ../results/full_observation_benchmark full_observation_benchmark
 
 %% comparison of learned policy against full-observation policy
-costs=[0.05,0.10,0.20,0.40,0.80,1.60];
+costs=[0.01,0.05,0.10,0.20,0.40,0.80,1.60,2.00,2.40,2.80,3.20,6.40,12.80];
 mu0(:,1)=[1;1;1];
 mu0(:,2)=[0;0;0];
 mu0(:,3)=[0;0;1];
@@ -181,22 +181,36 @@ mu0(:,6)=[1;1;0];
 mu0(:,7)=[1;0;1];
 mu0(:,8)=[0;1;1];
 
+nr_initial_values=32;
+
 for c=1:length(costs)
+
+    cost=costs(c);
+    load(['../results/full_observation_benchmark',int2str(100*cost),'.mat'])
     
-    for init=1:size(mu0,2)
+    for init=1:nr_initial_values
+
+        try
+            filename=['../results/MouselabMDPFitBayesianSARSA',int2str(100*cost),'_',int2str(init),'.mat']
+            load(filename)
         
-        cost=costs(c);
-        load(['../results/full_observation_benchmark',int2str(100*cost),'.mat'])
-        load(['../results/MouselabMDPFitBayesianSARSA',int2str(100*cost),'_',int2str(init),'.mat'])
-        
-        weights(:,c,init)=result.weights;
-        BSARSA_performance(c,init)=result.reward(1);
-        BSARSA_sem_performance(c,init)=result.reward(2);
-        
-        t(c,init)=(result.reward(1)-full_observation_benchmark.reward(1))/...
-            sqrt(result.reward(2)^2+full_observation_benchmark.reward(2)^2);
-        
-        p(c,init)=1-normcdf(t(c,init))
+            weights(:,c,init)=result.weights;
+            BSARSA_performance(c,init)=result.reward(1);
+            BSARSA_sem_performance(c,init)=result.reward(2);
+            BSARSA_avg_nr_observations(c,init)=result.nr_observations(1);
+            BSARSA_sem_nr_observations(c,init)=result.nr_observations(2);
+            
+            t(c,init)=(result.reward(1)-full_observation_benchmark.reward(1))/...
+                sqrt(result.reward(2)^2+full_observation_benchmark.reward(2)^2);
+            
+            p(c,init)=1-normcdf(t(c,init))
+            
+            glms(c,init)=result.glm;
+        catch
+            disp(['Could''t load ',filename])
+            BSARSA_performance(c,init)=NaN
+            
+        end
     end
     
     avg_performance.full_observation(c)=full_observation_benchmark.reward(1);
@@ -205,7 +219,26 @@ for c=1:length(costs)
     [avg_performance.BSARSAQ(c),best_initial_value]=max(BSARSA_performance(c,:));
     sem_performance.BSARSAQ(c)=BSARSA_sem_performance(c,best_initial_value);
 
+    avg_nr_observations.BSARSAQ(c)=BSARSA_avg_nr_observations(c,best_initial_value);
+    sem_nr_observations.BSARSAQ(c)=BSARSA_sem_nr_observations(c,best_initial_value);
+    
+    avg_nr_observations.full_observation(c)=full_observation_benchmark.nr_observations(1);
+    sem_nr_observations.full_observation(c)=full_observation_benchmark.nr_observations(2);
+    
+    best_weights(:,c)=weights(:,c,best_initial_value);
+    best_glms(c)=glms(c,best_initial_value);
+
 end
+
+BSARSA_results.best_weights=best_weights;
+BSARSA_results.costs=costs;
+BSARSA_results.avg_nr_observations=avg_nr_observations;
+BSARSA_results.sem_nr_observations=sem_nr_observations;
+BSARSA_results.avg_performance=avg_performance;
+BSARSA_results.sem_performance=sem_performance;
+BSARSA_results.glms=best_glms;
+
+save('../results/BSARSA_results_Mouselab.mat','BSARSA_results')
 
 fig=figure(),
 errorbar(costs',avg_performance.BSARSAQ,sem_performance.BSARSAQ,'LineWidth',3),hold on
@@ -217,6 +250,23 @@ legend('BSARSA','Full-Observation Policy')
 saveas(fig,'../results/figures/MouselabEvaluation.fig')
 saveas(fig,'../results/figures/MouselabEvaluation.png')
 
+fig=figure(),
+errorbar(costs',avg_nr_observations.BSARSAQ,sem_nr_observations.BSARSAQ,'LineWidth',3),hold on
+errorbar(costs',avg_nr_observations.full_observation,sem_nr_observations.full_observation,'LineWidth',3),hold on
+set(gca,'FontSize',16)
+xlabel('Cost per Click','FontSize',16)
+ylabel('#Observations','FontSize',16)
+legend('BSARSA','Full-Observation Policy')
+
+
+
+figure()
+bar(best_weights')
+set(gca,'XTickLabel',costs,'FontSize',16)
+%set(gca,'XTick',costs,'XScale','log')
+xlabel('Cost per click','FontSize',16)
+legend(result.features)
+ylabel('Weights','FontSize',16)
 %The policy learned by Bayesian SARSA algorithm achieved a significantly
 %higher average return than the full-observation policy ($36.73 \pm 0.09$ vs. 
 %36.41 \pm 0.09 points per trial, Z=2.66, p=0.004$).
