@@ -103,10 +103,6 @@ action_feature_names={'Expected regret','regret reduction','VOC',...
         end
         
         function [state,meta_MDP]=sampleS0(meta_MDP)
-
-            state.step=1;
-            state.nr_steps=3;
-            state.s=1;            
             
             %sample number of outcomes and number of gambles
             state.observations=NaN(meta_MDP.nr_cells,1);
@@ -123,6 +119,9 @@ action_feature_names={'Expected regret','regret reduction','VOC',...
             state.decision=NaN;
             state.outcome=NaN;
 
+            state.step=1;
+            state.nr_steps=3;
+            state.s=1;
             
             [meta_MDP.reward_function,meta_MDP.rewards]=meta_MDP.sampleRewards();
             
@@ -1225,28 +1224,21 @@ action_feature_names={'Expected regret','regret reduction','VOC',...
             %to solve one of them.
             arm_states = setdiff(meta_MDP.getDownStreamStates(state),state.s);
             
-            nr_branches=0; nr_leafs=0;
             for as=1:numel(arm_states)
                 nr_choices=sum(any(state.T(arm_states(as),:,:)));
                 if nr_choices>1
                     nr_branches=nr_branches+1;
                 end
                 
-                if nr_choices==0
-                    nr_leafs=nr_leafs+1;
-                end
+                if nr_choices=
             end
             
-            nr_cells_per_arm = (numel(meta_MDP.getDownStreamStates(state))-1)/nr_arms;
-            nr_branches_per_arm=nr_branches/nr_arms;
-            nr_leafs_per_branch=nr_leafs/nr_branches;
-            
-            nr_hallway_cells_per_arm = nr_cells_per_arm - nr_leafs_per_branch*nr_branches_per_arm;
-                                
+            nr_cells = (numel(meta_MDP.getDownStreamStates(state))-1)/nr_arms;
+                
+                
             [T_blinkered,R_blinkered,states_blinkered]=...
-                oneArmedMouselabMDP(nr_hallway_cells_per_arm,nr_branches_per_arm,...
-                nr_leafs_per_branch,meta_MDP.mean_payoff,meta_MDP.std_payoff,...
-                meta_MDP.cost_per_click);
+                oneArmedMouselabMDP(nr_cells_hallway,nr_branches,...
+                nr_leafs_per_branch,mu_reward,sigma_reward,cost,alternative)
 
             
         end

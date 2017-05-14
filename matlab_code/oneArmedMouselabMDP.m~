@@ -35,8 +35,8 @@ R(:,:,2:nr_actions)=-cost; %cost of sampling
 
 for from=1:(nr_states-1)
     
-    current_mu=states.mu(from);
-    current_sigma=states.sigma(from);
+    current_mu=MUs(from);
+    current_sigma=SIGMAs(from);
     
     if current_sigma>0 %there is still something to be observed
         sample_values=(mu_reward-3*current_sigma):resolution:(mu_reward+3*current_sigma);
@@ -63,7 +63,8 @@ for from=1:(nr_states-1)
         T(from,unique(to.index),1)=grpstats(p_samples,to.index,{@sum});
         
     else
-        T(from,:,2:end)=repmat([zeros(1,nr_states-1),1],[1,1,nr_actions-1]);
+        T(from,:,1)=[zeros(1,nr_states-1),0];
+        R(from,:,1)=-cost;
     end
     
     %reward of acting

@@ -1,5 +1,5 @@
 costs=[0.05,0.10,0.20,0.40,0.80,1.60];
-nr_initial_values=5;
+nr_initial_values=8;
 
 for init=1:nr_initial_values
     for c=1:numel(costs)

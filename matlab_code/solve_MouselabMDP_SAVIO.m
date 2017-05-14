@@ -44,6 +44,9 @@ mu0(:,2)=[0;0;0];
 mu0(:,3)=[0;0;1];
 mu0(:,4)=[0;1;0];
 mu0(:,5)=[1;0;0];
+mu0(:,6)=[1;1;0];
+mu0(:,7)=[1;0;1];
+mu0(:,8)=[0;1;1];
 
 nr_features=size(mu0,1);
 sigma0=0.1;
@@ -53,13 +56,13 @@ feature_extractor=@(s,c,meta_MDP) meta_MDP.extractStateActionFeatures(s,c);
 
 %load MouselabMDPMetaMDPTestFeb-17-2017
 
-nr_training_episodes=2000;%2000;
+nr_training_episodes=1000;%2000;
 nr_reps=1;
 first_episode=1; last_rep=nr_training_episodes;
 for rep=1:nr_reps
     glm(rep)=glm0;
-    glm0.mu_0=mu0(:,init);
-    glm0.mu_n=mu0(:,init);
+    glm(rep).mu_0=mu0(:,init);
+    glm(rep).mu_n=mu0(:,init);
     
     tic()
     [glm(rep),MSE(first_episode:nr_training_episodes,rep),...
@@ -125,7 +128,7 @@ set(gca,'XTickLabelRotation',45,'FontSize',16)
 ylabel('Learned Weights','FontSize',16)
 title(['Bayesian SARSA without PR, ',int2str(nr_episodes),' episodes'],'FontSize',18)
 %}
-nr_episodes_evaluation=2000;%2000;
+nr_episodes_evaluation=500;%2000;
 meta_MDP.object_level_MDP=meta_MDP.object_level_MDPs(1);
 policy=@(state,mdp) contextualThompsonSampling(state,meta_MDP,glm(best_run));
 [R_total_evaluation,problems_evaluation,states_evaluation,chosen_actions_evaluation,indices_evaluation]=...
@@ -142,6 +145,7 @@ result.features={'VPI','VOC','E[R|act,b]'};
 result.nr_observations=nr_observations_learned_policy;
 result.returns=R_total_evaluation;
 result.cost_per_click=c;
+result.glm=glm;
 
 do_save=true;
 if do_save
