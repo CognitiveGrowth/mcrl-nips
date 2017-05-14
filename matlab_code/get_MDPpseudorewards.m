@@ -3,9 +3,8 @@ clear all;
 tmp = matlab.desktop.editor.getActive;
 cd(fileparts(tmp.Filename));
 
-host = getenv('USER');
-if strcmp(host(1:4),'paul')
-    cd ~/Desktop/Tom_Griffiths/collapsingBoundsExp/matlab_code/
+if strcmp(getenv('USER'),'paulkrueger')
+%     cd ~/Desktop/Tom_Griffiths/collapsingBoundsExp/matlab_code/
     addpath(genpath('~/Documents/MATLAB/Add-Ons/Toolboxes/Markov Decision Processes (MDP) Toolbox'))
 else
     % Falk path goes here
@@ -76,4 +75,44 @@ for c=1:numel(costs)
     lightbulb_mdp(c).cost=cost;
 end
 
+<<<<<<< HEAD
+P2(:,s+1) = 1;
+l = (nTrials-1)*nTrials/2;
+P1(l+1:s+1,s+1) = 1;
+P1 = P1(1:s+1,1:s+1);
+
+P = cat(3,P1,P2);
+R = [-cost*ones(s+1,1), max(R,[],2)]; % zero reward for action 1
+R(s+1,:) = [0,0];
+S(s+1,:) = [-1,-1];
+min_trial(s+1) = 30;
+
+
+[values, policy] = mdp_finite_horizon (P, R, discount, nTrials);
+
+lightbulb_mdp.v_star=values(:,1);
+lightbulb_mdp.pi_star=policy(:,1);
+lightbulb_mdp.states=S;
+lightbulb_mdp.T=P;
+lightbulb_mdp.R=R;
+
+pseudoR_matrix = get_pseudoreward_matrix(S,values,min_trial,discount,R);
+
+save('mdp_pseudorewards','values','policy','P','R','S','pseudoR_matrix','discount','nTrials','min_trial')
+save(['mdp_pseudorewardsPlusExpectedR_',num2str(nTrials),'trials'],'values','policy','P','R','S','pseudoR_matrix','discount','nTrials','min_trial')
+save(['mdp_pseudorewards_compareSARSA_',num2str(nTrials),'trials'],'values','policy','P','R','S','pseudoR_matrix','discount','nTrials','min_trial')
+
+% save in format that falk requested
+PR_observe = pseudoR_matrix(:,1:nTrials,1);
+PR_bet = pseudoR_matrix(:,1:nTrials,2);
+save(['TverskyEdwards_pseudorewards_',num2str(nTrials),'trials'],'PR_observe','PR_bet','S')
+
+pseudoR_matrix = pseudoR_matrix(:,1:nTrials,:);
+ER = max(S,[],2)./sum(S,2);
+ER = repmat(ER,1,nTrials,2);
+% pseudoR_matrix = pseudoR_matrix + ER;
+lightbulb_mdp.optimal_PR = pseudoR_matrix; %[PR_observe(:,1),PR_bet(:,1)] + ER;
+
+=======
+>>>>>>> 380ca3738bf318f25b9eccf7b4d6d771733e3cdc
 save('../results/lightbulb_problem.mat','lightbulb_mdp') 
