@@ -58,7 +58,7 @@ nr_observations_learned_policy=[mean(indices_evaluation.nr_acquisitions),...
 
 %result.policy=policy;
 result.reward=reward_learned_policy;
-result.weights=weights;
+result.weights=glm.mu_n;
 result.features={'VPI','VOC','E[R|act,b]'};
 result.nr_observations=nr_observations_learned_policy;
 result.returns=R_total_evaluation;

@@ -72,7 +72,7 @@ function metaMDP(){
     clicks=[]
     
     var meta_MDP={
-        cost_per_click: 0.10,
+        cost_per_click: [],
         cost_per_planning_step: 0.01,
         mean_payoff: 4.5,
         std_payoff: 10.6,        
@@ -135,6 +135,19 @@ function metaMDP(){
 }
 
 function getPR(state,actions){
+    
+    if (params.time_cost_is_low){
+        meta_MDP.cost_per_click = 0.01
+    }
+    
+    if (params.time_cost_is_medium){
+        meta_MDP.cost_per_click = 1.60
+    }
+
+    if (params.time_cost_is_high){
+        //TODO: updated these weights with the learned values
+        meta_MDP.cost_per_click = 2.80
+    }
   
     var next_state=getNextState(state,actions,true)
     var environment_model=getNextState(state,actions.slice(0,-1),true) //information state after having thought but before having taken action
@@ -617,18 +630,26 @@ function predictQValue(state,computation){
     
     if (params.time_cost_is_low){
         feature_weights = {
-            VPI : 1.2014,
-            VOC1 : 0.3003,
-            ER : 0.5854
+            VPI : 0.2560,
+            VOC1 : 0.6988,
+            ER : 0.1766
+        }
+    }
+    
+    if (params.time_cost_is_medium){
+        feature_weights = {
+            VPI : 0.1006,
+            VOC1 : 0.5202,
+            ER : 0.1686
         }
     }
 
     if (params.time_cost_is_high){
         //TODO: updated these weights with the learned values
         feature_weights = {
-            VPI : 0,
-            VOC1 : 1,
-            ER : 1
+            VPI : -1.2980,
+            VOC1 : 0.3910,
+            ER : 0.3197
         }
     }
 
