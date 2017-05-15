@@ -1,0 +1,35 @@
+Experiments:
+
+Experiment 1
+------------
+-folder: exp1 
+-description: Evaluation of meta-level PRs against alternative pseudorewards within a single block of a single task.
+-versions and their tags:
+   a) RLDM final: tag = v1A date = 03/04/17
+   b) version with 2x2 factorial design (message type x delay type): tag = ?? date =??
+   c) pilot experiment with object level PRs: tag = 1E  date = 4/30/2017
+   d) version presented at Neuroscape: tag = ?? date = ??
+   e) final version:  tag = ?? date = ??
+-analysis code: 
+-figures:
+-results:
+-write-up:
+
+
+Experiment 2
+------------
+-folder: exp2
+-description: testing whether the learning benefits of pseudo-rewards persist when the pseudo-rewards are taken away and whether/how this effect decays over time.
+-versions and their tags:
+  a) first pilot experiment: tag = 2A date = April 29
+  b) 130 participants, 2x2 design: FB vs no FB x 10 minute retention delay vs not. tag = 2B date = May 1; trial_properties_retention_experiment.mat
+
+-analysis code:
+-figures:
+-results:
+-write-up:
+
+Experiment 3
+------------
+-folder: exp3
+-description: Transfer experiment

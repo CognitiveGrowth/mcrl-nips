@@ -1,0 +1,180 @@
+/* A modal pop up box, used for feedback in jspsych-graph */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    padding-top: 200px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid #888;
+    width: 40%;
+}
+
+.timer {
+    margin-top: 10%;
+    text-align: center;
+    font-size: 50pt;
+}
+
+.canvas-container {
+  position: relative;
+  margin: auto;
+}
+
+#graph-canvas {
+  float: left;
+  // border: thin red solid;
+}
+
+.graph-header {
+    margin: 0;
+    float: left;
+    margin-bottom: 0.3em;
+    font-size: 20pt;
+}
+
+#graph-msg-left {
+  width: 20%;
+  text-align: left;
+}
+
+#graph-msg-right {
+    width: 20%;
+    text-align: right;
+}
+#graph-msg-center {
+    width: 60%;
+    font-weight: bold;
+    text-align: center;
+}
+
+#graph-msg-bottom {
+    width: 100%;
+    font-size: 16pt;
+    // font-weight: bold;
+    text-align: center;
+}
+
+.body-text {
+    max-width: 700px;
+}
+#graph-score, #graph-moves {
+  font-weight: bold;
+}
+
+
+/********************************************************************/
+/* Generic element styles                                           */
+/********************************************************************/
+
+body {
+    padding:0px;
+    margin: 0px;
+    background-color: white;
+    color: black;
+    font-weight: 300;
+    font-size: 13pt;
+}
+
+h1 {
+    margin-top: 0px;
+}
+
+
+/* text styling */
+strong {
+  font-weight: 600;
+}
+
+ul {
+    margin: 0;
+}
+
+ol.insructions > li {
+    margin: 1em 0;
+}
+
+.warm {
+  color: steelblue;
+  text-align: justify;
+}
+
+.cool {
+  color: #ccccff;
+}
+
+/* these are all the same for now, but easy to modify individually */
+#container-ad, #container-error, #container-exp, #container-consent, #container-instructions, #container-questionnaire {
+    background: white;
+    margin: 30px;
+}
+
+/* ad.html  - the ad that people view first */
+#adlogo {
+    width: 200px;
+    padding: 2px;
+}
+
+/* consent.html - the consent form */
+.legal {
+  text-align: justify;
+  font-size: 11pt;
+  line-height: 1.1em;
+}
+
+.spacer {
+    clear: both;
+}
+
+/********************************************************************/
+/* Index slide components                                           */
+/********************************************************************/
+
+img.logo { height: 6.25em; }
+
+#consent {
+    padding-left: 4%;
+    padding-right: 4%;
+    margin: 1.5em 0;
+    text-align: justify;
+}
+
+span.consent {
+    font-color: red;
+}
+
+/********************************************************************/
+/* Finished slide components                                        */
+/********************************************************************/
+
+#submit_error_slide {
+    display: none;
+}
+
+#resubmit_slide {
+    display: none;
+}
+
+/********************************************************************/
+/* Error                                                            */
+/********************************************************************/
+
+#error-message {
+    background-color: #FEA;
+    padding: 0 0.625em;
+    border: 1px solid black;
+    margin: 0.625em;
+}

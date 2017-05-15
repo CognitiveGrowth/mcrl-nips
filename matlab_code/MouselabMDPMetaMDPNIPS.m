@@ -26,6 +26,9 @@ classdef MouselabMDPMetaMDPNIPS < MDP
         p_next_states;
         query_state;
         query_computation;
+        Q_blinkered;
+        sigma_values;
+        mu_values;
         
     end
     
@@ -100,12 +103,17 @@ action_feature_names={'Expected regret','regret reduction','VOC',...
         end
         
         function [state,meta_MDP]=sampleS0(meta_MDP)
+
+            state.step=1;
+            state.nr_steps=3;
+            state.s=1;            
             
             %sample number of outcomes and number of gambles
             state.observations=NaN(meta_MDP.nr_cells,1);
             state.S=meta_MDP.object_level_MDP.states;
             state.T=meta_MDP.object_level_MDP.T;
             state.A=meta_MDP.object_level_MDP.actions;
+            state.available_actions = find(any(squeeze(state.T(state.s,:,:))));
             
             state.nr_steps=meta_MDP.object_level_MDP.horizon;
             state.has_plan=false;
@@ -115,9 +123,6 @@ action_feature_names={'Expected regret','regret reduction','VOC',...
             state.decision=NaN;
             state.outcome=NaN;
 
-            state.step=1;
-            state.nr_steps=3;
-            state.s=1;
             
             [meta_MDP.reward_function,meta_MDP.rewards]=meta_MDP.sampleRewards();
             
@@ -389,11 +394,11 @@ action_feature_names={'Expected regret','regret reduction','VOC',...
                 next_state=state;
                 next_state.s=meta_MDP.object_level_MDP.nextState(state.s,...
                     c.decision);                
+                next_state.available_actions = find(any(squeeze(next_state.T(next_state.s,:,:))));
                 
                 r=meta_MDP.rewards(next_state.s);%meta_MDP.object_level_MDP.rewards(state.s,next_state.s,c.decision)-...
                   %  meta_MDP.costOfPlanning(state,c);
-                
-                
+                                
                 if isnan(next_state.s)
                     throw(MException('invalidValue:isNaN','next state not found'))
                 end
@@ -827,19 +832,23 @@ action_feature_names={'Expected regret','regret reduction','VOC',...
         
         function VPI=computeVPI(meta_MDP,state,c)
             
-            [~,downstream_states_by_action]=meta_MDP.getDownStreamStates(state);
-            
-            corresponding_action=NaN;
-            for a=1:numel(downstream_states_by_action)
-                if ismember(c.state,downstream_states_by_action{a})
-                    corresponding_action=a;
-                end        
-            end
+            corresponding_action=meta_MDP.getCorrespondingAction(state,c);
             
             if or(isnan(corresponding_action),not(isnan(state.observations(c.state))))
                 VPI=0;
             else
                 VPI=valueOfPerfectInformation(state.mu_Q(state.s,:),state.sigma_Q(state.s,:),corresponding_action);
+            end
+        end
+        
+        function a=getCorrespondingAction(state,c)
+            
+            [~,downstream_states_by_action]=meta_MDP.getDownStreamStates(state);
+            corresponding_action=NaN;
+            for a=1:numel(downstream_states_by_action)
+                if ismember(c.state,downstream_states_by_action{a})
+                    corresponding_action=a;
+                end
             end
         end
         
@@ -884,11 +893,8 @@ action_feature_names={'Expected regret','regret reduction','VOC',...
                     for s=2:numel(states)
                         
                         downstream_by_action{states(s).path(1)}=...
-                            [downstream_by_action{states(s).path(1)},s];
-                        
+                            [downstream_by_action{states(s).path(1)},s];                        
                     end
-                    
-                    
                     
                 else                    
                     for s=1:numel(states)
@@ -1162,6 +1168,88 @@ action_feature_names={'Expected regret','regret reduction','VOC',...
             
         end
         
+        function c_blinkered=piBlinkered(meta_MDP,s)
+            %c_blinkered is the computation the blinkered policy would choose in
+            %state s
+            computations = meta_MDP.getActions(s);            
+            
+            Q_blinkered=NaN(numel(computations),1);
+            for c=1:numel(computations)
+                
+                computation=computations(c);
+                
+                if computation.is_computation                 
+                    if computation.state==state.s
+                        Q_blinkered=-meta_MDP.cost_per_click;
+                    else
+                        arm_states=setdiff(meta_MDP.getUpStreamStates(computation.state),state.s);
+                        observed = not(isnan(s.observed(arm_states)));
+                        corresponding_action = meta_MDP.getCorrespondingAction(state,computation); 
+                        
+                        sigma_mu = state.sigma_Q(state.s,corresponding_action);
+                        E_mu = state.mu_Q(state.s,corresponding_action);
+                        
+                        best_alternative = max(state.Q(state.s,1:4,corresponding_action));                        
+                        delta_mu = E_mu - best_alternative;
+                                                
+                        Q_blinkered(c)=getQBlinkered(meta_MDP,delta_mu,sigma_mu,observed);
+                    end
+                else
+                    Q_blinkered=state.mu_Q(state.s,computation.move);
+                end
+            end
+            
+            c_blinkered = computations(argmax(Q_blinkered(:)));
+        end
+        
+        function Q_hat=getQBlinkered(meta_MDP,delta_mu,sigma_mu,observed)
+            %Q_hat is an approximation to the blinkered Q-function when the
+            %current difference between the mean of the considered arm and
+            %the best alternative is delta_mu and the STD of the mean of
+            %the considered arm is sigma_mu. observed(i)=1 if the i-th
+            %cell of the considered arm has already been observed.
+            
+            [~,mu_id] = min(abs(delta_mu-meta_MDP.delta_mu_values));
+            [~,sigma_id]  = min(abs(sigma_mu-meta_MDP.sigma_values));
+            
+            obs_id = bi2de(observed(:)');
+            Q_hat = meta_MDP.Q_blinkered(mu_id,sigma_id,obs_id);            
+            
+        end
+        
+        function meta_MDP=computeBlinkeredPolicy(meta_MDP,state)
+            
+            nr_arms=numel(state.available_actions);
+            
+            %The blinkered MDPs are identical across arms. So we only need
+            %to solve one of them.
+            arm_states = setdiff(meta_MDP.getDownStreamStates(state),state.s);
+            
+            nr_branches=0; nr_leafs=0;
+            for as=1:numel(arm_states)
+                nr_choices=sum(any(state.T(arm_states(as),:,:)));
+                if nr_choices>1
+                    nr_branches=nr_branches+1;
+                end
+                
+                if nr_choices==0
+                    nr_leafs=nr_leafs+1;
+                end
+            end
+            
+            nr_cells_per_arm = (numel(meta_MDP.getDownStreamStates(state))-1)/nr_arms;
+            nr_branches_per_arm=nr_branches/nr_arms;
+            nr_leafs_per_branch=nr_leafs/nr_branches;
+            
+            nr_hallway_cells_per_arm = nr_cells_per_arm - nr_leafs_per_branch*nr_branches_per_arm;
+                                
+            [T_blinkered,R_blinkered,states_blinkered]=...
+                oneArmedMouselabMDP(nr_hallway_cells_per_arm,nr_branches_per_arm,...
+                nr_leafs_per_branch,meta_MDP.mean_payoff,meta_MDP.std_payoff,...
+                meta_MDP.cost_per_click);
+
+            
+        end
     end
     
 end

@@ -3,9 +3,8 @@ clear all;
 tmp = matlab.desktop.editor.getActive;
 cd(fileparts(tmp.Filename));
 
-host = getenv('USER');
-if strcmp(host(1:4),'paul')
-    cd ~/Desktop/Tom_Griffiths/collapsingBoundsExp/matlab_code/
+if strcmp(getenv('USER'),'paulkrueger')
+%     cd ~/Desktop/Tom_Griffiths/collapsingBoundsExp/matlab_code/
     addpath(genpath('~/Documents/MATLAB/Add-Ons/Toolboxes/Markov Decision Processes (MDP) Toolbox'))
 else
     % Falk path goes here
@@ -72,7 +71,9 @@ for c=1:numel(costs)
     PR_bet = pseudoR_matrix(:,1:nTrials,2);
     save(['TverskyEdwards_pseudorewards_',num2str(nTrials),'trials'],'PR_observe','PR_bet','S')
     
-    lightbulb_mdp(c).optimal_PR=[PR_observe(:,1),PR_bet(:,1)];
+    pseudoR_matrix = pseudoR_matrix(:,1:nTrials,:);
+    lightbulb_mdp(c).optimal_PR = pseudoR_matrix; %[PR_observe(:,1),PR_bet(:,1)] + ER;
+
     lightbulb_mdp(c).cost=cost;
 end
 
