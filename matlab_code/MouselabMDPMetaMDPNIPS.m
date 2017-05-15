@@ -1248,7 +1248,11 @@ action_feature_names={'Expected regret','regret reduction','VOC',...
                 nr_leafs_per_branch,meta_MDP.mean_payoff,meta_MDP.std_payoff,...
                 meta_MDP.cost_per_click);
 
+            horizon=nr_cells_per_arm+1;
+            gamma=1;            
+            [V_blinkered, pi_blinkered, ~] = mdp_finite_horizon(T_blinkered, R_blinkered, gamma, horizon);
             
+            meta_MDP.Q_blinkered = getQFromV(V_blinkered(:,1),T_blinkered,R_blinkered,gamma);
         end
     end
     

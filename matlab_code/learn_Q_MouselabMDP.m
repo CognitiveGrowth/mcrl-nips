@@ -243,7 +243,8 @@ save('../results/BSARSA_results_Mouselab.mat','BSARSA_results')
 fig=figure(),
 errorbar(costs',avg_performance.BSARSAQ,sem_performance.BSARSAQ,'LineWidth',3),hold on
 errorbar(costs',avg_performance.full_observation,sem_performance.full_observation,'LineWidth',3),hold on
-set(gca,'FontSize',16)
+xlim([0.01,3.3])
+set(gca,'FontSize',16,'XScale','log')
 xlabel('Cost per Click','FontSize',16)
 ylabel('Expected return','FontSize',16)
 legend('BSARSA','Full-Observation Policy')
@@ -257,16 +258,61 @@ set(gca,'FontSize',16)
 xlabel('Cost per Click','FontSize',16)
 ylabel('#Observations','FontSize',16)
 legend('BSARSA','Full-Observation Policy')
+saveas(fig,'../results/figures/MouselabEvaluationNrObservations.fig')
+saveas(fig,'../results/figures/MouselabEvaluationNrObservations.png')
 
 
-
-figure()
+fig_w=figure()
 bar(best_weights')
 set(gca,'XTickLabel',costs,'FontSize',16)
 %set(gca,'XTick',costs,'XScale','log')
 xlabel('Cost per click','FontSize',16)
 legend(result.features)
 ylabel('Weights','FontSize',16)
+saveas(fig_w,'../results/figures/MouselabEvaluationBestWeights.fig')
+saveas(fig_w,'../results/figures/MouselabEvaluationBestWeights.png')
+
+
 %The policy learned by Bayesian SARSA algorithm achieved a significantly
 %higher average return than the full-observation policy ($36.73 \pm 0.09$ vs. 
 %36.41 \pm 0.09 points per trial, Z=2.66, p=0.004$).
+
+%%
+
+for c=1:numel(costs)
+    load(['../results/BSARSA_evaluation',int2str(100*costs(c)),'.mat'])
+    avg_performance.BSARSAQ_validation(c)=result.reward(1);
+    sem_performance.BSARSAQ_validation(c)=result.reward(2);
+    
+    t_validation(c)=(avg_performance.BSARSAQ_validation(c)-avg_performance.full_observation(c))/...
+        sqrt(sem_performance.BSARSAQ_validation(c)^2+sem_performance.full_observation(c)^2);
+    
+    p_validation(c)=1-normcdf(t_validation(c));
+    
+end
+
+[costs;t_validation;p_validation]
+%Starting with a cost of $0.20 per click, the policy learned by the
+%Bayesian SARSA algorithm performs significantly better than the
+%full-observation policy (Z=2.59, p=0.0049) and its advantage increases with the cost per
+%observation from $1.23 per trial for a cost of $0.20 per click to $179.85 per trial for a cost of $12.80 per click.
+%For time costs, of less than $0.20 there was no significant difference
+%between the average reward attained by the two policies, although the
+%policy learned by BSARSA collected significantly less information than the
+%full-observation policy ($13.4 \pm 0.04$ vs. 16 inspections per trial, Z=-65.38, p=<0.0001).
+
+mean(avg_nr_observations.BSARSAQ(1:3))
+sqrt(sum(sem_nr_observations.BSARSAQ(1:3).^2)/9)
+Z=(mean(avg_nr_observations.BSARSAQ(1:3))-16)/sqrt(sum(sem_nr_observations.BSARSAQ(1:3).^2)/9)
+p=normcdf(Z)
+
+fig=figure(),
+errorbar(costs',avg_performance.BSARSAQ_validation,sem_performance.BSARSAQ_validation,'LineWidth',3),hold on
+errorbar(costs',avg_performance.full_observation,sem_performance.full_observation,'LineWidth',3),hold on
+xlim([0.01,3.3])
+set(gca,'FontSize',16,'XScale','log')
+xlabel('Cost per Click','FontSize',16)
+ylabel('Expected return','FontSize',16)
+legend('BSARSA','Full-Observation Policy','Location','West')
+saveas(fig,'../results/figures/MouselabValidation.fig')
+saveas(fig,'../results/figures/MouselabValidation.png')

@@ -11,7 +11,11 @@ Q=zeros(nr_states,nr_actions);
 
 for s=1:nr_states
     for a=1:nr_actions
-        Q(s,a)=T(s,:,a)*(gamma*V+R(s,a));
+        if numel(size(R))==3
+            Q(s,a)=T(s,:,a)*(gamma*V+squeeze(R(s,:,a))');
+        elseif numel(size(R))==3
+            Q(s,a)=T(s,:,a)*(gamma*V+R(s,a));
+        end
     end
 end
 

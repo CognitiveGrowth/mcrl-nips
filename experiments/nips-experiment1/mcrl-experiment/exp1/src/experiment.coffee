@@ -7,8 +7,6 @@ Demonstrates the jspsych-mdp plugin
 ###
 # coffeelint: disable=max_line_length, indentation
 
-# conditions: 1 = optimal delays, optimal message; 0 = fixed delays, no message; 2 = optimal delays, simple message; 3 = fixed delays, optimal message
-#             4 = delays based on object-level PRs, simple message; 5 = delays based on object-level PRs, optimal message, 6 = delay based on feature-based meta-level PRs, simple message
 DEBUG = true
 console.log condition
 if DEBUG
@@ -17,7 +15,7 @@ if DEBUG
    X X X X X DEBUG  MODE X X X X X
   X X X X X X X X X X X X X X X X X
   """
-  condition = 6
+  condition = 1
 else
   
     condition = 6
@@ -49,20 +47,66 @@ do ->  # big closure to prevent polluting global namespace
   expData = loadJson 'static/json/condition_1.json'
   trials = expData.trials
   params = expData.params
-    
-  if condition<6
-    params.PR_type = 1 #based on full-observation policy
-  
-  if condition>=6
-    params.PR_type = 2 #feature-based approximation
-  
-if condition<=6
-    params.time_cost_is_low = true
-    params.time_cost_is_high = false
 
-if condition>6
-    params.time_cost_is_low = false
-    params.time_cost_is_high = true
+params.time_cost_is_low = false
+params.time_cost_is_medium = false
+params.time_cost_is_high = false
+
+switch(condition){
+    case 1:
+        params.time_cost_is_low = true
+        params.PR_type = 0 # no feedback
+    case 2:
+        params.time_cost_is_low = true
+        params.PR_type = 1 # based on full-observation policy
+    case 3:
+        params.time_cost_is_low = true
+        params.PR_type = 2 # feature-based approximation
+    case 4:
+        params.time_cost_is_medium = true
+        params.PR_type = 0
+    case 5:
+        params.time_cost_is_medium = true
+        params.PR_type = 1
+    case 6:
+        params.time_cost_is_medium = true
+        params.PR_type = 2
+    case 7:
+        params.time_cost_is_high = true
+        params.PR_type = 0
+    case 8:
+        params.time_cost_is_high = true
+        params.PR_type = 1
+    case 9:
+        params.time_cost_is_high = true
+        params.PR_type = 2
+    }
+
+if params.time_cost_is_low
+    time_cost = "$0.01"
+    fullobs_cost = "$-0.16"
+else if params.time_cost_is_medium
+    time_cost = "$1.60"
+    fullobs_cost = "$-25.60"
+else if params.time_cost_is_high
+    time_cost = "$2.80"
+    fullobs_cost = "$-44.80"
+            
+            
+    
+#  if condition<6
+#    params.PR_type = 1 #based on full-observation policy
+#  
+#  if condition>=6
+#    params.PR_type = 2 #feature-based approximation
+#  
+#if condition<=6
+#    params.time_cost_is_low = true
+#    params.time_cost_is_high = false
+#
+#if condition>6
+#    params.time_cost_is_low = false
+#    params.time_cost_is_high = true
 
     
     
@@ -141,7 +185,7 @@ if condition>6
           markdown """
             # Instructions
 
-            You will play the game for 8 rounds. The value of every location will change from each round to the next. At the begining of each round, the value of every location will be hidden, and you will only discover the value of the locations you click on. The example below shows the value of every location, just to give you an example of values you could see if you clicked on every location. <b>Every time you click a circle to observe its value, you pay a fee of 10 cents.</b> In the example below, the current profit is $-1.60 because 16 locations have been inspected and none of their rewards has been collected yet. Each time you move to a location, your profit will be adjusted. If you move to a location with a hidden value, your profit will still be adjusted according to the value of that location. There will be a 3.18-second delay period after the first move in each round.
+            You will play the game for 8 rounds. The value of every location will change from each round to the next. At the begining of each round, the value of every location will be hidden, and you will only discover the value of the locations you click on. The example below shows the value of every location, just to give you an example of values you could see if you clicked on every location. <b>Every time you click a circle to observe its value, you pay a fee of 10 cents.</b> In the example below, the current profit is #{fullobs_cost} because 16 locations have been inspected and none of their rewards has been collected yet. Each time you move to a location, your profit will be adjusted. If you move to a location with a hidden value, your profit will still be adjusted according to the value of that location. There will be a 3.18-second delay period after the first move in each round.
 
             <p><div align="center"><img src="static/js/images/instruction_images/Slide2.png" width=600></div></p>
           """
