@@ -135,7 +135,7 @@ function metaMDP(){
 }
 
 function getPR(state,actions){
-    meta_MDP.cost_per_click = PARAMS.time_cost
+    meta_MDP.cost_per_click = PARAMS.info_cost
   
     var next_state=getNextState(state,actions,true)
     var environment_model=getNextState(state,actions.slice(0,-1),true) //information state after having thought but before having taken action
@@ -171,18 +171,20 @@ function getPR(state,actions){
 function computeDelay(initial_state,actions){   
     //returns the delay in seconds corresponding to the PR for starting in initial_state and taking the actions in the array actions
     
-    if (_.contains(conditions_with_metalevel_PR,condition)){
-        total_PR=getPR(initial_state,actions)
-    }
+    // if (_.contains(conditions_with_metalevel_PR,condition)){
+    //     total_PR=getPR(initial_state,actions)
+    // }
     
-    if (_.contains(conditions_with_objectlevel_PR,condition)){
-        PRs=getObjectLevelPR(meta_MDP.object_level_MDP.trialID, initial_state, actions)
-        total_PR=sum(PRs)
-    }
+    // if (_.contains(conditions_with_objectlevel_PR,condition)){
+    //     PRs=getObjectLevelPR(meta_MDP.object_level_MDP.trialID, initial_state, actions)
+    //     total_PR=sum(PRs)
+    // }
     
+    total_PR=getPR(initial_state,actions)
     delay=-meta_MDP.delay_per_point*total_PR
+    console.log('delay', total_PR, delay)
     
-    delay = delay*2
+    // delay = delay*2
     
     return delay
     
@@ -245,12 +247,7 @@ function registerMove(direction){
         }
     }
     
-    if (_.contains(conditions_with_delays,condition)){        
-        var delay=computeDelay(meta_MDP.state,clicks.concat([move]))                
-    }
-    else{
-        var delay=0
-    }
+    var delay=computeDelay(meta_MDP.state,clicks.concat([move]))
 
     
     var last_move = moves.slice(-1).pop()
@@ -601,6 +598,7 @@ function valueFunction(state,environment_model){
             
             break;
         case 2: //feature-based PRs
+            console.log('feature-based valueFunction')
             Q_hat = new Array()
             
             available_actions=getActions(state)
@@ -608,6 +606,7 @@ function valueFunction(state,environment_model){
                 Q_hat.push(predictQValue(state,available_actions[a]))
             }
             
+            console.log('Q_hat', Q_hat)
             V = _.max(Q_hat)
             break;
     }
@@ -615,8 +614,8 @@ function valueFunction(state,environment_model){
 }
 
 function predictQValue(state,computation){
-    
-    switch(PARAMS.time_cost){
+    feature_weights = null;
+    switch(PARAMS.info_cost){
         case 0.01:
             feature_weights = {VPI: 0.2560, VOC1: 0.6988, ER: 0.1766};
             break;
@@ -626,6 +625,9 @@ function predictQValue(state,computation){
         case 2.8:
             feature_weights = {VPI: -1.2980, VOC1: 0.3910, ER: 0.3197};
             break;
+
+    console.log('weights', feature_weights)
+
     }
     
     VPI = computeVPI(state,computation)

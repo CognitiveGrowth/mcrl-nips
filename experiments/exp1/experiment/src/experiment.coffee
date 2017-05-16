@@ -15,7 +15,7 @@ if DEBUG
    X X X X X DEBUG  MODE X X X X X
   X X X X X X X X X X X X X X X X X
   """
-  condition = 4
+  condition = 1
 else
   console.log """
   # =============================== #

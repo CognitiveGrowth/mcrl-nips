@@ -337,123 +337,57 @@ jsPsych.plugins['graph'] = do ->
         @lowerMessage.html """Waiting for the timer to expire..."""
       if @complete and @timeLeft <= 0
         @endTrial()
-
+ 
     displayFeedback: (a, s1) =>
-      # console.log result
       feedback = registerMove a
+      console.log 'feedback', feedback
     
-    # conditions: 1 = optimal delays, optimal message; 0 = fixed delays, no message; 2 = optimal delays, simple message; 3 = fixed delays, optimal message
-    #             5 = delays based on object-level PRs, simple message; 4 = delays based on object-level PRs, optimal message
-      if condition is 1 || condition is 2 || condition is 4 || condition is 5 || condition is 6
-          result =
-            delay: Math.round(feedback.delay)
-            planned_too_little: feedback.planned_too_little
-            planned_too_much: feedback.planned_too_much
-            information_used_correctly: feedback.information_used_correctly
-      if condition is 0
-          if @nMoves is 1
-            result =
-              delay: 3.18 #1.59*2
-          if @nMoves is 2
-            result =
-              delay: 0
-          if @nMoves is 3
-            result =
-              delay: 0
-      if condition is 3
-          if @nMoves is 1
-            result =
-              delay: 3.18 #1.59*2
-              planned_too_little: feedback.planned_too_little
-              planned_too_much: feedback.planned_too_much
-              information_used_correctly: feedback.information_used_correctly
-          if @nMoves is 2
-            result =
-              delay: 0
-              planned_too_little: feedback.planned_too_little
-              planned_too_much: feedback.planned_too_much
-              information_used_correctly: feedback.information_used_correctly
-          if @nMoves is 3
-            result =
-              delay: 0
-              planned_too_little: feedback.planned_too_little
-              planned_too_much: feedback.planned_too_much
-              information_used_correctly: feedback.information_used_correctly
+      if PARAMS.PR_type
+        result =
+          delay: Math.round feedback.delay
+          planned_too_little: feedback.planned_too_little
+          planned_too_much: feedback.planned_too_much
+          information_used_correctly: feedback.information_used_correctly
+      else
+        result =
+          delay: switch @nMoves
+            when 1 then 8
+            when 2 then 0
+            when 3 then 1
+          
+      @data.delays.push(result.delay)
             
-      @data.delays.push(result.delay)        
       redGreenSpan = (txt, val) ->
         "<span style='color: #{redGreen val}; font-weight: bold;'>#{txt}</span>"
       
-      if condition is 1 || condition is 5
-          mistake = result.delay
-          head = do ->
-            if result.planned_too_little
-                if !result.planned_too_much
-                    redGreenSpan "You should have gathered more information!", -1            
-                else
-                    redGreenSpan "You gathered too little relevant and too much irrelevant information!", -1            
+      if PARAMS.PR_type
+        head = do ->
+          if result.planned_too_little
+            if !result.planned_too_much
+                redGreenSpan "You should have gathered more information!", -1            
             else
-                if result.planned_too_much
-                    redGreenSpan "You considered irrelevant outcomes.", -1                    
-                else
-                    redGreenSpan "You gathered enough information!", 1
-
-          penalty = if result.delay then "<p>#{result.delay} second penalty</p>"
-          info = \
-            "Given the information you collected, your decision was " + \
-            if result.information_used_correctly
-              redGreenSpan 'optimal.', 1
+                redGreenSpan "You gathered too little relevant and too much irrelevant information!", -1            
+          else
+            if result.planned_too_much
+                redGreenSpan "You considered irrelevant outcomes.", -1                    
             else
-              redGreenSpan 'suboptimal.', -1
+                redGreenSpan "You gathered enough information!", 1
 
-          msg = """
-            <h3>#{head}</h3>
-            <b>#{penalty}</b>
-            #{info}
-          """
-      else if condition is 3
-          mistake = result.delay
-          head = do ->
-            if result.planned_too_little
-                if !result.planned_too_much
-                    redGreenSpan "You should have gathered more information!", -1            
-                else
-                    redGreenSpan "You gathered too little relevant and too much irrelevant information!", -1            
-            else
-                if result.planned_too_much
-                    redGreenSpan "You considered irrelevant outcomes.", -1                    
-                else
-                    redGreenSpan "You gathered enough information!", 1
+        penalty = if result.delay then "<p>#{result.delay} second penalty</p>"
+        info = \
+          "Given the information you collected, your decision was " + \
+          if result.information_used_correctly
+            redGreenSpan 'optimal.', 1
+          else
+            redGreenSpan 'suboptimal.', -1
 
-          penalty = if result.delay then "<p>Please wait #{result.delay} seconds</p>"
-          info = \
-            "Given the information you collected, your decision was " + \
-            if result.information_used_correctly
-              redGreenSpan 'optimal.', 1
-            else
-              redGreenSpan 'suboptimal.', -1
-
-          msg = """
-            <h3>#{head}</h3>
-            <b>#{penalty}</b>
-            #{info}
-          """
-      else if condition is 0
-            msg = "Please wait "+result.delay+" seconds."  
-      else if condition is 2 || condition is 4 || condition is 6
-          mistake = result.delay
-          head = do ->
-            if result.delay > 0
-                redGreenSpan "Poor planning:", -1
-
-          penalty = if result.delay then "<p>#{result.delay} second penalty</p>"
-          info = ""
-
-          msg = """
-            <h3>#{head}</h3>
-            <b>#{penalty}</b>
-            #{info}
-          """
+        msg = """
+          <h3>#{head}</h3>
+          <b>#{penalty}</b>
+          #{info}
+        """
+      else
+        msg = "Please wait "+result.delay+" seconds."  
 
       if @feedback and result.delay>=1        
           @freeze = true
@@ -473,7 +407,6 @@ jsPsych.plugins['graph'] = do ->
       else
             $('#graph-feedback').css(display: 'none')
             @arrive s1
-        
     
 
   #  =========================== #

@@ -327,65 +327,35 @@ jsPsych.plugins['graph'] = (function() {
     };
 
     GraphMDP.prototype.displayFeedback = function(a, s1) {
-      var feedback, head, info, mistake, msg, penalty, redGreenSpan, result;
+      var feedback, head, info, msg, penalty, redGreenSpan, result;
       feedback = registerMove(a);
-      if (condition === 1 || condition === 2 || condition === 4 || condition === 5 || condition === 6) {
+      console.log('feedback', feedback);
+      if (PARAMS.PR_type) {
         result = {
           delay: Math.round(feedback.delay),
           planned_too_little: feedback.planned_too_little,
           planned_too_much: feedback.planned_too_much,
           information_used_correctly: feedback.information_used_correctly
         };
-      }
-      if (condition === 0) {
-        if (this.nMoves === 1) {
-          result = {
-            delay: 3.18
-          };
-        }
-        if (this.nMoves === 2) {
-          result = {
-            delay: 0
-          };
-        }
-        if (this.nMoves === 3) {
-          result = {
-            delay: 0
-          };
-        }
-      }
-      if (condition === 3) {
-        if (this.nMoves === 1) {
-          result = {
-            delay: 3.18,
-            planned_too_little: feedback.planned_too_little,
-            planned_too_much: feedback.planned_too_much,
-            information_used_correctly: feedback.information_used_correctly
-          };
-        }
-        if (this.nMoves === 2) {
-          result = {
-            delay: 0,
-            planned_too_little: feedback.planned_too_little,
-            planned_too_much: feedback.planned_too_much,
-            information_used_correctly: feedback.information_used_correctly
-          };
-        }
-        if (this.nMoves === 3) {
-          result = {
-            delay: 0,
-            planned_too_little: feedback.planned_too_little,
-            planned_too_much: feedback.planned_too_much,
-            information_used_correctly: feedback.information_used_correctly
-          };
-        }
+      } else {
+        result = {
+          delay: (function() {
+            switch (this.nMoves) {
+              case 1:
+                return 8;
+              case 2:
+                return 0;
+              case 3:
+                return 1;
+            }
+          }).call(this)
+        };
       }
       this.data.delays.push(result.delay);
       redGreenSpan = function(txt, val) {
         return "<span style='color: " + (redGreen(val)) + "; font-weight: bold;'>" + txt + "</span>";
       };
-      if (condition === 1 || condition === 5) {
-        mistake = result.delay;
+      if (PARAMS.PR_type) {
         head = (function() {
           if (result.planned_too_little) {
             if (!result.planned_too_much) {
@@ -404,38 +374,8 @@ jsPsych.plugins['graph'] = (function() {
         penalty = result.delay ? "<p>" + result.delay + " second penalty</p>" : void 0;
         info = "Given the information you collected, your decision was " + (result.information_used_correctly ? redGreenSpan('optimal.', 1) : redGreenSpan('suboptimal.', -1));
         msg = "<h3>" + head + "</h3>\n<b>" + penalty + "</b>\n" + info;
-      } else if (condition === 3) {
-        mistake = result.delay;
-        head = (function() {
-          if (result.planned_too_little) {
-            if (!result.planned_too_much) {
-              return redGreenSpan("You should have gathered more information!", -1);
-            } else {
-              return redGreenSpan("You gathered too little relevant and too much irrelevant information!", -1);
-            }
-          } else {
-            if (result.planned_too_much) {
-              return redGreenSpan("You considered irrelevant outcomes.", -1);
-            } else {
-              return redGreenSpan("You gathered enough information!", 1);
-            }
-          }
-        })();
-        penalty = result.delay ? "<p>Please wait " + result.delay + " seconds</p>" : void 0;
-        info = "Given the information you collected, your decision was " + (result.information_used_correctly ? redGreenSpan('optimal.', 1) : redGreenSpan('suboptimal.', -1));
-        msg = "<h3>" + head + "</h3>\n<b>" + penalty + "</b>\n" + info;
-      } else if (condition === 0) {
+      } else {
         msg = "Please wait " + result.delay + " seconds.";
-      } else if (condition === 2 || condition === 4 || condition === 6) {
-        mistake = result.delay;
-        head = (function() {
-          if (result.delay > 0) {
-            return redGreenSpan("Poor planning:", -1);
-          }
-        })();
-        penalty = result.delay ? "<p>" + result.delay + " second penalty</p>" : void 0;
-        info = "";
-        msg = "<h3>" + head + "</h3>\n<b>" + penalty + "</b>\n" + info;
       }
       if (this.feedback && result.delay >= 1) {
         this.freeze = true;
