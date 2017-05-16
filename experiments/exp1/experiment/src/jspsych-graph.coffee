@@ -117,7 +117,7 @@ jsPsych.plugins['graph'] = do ->
         @initialState
         @trialID
         @feedback=true
-        @infoCost=0.10
+        @infoCost=PARAMS.info_cost
         @keys=KEYS
         @playerImage='/static/images/plane.png'
         @minTime=(if DEBUG then 5 else 45)

@@ -82,7 +82,7 @@ jsPsych.plugins['graph'] = (function() {
       this.click = bind(this.click, this);
       this.act = bind(this.act, this);
       var lowerMessage, ref, ref1, ref2, ref3, ref4, ref5;
-      this.display = config.display, this.block = config.block, this.graph = config.graph, this.initialState = config.initialState, this.trialID = config.trialID, this.feedback = (ref = config.feedback) != null ? ref : true, this.infoCost = (ref1 = config.infoCost) != null ? ref1 : 0.10, this.keys = (ref2 = config.keys) != null ? ref2 : KEYS, this.playerImage = (ref3 = config.playerImage) != null ? ref3 : '/static/images/plane.png', this.minTime = (ref4 = config.minTime) != null ? ref4 : (DEBUG ? 5 : 45), lowerMessage = (ref5 = config.lowerMessage) != null ? ref5 : KEY_DESCRIPTION;
+      this.display = config.display, this.block = config.block, this.graph = config.graph, this.initialState = config.initialState, this.trialID = config.trialID, this.feedback = (ref = config.feedback) != null ? ref : true, this.infoCost = (ref1 = config.infoCost) != null ? ref1 : PARAMS.info_cost, this.keys = (ref2 = config.keys) != null ? ref2 : KEYS, this.playerImage = (ref3 = config.playerImage) != null ? ref3 : '/static/images/plane.png', this.minTime = (ref4 = config.minTime) != null ? ref4 : (DEBUG ? 5 : 45), lowerMessage = (ref5 = config.lowerMessage) != null ? ref5 : KEY_DESCRIPTION;
       meta_MDP.init(this.trialID);
       this.invKeys = _.invert(this.keys);
       this.data = {

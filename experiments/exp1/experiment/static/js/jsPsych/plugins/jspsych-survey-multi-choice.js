@@ -142,6 +142,7 @@ jsPsych.plugins['survey-multi-choice'] = (function() {
           correct.push(c)
         }
       }
+      
 
 
       // save data
