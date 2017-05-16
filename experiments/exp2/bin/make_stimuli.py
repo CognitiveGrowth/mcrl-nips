@@ -16,7 +16,7 @@ class Stims(Stimulator):
 
     def conditions(self):
         yield {
-            'creation_date': 
+            'creation_date': str(datetime.now())
         }
     def blocks(self, params):
         yield {
