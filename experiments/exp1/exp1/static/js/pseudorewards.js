@@ -135,19 +135,7 @@ function metaMDP(){
 }
 
 function getPR(state,actions){
-    
-    if (params.time_cost_is_low){
-        meta_MDP.cost_per_click = 0.01
-    }
-    
-    if (params.time_cost_is_medium){
-        meta_MDP.cost_per_click = 1.60
-    }
-
-    if (params.time_cost_is_high){
-        //TODO: updated these weights with the learned values
-        meta_MDP.cost_per_click = 2.80
-    }
+    meta_MDP.cost_per_click = PARAMS.time_cost
   
     var next_state=getNextState(state,actions,true)
     var environment_model=getNextState(state,actions.slice(0,-1),true) //information state after having thought but before having taken action
@@ -573,7 +561,7 @@ function updateBelief(meta_MDP,state,new_observations){
 
 function valueFunction(state,environment_model){        
     
-    switch(params.PR_type){
+    switch(PARAMS.PR_type){
         case 1: //PRs based on the full-observation policy
             var current_location=state.s;
             var planning_horizon=state.nr_steps-state.step+1;
@@ -628,31 +616,17 @@ function valueFunction(state,environment_model){
 
 function predictQValue(state,computation){
     
-    if (params.time_cost_is_low){
-        feature_weights = {
-            VPI : 0.2560,
-            VOC1 : 0.6988,
-            ER : 0.1766
-        }
+    switch(PARAMS.time_cost){
+        case 0.01:
+            feature_weights = {VPI: 0.2560, VOC1: 0.6988, ER: 0.1766};
+            break;
+        case 1.6:
+            feature_weights = {VPI: 0.1006, VOC1: 0.5202, ER: 0.1686};
+            break;
+        case 2.8:
+            feature_weights = {VPI: -1.2980, VOC1: 0.3910, ER: 0.3197};
+            break;
     }
-    
-    if (params.time_cost_is_medium){
-        feature_weights = {
-            VPI : 0.1006,
-            VOC1 : 0.5202,
-            ER : 0.1686
-        }
-    }
-
-    if (params.time_cost_is_high){
-        //TODO: updated these weights with the learned values
-        feature_weights = {
-            VPI : -1.2980,
-            VOC1 : 0.3910,
-            ER : 0.3197
-        }
-    }
-
     
     VPI = computeVPI(state,computation)
     VOC1 = computeMyopicVOC(state,computation)
