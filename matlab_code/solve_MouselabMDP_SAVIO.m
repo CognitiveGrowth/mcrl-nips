@@ -49,31 +49,43 @@ mu0(:,5)=[1;0;0];
 mu0(:,6)=[1;1;0];
 mu0(:,7)=[1;0;1];
 mu0(:,8)=[0;1;1];
+mu0(:,9)=[0.5;0.5;0.5];
+
+sigmas=0.1:0.1:0.3;
+
+mu_ind=1:size(mu0,2);
+sigma_ind=1:numel(sigmas);
+
+[M,S]=meshgrid(mu_ind,sigma_ind);
+
+s_init=S(init);
+m_init=M(init);
+sigma_init=sigmas(s_init);
+mu_init=mu0(:,m_init);
 
 nr_initial_values=size(mu0,2);
 
 nr_features=size(mu0,1);
-sigma0=0.1;
-glm0=BayesianGLM(nr_features,sigma0);
+glm0=BayesianGLM(nr_features,sigma_init);
 
 feature_extractor=@(s,c,meta_MDP) meta_MDP.extractStateActionFeatures(s,c);
 
 %load MouselabMDPMetaMDPTestFeb-17-2017
 
-nr_training_episodes=1500;%2000;
+nr_training_episodes=500;%2000;
 nr_reps=1;
 first_episode=1; last_rep=nr_training_episodes;
 for rep=1:nr_reps
 
     if continue_previous_run
         load(['/global/home/users/flieder/results/MouselabMDPFitBayesianSARSA',...
-        int2str(round(100*c)),'_',int2str(init),'.mat'])
+        int2str(round(100*c)),'_',int2str(init_mu),'.mat'])
         glm=result.glm;
     else
         glm(rep)=glm0;
 
-        glm(rep).mu_0=mu0(:,mod(init-1,nr_initial_values)+1);
-        glm(rep).mu_n=mu0(:,mod(init-1,nr_initial_values)+1);
+        glm(rep).mu_0=mu_init;
+        glm(rep).mu_n=mu_init;
     end
     
     tic()
@@ -83,6 +95,7 @@ for rep=1:nr_reps
     disp(['Repetition ',int2str(rep),' took ',int2str(round(toc()/60)),' minutes.'])
 end
 
+%{
 clear avg_returns, clear sem_avg_return, clear avg_RMSE, clear sem_RMSE
 bin_width=20;
 for r=1:nr_reps
@@ -101,7 +114,7 @@ episode_nrs=bin_width:bin_width:nr_episodes;
 [avg_RMSE,sem_RMSE]=binnedAverage(sqrt(avg_MSE),bin_width);
 [avg_R,sem_R]=binnedAverage(R_total,bin_width);
 
-%{
+
 figure()
 subplot(2,1,1)
 errorbar(episode_nrs,avg_R,sem_R,'g-o','LineWidth',2), hold on
@@ -140,7 +153,10 @@ set(gca,'XTickLabelRotation',45,'FontSize',16)
 ylabel('Learned Weights','FontSize',16)
 title(['Bayesian SARSA without PR, ',int2str(nr_episodes),' episodes'],'FontSize',18)
 %}
-nr_episodes_evaluation=1000;%2000;
+if nr_reps==1
+    best_run=1;
+end
+nr_episodes_evaluation=250;%2000;
 meta_MDP.object_level_MDP=meta_MDP.object_level_MDPs(1);
 policy=@(state,mdp) contextualThompsonSampling(state,meta_MDP,glm(best_run));
 [R_total_evaluation,problems_evaluation,states_evaluation,chosen_actions_evaluation,indices_evaluation]=...
@@ -162,7 +178,8 @@ result.glm=glm;
 do_save=true;
 if do_save
     save(['/global/home/users/flieder/results/MouselabMDPFitBayesianSARSA',...
-        int2str(round(100*c)),'_',int2str(init),'.mat'],'result','-v7.3')
+        int2str(round(100*c)),'_',int2str(m_init),'_',int2str(s_init),...
+        '.mat'],'result','-v7.3')
 end
 
 end

@@ -15,6 +15,10 @@ if DEBUG
    X X X X X DEBUG  MODE X X X X X
   X X X X X X X X X X X X X X X X X
   """
+<<<<<<< HEAD
+=======
+  condition = 5
+>>>>>>> d4c59fe8fd45d84f2d2237264c1a2208cfc48058
 else
   console.log """
   # =============================== #

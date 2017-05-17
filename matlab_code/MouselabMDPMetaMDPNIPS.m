@@ -27,8 +27,11 @@ classdef MouselabMDPMetaMDPNIPS < MDP
         query_state;
         query_computation;
         Q_blinkered;
+        states_blinkered;
         sigma_values;
         mu_values;
+        terminal_states=10:17;
+        nonterminal_states=1:9;
         
     end
     
@@ -102,6 +105,26 @@ action_feature_names={'Expected regret','regret reduction','VOC',...
             state.returns=[];
         end
         
+        function [state,meta_MDP]=randomStart(meta_MDP)
+
+            [~,meta_MDP]=meta_MDP.newEpisode();
+            [state,meta_MDP]=meta_MDP.sampleS0();
+            
+            state.step=drawSample(1:state.nr_steps-1);
+            state.s=drawSample([meta_MDP.object_level_MDP.states_by_step{state.step}.nr]);
+            
+            nr_locations=numel(state.observations);
+            observed=rand(nr_locations,1)<0.5;
+
+            for l=1:nr_locations
+                if observed(l)
+                    state.observations(l)=meta_MDP.rewards(l);
+                end
+            end
+
+            state=meta_MDP.updateBelief(state,find(observed));
+        end
+
         function [state,meta_MDP]=sampleS0(meta_MDP)
 
             state.step=1;
@@ -134,6 +157,8 @@ action_feature_names={'Expected regret','regret reduction','VOC',...
             
         end
         
+    
+
         function state=updateBelief(meta_MDP,state,new_observations)
             %{ 
                 computes state.mu_Q, state.sigma_Q, state.mu_V, and
@@ -841,7 +866,7 @@ action_feature_names={'Expected regret','regret reduction','VOC',...
             end
         end
         
-        function a=getCorrespondingAction(state,c)
+        function a=getCorrespondingAction(meta_MDP,state,c)
             
             [~,downstream_states_by_action]=meta_MDP.getDownStreamStates(state);
             corresponding_action=NaN;
@@ -1202,18 +1227,25 @@ action_feature_names={'Expected regret','regret reduction','VOC',...
             c_blinkered = computations(argmax(Q_blinkered(:)));
         end
         
-        function Q_hat=getQBlinkered(meta_MDP,delta_mu,sigma_mu,observed)
+        function Q_hat=getQBlinkered(meta_MDP,delta_mu,sigma_mu,observed,c)
             %Q_hat is an approximation to the blinkered Q-function when the
             %current difference between the mean of the considered arm and
             %the best alternative is delta_mu and the STD of the mean of
             %the considered arm is sigma_mu. observed(i)=1 if the i-th
             %cell of the considered arm has already been observed.
+            states=meta_MDP.states_blinkered;
             
-            [~,mu_id] = min(abs(delta_mu-meta_MDP.delta_mu_values));
-            [~,sigma_id]  = min(abs(sigma_mu-meta_MDP.sigma_values));
+            state_nr = @(observation_vector,mu,sigma) (bi2de(observed)+1)+...
+    states.nr_observation_indices*(find(and( states.mu(:)==mu,states.sigma==sigma))-1);
             
-            obs_id = bi2de(observed(:)');
-            Q_hat = meta_MDP.Q_blinkered(mu_id,sigma_id,obs_id);            
+            delta_mu_values = unique(states.mu(:));
+            sigma_mu_values = unique(states.sigma(:));
+            
+            [~,mu_id] = min(abs(delta_mu-delta_mu_values));
+            [~,sigma_id]  = min(abs(sigma_mu-sigma_mu_values));
+            
+            obs_id = bi2de(observed(:)')+1;
+            Q_hat = meta_MDP.Q_blinkered(state_nr(mu_id,sigma_id,obs_id),c);            
             
         end
         
@@ -1253,6 +1285,7 @@ action_feature_names={'Expected regret','regret reduction','VOC',...
             [V_blinkered, pi_blinkered, ~] = mdp_finite_horizon(T_blinkered, R_blinkered, gamma, horizon);
             
             meta_MDP.Q_blinkered = getQFromV(V_blinkered(:,1),T_blinkered,R_blinkered,gamma);
+            meta_MDP.states_blinkered=states_blinkered;
         end
     end
     

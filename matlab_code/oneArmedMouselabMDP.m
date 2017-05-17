@@ -43,6 +43,7 @@ states.sigma=repmat(SIGMAs,[1,1,nr_observation_indices]);
 for id=1:nr_observation_indices
     states.observation_id(:,:,id)=1+observation_indices(id)*ones(size(MUs));
 end
+states.nr_observation_indices=nr_observation_indices;
 
 %state = (obs_id, delta_mu, sigma_mu)
 nr_states=numel(MUs)*2^nr_cells+1; %each combination of mu and sigma is a state and there is one additional terminal state

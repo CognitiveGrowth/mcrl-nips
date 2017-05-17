@@ -1,0 +1,841 @@
+2017-05-15 21:09:43 [45765] [DEBUG] Current configuration:
+  proxy_protocol: False
+  worker_connections: 1000
+  post_fork: <function post_fork at 0x10da64b18>
+  pythonpath: None
+  syslog: False
+  syslog_facility: user
+  enable_stdio_inheritance: False
+  worker_class: sync
+  ssl_version: 3
+  cert_reqs: 0
+  suppress_ragged_eofs: True
+  when_ready: <function when_ready at 0x10da64848>
+  pre_fork: <function pre_fork at 0x10da649b0>
+  preload_app: False
+  workers: 4
+  keepalive: 2
+  accesslog: None
+  pidfile: None
+  worker_tmp_dir: None
+  group: 20
+  graceful_timeout: 30
+  spew: False
+  proc_name: psiturk_experiment_server
+  umask: 0
+  on_reload: <function on_reload at 0x10da646e0>
+  post_worker_init: <function post_worker_init at 0x10da64c80>
+  pre_exec: <function pre_exec at 0x10da6b140>
+  limit_request_fields: 100
+  on_exit: <function on_exit at 0x10da6b7d0>
+  config: None
+  logconfig: None
+  check_config: False
+  do_handshake_on_connect: False
+  secure_scheme_headers: {'X-FORWARDED-PROTOCOL': 'ssl', 'X-FORWARDED-PROTO': 'https', 'X-FORWARDED-SSL': 'on'}
+  proxy_allow_ips: ['127.0.0.1']
+  pre_request: <function pre_request at 0x10da6b2a8>
+  post_request: <function post_request at 0x10da6b398>
+  forwarded_allow_ips: ['127.0.0.1']
+  worker_int: <function worker_int at 0x10da64de8>
+  ca_certs: None
+  threads: 1
+  max_requests: 0
+  chdir: /Users/Falk/Dropbox/PhD/Metacognitive RL/mcrl-nips/experiments/exp1/experiment
+  daemon: False
+  user: 501
+  limit_request_line: 4094
+  access_log_format: %(h)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s"
+  certfile: None
+  worker_exit: <function worker_exit at 0x10da6b500>
+  paste: None
+  default_proc_name: gunicorn
+  errorlog: server.log
+  logger_class: gunicorn.glogging.Logger
+  syslog_addr: unix:///var/run/syslog
+  syslog_prefix: None
+  ciphers: TLSv1
+  worker_abort: <function worker_abort at 0x10da64f50>
+  loglevel: debug
+  bind: ['localhost:22361']
+  raw_env: []
+  reload: False
+  limit_request_field_size: 8190
+  nworkers_changed: <function nworkers_changed at 0x10da6b668>
+  timeout: 30
+  on_starting: <function on_starting at 0x10da64578>
+  debug: False
+  django_settings: None
+  tmp_upload_dir: None
+  keyfile: None
+  backlog: 2048
+2017-05-15 21:09:43 [45765] [INFO] Starting gunicorn 19.0.0
+2017-05-15 21:09:43 [45765] [DEBUG] Arbiter booted
+2017-05-15 21:09:43 [45765] [INFO] Listening at: http://127.0.0.1:22361 (45765)
+2017-05-15 21:09:43 [45765] [INFO] Using worker: sync
+2017-05-15 21:09:43 [45769] [INFO] Booting worker with pid: 45769
+2017-05-15 21:09:43 [45770] [INFO] Booting worker with pid: 45770
+2017-05-15 21:09:43 [45771] [INFO] Booting worker with pid: 45771
+2017-05-15 21:09:43 [45772] [INFO] Booting worker with pid: 45772
+2017-05-15 21:09:44,172 /Library/Python/2.7/site-packages/psiturk/psiturk_js/psiturk.js
+2017-05-15 21:09:44 [45769] [ERROR] Exception in worker process:
+Traceback (most recent call last):
+  File "/Library/Python/2.7/site-packages/gunicorn/arbiter.py", line 502, in spawn_worker
+    worker.init_process()
+  File "/Library/Python/2.7/site-packages/gunicorn/workers/base.py", line 114, in init_process
+    self.wsgi = self.app.wsgi()
+  File "/Library/Python/2.7/site-packages/gunicorn/app/base.py", line 66, in wsgi
+    self.callable = self.load()
+  File "/Library/Python/2.7/site-packages/psiturk/experiment_server.py", line 49, in load
+    return util.import_app("psiturk.experiment:app")
+  File "/Library/Python/2.7/site-packages/gunicorn/util.py", line 356, in import_app
+    __import__(module)
+  File "/Library/Python/2.7/site-packages/psiturk/experiment.py", line 85, in <module>
+    init_db()
+  File "/Library/Python/2.7/site-packages/psiturk/db.py", line 23, in init_db
+    Base.metadata.create_all(bind=engine)
+  File "/Library/Python/2.7/site-packages/sqlalchemy/sql/schema.py", line 3352, in create_all
+    tables=tables)
+  File "/Library/Python/2.7/site-packages/sqlalchemy/engine/base.py", line 1617, in _run_visitor
+    conn._run_visitor(visitorcallable, element, **kwargs)
+  File "/Library/Python/2.7/site-packages/sqlalchemy/engine/base.py", line 1246, in _run_visitor
+    **kwargs).traverse_single(element)
+  File "/Library/Python/2.7/site-packages/sqlalchemy/sql/visitors.py", line 120, in traverse_single
+    return meth(obj, **kw)
+  File "/Library/Python/2.7/site-packages/sqlalchemy/sql/ddl.py", line 713, in visit_metadata
+    self.traverse_single(table, create_ok=True)
+  File "/Library/Python/2.7/site-packages/sqlalchemy/sql/visitors.py", line 120, in traverse_single
+    return meth(obj, **kw)
+  File "/Library/Python/2.7/site-packages/sqlalchemy/sql/ddl.py", line 732, in visit_table
+    self.connection.execute(CreateTable(table))
+  File "/Library/Python/2.7/site-packages/sqlalchemy/engine/base.py", line 729, in execute
+    return meth(self, multiparams, params)
+  File "/Library/Python/2.7/site-packages/sqlalchemy/sql/ddl.py", line 69, in _execute_on_connection
+    return connection._execute_ddl(self, multiparams, params)
+  File "/Library/Python/2.7/site-packages/sqlalchemy/engine/base.py", line 783, in _execute_ddl
+    compiled
+  File "/Library/Python/2.7/site-packages/sqlalchemy/engine/base.py", line 958, in _execute_context
+    context)
+  File "/Library/Python/2.7/site-packages/sqlalchemy/engine/base.py", line 1160, in _handle_dbapi_exception
+    exc_info
+  File "/Library/Python/2.7/site-packages/sqlalchemy/util/compat.py", line 199, in raise_from_cause
+    reraise(type(exception), exception, tb=exc_tb)
+  File "/Library/Python/2.7/site-packages/sqlalchemy/engine/base.py", line 951, in _execute_context
+    context)
+  File "/Library/Python/2.7/site-packages/sqlalchemy/engine/default.py", line 436, in do_execute
+    cursor.execute(statement, parameters)
+OperationalError: (OperationalError) table participants already exists u'\nCREATE TABLE participants (\n\tuniqueid VARCHAR(128) NOT NULL, \n\tassignmentid VARCHAR(128) NOT NULL, \n\tworkerid VARCHAR(128) NOT NULL, \n\thitid VARCHAR(128) NOT NULL, \n\tipaddress VARCHAR(128), \n\tbrowser VARCHAR(128), \n\tplatform VARCHAR(128), \n\tlanguage VARCHAR(128), \n\tcond INTEGER, \n\tcounterbalance INTEGER, \n\tcodeversion VARCHAR(128), \n\tbeginhit DATETIME, \n\tbeginexp DATETIME, \n\tendhit DATETIME, \n\tbonus FLOAT, \n\tstatus INTEGER, \n\tdatastring TEXT(4294967295), \n\tPRIMARY KEY (uniqueid)\n)\n\n' ()
+Traceback (most recent call last):
+  File "/Library/Python/2.7/site-packages/gunicorn/arbiter.py", line 502, in spawn_worker
+    worker.init_process()
+  File "/Library/Python/2.7/site-packages/gunicorn/workers/base.py", line 114, in init_process
+    self.wsgi = self.app.wsgi()
+  File "/Library/Python/2.7/site-packages/gunicorn/app/base.py", line 66, in wsgi
+    self.callable = self.load()
+  File "/Library/Python/2.7/site-packages/psiturk/experiment_server.py", line 49, in load
+    return util.import_app("psiturk.experiment:app")
+  File "/Library/Python/2.7/site-packages/gunicorn/util.py", line 356, in import_app
+    __import__(module)
+  File "/Library/Python/2.7/site-packages/psiturk/experiment.py", line 85, in <module>
+    init_db()
+  File "/Library/Python/2.7/site-packages/psiturk/db.py", line 23, in init_db
+    Base.metadata.create_all(bind=engine)
+  File "/Library/Python/2.7/site-packages/sqlalchemy/sql/schema.py", line 3352, in create_all
+    tables=tables)
+  File "/Library/Python/2.7/site-packages/sqlalchemy/engine/base.py", line 1617, in _run_visitor
+    conn._run_visitor(visitorcallable, element, **kwargs)
+  File "/Library/Python/2.7/site-packages/sqlalchemy/engine/base.py", line 1246, in _run_visitor
+    **kwargs).traverse_single(element)
+  File "/Library/Python/2.7/site-packages/sqlalchemy/sql/visitors.py", line 120, in traverse_single
+    return meth(obj, **kw)
+  File "/Library/Python/2.7/site-packages/sqlalchemy/sql/ddl.py", line 713, in visit_metadata
+    self.traverse_single(table, create_ok=True)
+  File "/Library/Python/2.7/site-packages/sqlalchemy/sql/visitors.py", line 120, in traverse_single
+    return meth(obj, **kw)
+  File "/Library/Python/2.7/site-packages/sqlalchemy/sql/ddl.py", line 732, in visit_table
+    self.connection.execute(CreateTable(table))
+  File "/Library/Python/2.7/site-packages/sqlalchemy/engine/base.py", line 729, in execute
+    return meth(self, multiparams, params)
+  File "/Library/Python/2.7/site-packages/sqlalchemy/sql/ddl.py", line 69, in _execute_on_connection
+    return connection._execute_ddl(self, multiparams, params)
+  File "/Library/Python/2.7/site-packages/sqlalchemy/engine/base.py", line 783, in _execute_ddl
+    compiled
+  File "/Library/Python/2.7/site-packages/sqlalchemy/engine/base.py", line 958, in _execute_context
+    context)
+  File "/Library/Python/2.7/site-packages/sqlalchemy/engine/base.py", line 1160, in _handle_dbapi_exception
+    exc_info
+  File "/Library/Python/2.7/site-packages/sqlalchemy/util/compat.py", line 199, in raise_from_cause
+    reraise(type(exception), exception, tb=exc_tb)
+  File "/Library/Python/2.7/site-packages/sqlalchemy/engine/base.py", line 951, in _execute_context
+    context)
+  File "/Library/Python/2.7/site-packages/sqlalchemy/engine/default.py", line 436, in do_execute
+    cursor.execute(statement, parameters)
+OperationalError: (OperationalError) table participants already exists u'\nCREATE TABLE participants (\n\tuniqueid VARCHAR(128) NOT NULL, \n\tassignmentid VARCHAR(128) NOT NULL, \n\tworkerid VARCHAR(128) NOT NULL, \n\thitid VARCHAR(128) NOT NULL, \n\tipaddress VARCHAR(128), \n\tbrowser VARCHAR(128), \n\tplatform VARCHAR(128), \n\tlanguage VARCHAR(128), \n\tcond INTEGER, \n\tcounterbalance INTEGER, \n\tcodeversion VARCHAR(128), \n\tbeginhit DATETIME, \n\tbeginexp DATETIME, \n\tendhit DATETIME, \n\tbonus FLOAT, \n\tstatus INTEGER, \n\tdatastring TEXT(4294967295), \n\tPRIMARY KEY (uniqueid)\n)\n\n' ()
+2017-05-15 21:09:44 [45769] [INFO] Worker exiting (pid: 45769)
+2017-05-15 21:09:44 [45770] [INFO] Worker exiting (pid: 45770)
+2017-05-15 21:09:44,243 /Library/Python/2.7/site-packages/psiturk/psiturk_js/psiturk.js
+2017-05-15 21:09:44 [45771] [INFO] Worker exiting (pid: 45771)
+2017-05-15 21:09:44,263 /Library/Python/2.7/site-packages/psiturk/psiturk_js/psiturk.js
+2017-05-15 21:09:44 [45772] [INFO] Worker exiting (pid: 45772)
+2017-05-15 21:09:44 [45765] [INFO] Shutting down: Master
+2017-05-15 21:09:44 [45765] [INFO] Reason: Worker failed to boot.
+2017-05-15 21:09:52 [45803] [DEBUG] Current configuration:
+  proxy_protocol: False
+  worker_connections: 1000
+  post_fork: <function post_fork at 0x106134b18>
+  pythonpath: None
+  syslog: False
+  syslog_facility: user
+  enable_stdio_inheritance: False
+  worker_class: sync
+  ssl_version: 3
+  cert_reqs: 0
+  suppress_ragged_eofs: True
+  when_ready: <function when_ready at 0x106134848>
+  pre_fork: <function pre_fork at 0x1061349b0>
+  preload_app: False
+  workers: 4
+  keepalive: 2
+  accesslog: None
+  pidfile: None
+  worker_tmp_dir: None
+  group: 20
+  graceful_timeout: 30
+  spew: False
+  proc_name: psiturk_experiment_server
+  umask: 0
+  on_reload: <function on_reload at 0x1061346e0>
+  post_worker_init: <function post_worker_init at 0x106134c80>
+  pre_exec: <function pre_exec at 0x10613b140>
+  limit_request_fields: 100
+  on_exit: <function on_exit at 0x10613b7d0>
+  config: None
+  logconfig: None
+  check_config: False
+  do_handshake_on_connect: False
+  secure_scheme_headers: {'X-FORWARDED-PROTOCOL': 'ssl', 'X-FORWARDED-PROTO': 'https', 'X-FORWARDED-SSL': 'on'}
+  proxy_allow_ips: ['127.0.0.1']
+  pre_request: <function pre_request at 0x10613b2a8>
+  post_request: <function post_request at 0x10613b398>
+  forwarded_allow_ips: ['127.0.0.1']
+  worker_int: <function worker_int at 0x106134de8>
+  ca_certs: None
+  threads: 1
+  max_requests: 0
+  chdir: /Users/Falk/Dropbox/PhD/Metacognitive RL/mcrl-nips/experiments/exp1/experiment
+  daemon: False
+  user: 501
+  limit_request_line: 4094
+  access_log_format: %(h)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s"
+  certfile: None
+  worker_exit: <function worker_exit at 0x10613b500>
+  paste: None
+  default_proc_name: gunicorn
+  errorlog: server.log
+  logger_class: gunicorn.glogging.Logger
+  syslog_addr: unix:///var/run/syslog
+  syslog_prefix: None
+  ciphers: TLSv1
+  worker_abort: <function worker_abort at 0x106134f50>
+  loglevel: debug
+  bind: ['localhost:22361']
+  raw_env: []
+  reload: False
+  limit_request_field_size: 8190
+  nworkers_changed: <function nworkers_changed at 0x10613b668>
+  timeout: 30
+  on_starting: <function on_starting at 0x106134578>
+  debug: False
+  django_settings: None
+  tmp_upload_dir: None
+  keyfile: None
+  backlog: 2048
+2017-05-15 21:09:52 [45803] [INFO] Starting gunicorn 19.0.0
+2017-05-15 21:09:52 [45803] [DEBUG] Arbiter booted
+2017-05-15 21:09:52 [45803] [INFO] Listening at: http://127.0.0.1:22361 (45803)
+2017-05-15 21:09:52 [45803] [INFO] Using worker: sync
+2017-05-15 21:09:52 [45806] [INFO] Booting worker with pid: 45806
+2017-05-15 21:09:52 [45807] [INFO] Booting worker with pid: 45807
+2017-05-15 21:09:52 [45808] [INFO] Booting worker with pid: 45808
+2017-05-15 21:09:52 [45810] [INFO] Booting worker with pid: 45810
+2017-05-15 21:09:52,907 /Library/Python/2.7/site-packages/psiturk/psiturk_js/psiturk.js
+2017-05-15 21:09:52,956 /Library/Python/2.7/site-packages/psiturk/psiturk_js/psiturk.js
+2017-05-15 21:09:52,996 /Library/Python/2.7/site-packages/psiturk/psiturk_js/psiturk.js
+2017-05-15 21:09:53,072 /Library/Python/2.7/site-packages/psiturk/psiturk_js/psiturk.js
+2017-05-15 21:09:54 [45807] [DEBUG] Closing connection. 
+2017-05-15 21:09:56 [45810] [DEBUG] Closing connection. 
+2017-05-15 21:09:56 [45807] [DEBUG] Closing connection. 
+2017-05-15 21:09:56 [45810] [DEBUG] GET /ad
+2017-05-15 21:09:57 [45807] [DEBUG] GET /static/css/bootstrap.min.css
+2017-05-15 21:09:57 [45808] [DEBUG] GET /static/images/berkeley.png
+2017-05-15 21:09:57 [45807] [DEBUG] Closing connection. 
+2017-05-15 21:10:07 [45810] [DEBUG] Closing connection. 
+2017-05-15 21:10:07 [45806] [DEBUG] Closing connection. 
+2017-05-15 21:10:07 [45808] [DEBUG] Closing connection. 
+2017-05-15 21:10:07 [45810] [DEBUG] GET /consent
+2017-05-15 21:10:07 [45808] [DEBUG] GET /static/css/bootstrap.min.css
+2017-05-15 21:10:07 [45810] [DEBUG] GET /static/css/style.css
+2017-05-15 21:10:07 [45807] [DEBUG] GET /static/fonts/glyphicons-halflings-regular.woff
+2017-05-15 21:11:00 [45807] [DEBUG] GET /consent
+2017-05-15 21:11:00 [45810] [DEBUG] GET /static/css/style.css
+2017-05-15 21:11:00 [45808] [DEBUG] GET /static/css/bootstrap.min.css
+2017-05-15 21:11:00 [45807] [DEBUG] GET /static/fonts/glyphicons-halflings-regular.woff
+2017-05-15 21:11:02 [45808] [DEBUG] GET /exp
+2017-05-15 21:11:02,770 Accessing /exp: debugEGF0YS debugMKS3MH debugSRUD75 
+2017-05-15 21:11:02,779 given Counter({(0, 0): 0, (3, 0): 0, (2, 0): 0, (5, 0): 0, (1, 0): 0, (4, 0): 0}) chose (1, 0)
+2017-05-15 21:11:02 [45810] [DEBUG] GET /static/lib/jquery-min.js
+2017-05-15 21:11:02 [45806] [DEBUG] GET /static/lib/underscore-min.js
+2017-05-15 21:11:02 [45808] [DEBUG] GET /static/lib/d3.v3.min.js
+2017-05-15 21:11:02 [45807] [DEBUG] GET /static/lib/backbone-min.js
+2017-05-15 21:11:02 [45810] [DEBUG] GET /static/lib/showdown-min.js
+2017-05-15 21:11:02 [45807] [DEBUG] GET /static/lib/fabric.min.js
+2017-05-15 21:11:02 [45810] [DEBUG] GET /static/js/jsPsych/css/jspsych.css
+2017-05-15 21:11:02 [45806] [DEBUG] GET /static/js/jsPsych/jspsych.js
+2017-05-15 21:11:02 [45807] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-text.js
+2017-05-15 21:11:02 [45807] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-html.js
+2017-05-15 21:11:02 [45806] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-instructions.js
+2017-05-15 21:11:02 [45810] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-survey-multi-choice.js
+2017-05-15 21:11:02 [45807] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-button-response.js
+2017-05-15 21:11:02 [45806] [DEBUG] GET /static/js/jspsych-graph.js
+2017-05-15 21:11:02 [45808] [DEBUG] GET /static/js/jspsych-delay.js
+2017-05-15 21:11:02 [45807] [DEBUG] GET /static/js/gaussian.js
+2017-05-15 21:11:02 [45810] [DEBUG] GET /static/js/utils.js
+2017-05-15 21:11:02 [45806] [DEBUG] GET /static/lib/math.js
+2017-05-15 21:11:02 [45810] [DEBUG] GET /static/js/psiturk.js
+2017-05-15 21:11:02 [45807] [DEBUG] GET /static/js/pseudorewards.js
+2017-05-15 21:11:02 [45808] [DEBUG] GET /static/js/experiment.js
+2017-05-15 21:11:02 [45806] [DEBUG] GET /static/lib/underscore-min.map
+2017-05-15 21:11:02 [45807] [DEBUG] GET /static/lib/showdown.min.js.map
+2017-05-15 21:11:03 [45810] [DEBUG] GET /static/json/condition_1.json
+2017-05-15 21:11:03 [45808] [DEBUG] GET /static/json/ObjectLevelPRs.json
+2017-05-15 21:11:03 [45808] [DEBUG] GET /sync/debugSRUD75%3AdebugMKS3MH
+2017-05-15 21:11:03,296 GET /sync route with id: debugSRUD75:debugMKS3MH
+2017-05-15 21:11:03 [45808] [DEBUG] GET /static/images/plane.png
+2017-05-15 21:17:02 [45807] [DEBUG] Closing connection. 
+2017-05-15 21:17:02 [45806] [DEBUG] Closing connection. 
+2017-05-15 21:17:02 [45810] [DEBUG] Closing connection. 
+2017-05-15 21:17:02 [45810] [DEBUG] GET /ad
+2017-05-15 21:17:02 [45807] [DEBUG] GET /static/images/berkeley.png
+2017-05-15 21:17:02 [45808] [DEBUG] GET /static/css/bootstrap.min.css
+2017-05-15 21:17:04 [45806] [DEBUG] GET /consent
+2017-05-15 21:17:04 [45810] [DEBUG] GET /static/css/style.css
+2017-05-15 21:17:05 [45807] [DEBUG] GET /static/fonts/glyphicons-halflings-regular.woff
+2017-05-15 21:17:14 [45810] [DEBUG] GET /static/css/bootstrap.min.css
+2017-05-15 21:17:14 [45806] [DEBUG] GET /static/css/style.css
+2017-05-15 21:17:19 [45807] [DEBUG] GET /exp
+2017-05-15 21:17:19,205 Accessing /exp: debugD073VU debugF96WSN debugUHB3MD 
+2017-05-15 21:17:19,263 given Counter({(1, 0): 1, (0, 0): 0, (3, 0): 0, (2, 0): 0, (5, 0): 0, (4, 0): 0}) chose (2, 0)
+2017-05-15 21:17:19 [45807] [DEBUG] GET /static/lib/jquery-min.js
+2017-05-15 21:17:19 [45808] [DEBUG] GET /static/lib/underscore-min.js
+2017-05-15 21:17:19 [45806] [DEBUG] GET /static/lib/backbone-min.js
+2017-05-15 21:17:19 [45810] [DEBUG] GET /static/lib/d3.v3.min.js
+2017-05-15 21:17:19 [45806] [DEBUG] GET /static/lib/fabric.min.js
+2017-05-15 21:17:19 [45807] [DEBUG] GET /static/lib/showdown-min.js
+2017-05-15 21:17:19 [45810] [DEBUG] GET /static/js/jsPsych/css/jspsych.css
+2017-05-15 21:17:19 [45808] [DEBUG] GET /static/js/jsPsych/jspsych.js
+2017-05-15 21:17:19 [45806] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-text.js
+2017-05-15 21:17:19 [45807] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-html.js
+2017-05-15 21:17:19 [45810] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-instructions.js
+2017-05-15 21:17:19 [45808] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-survey-multi-choice.js
+2017-05-15 21:17:19 [45807] [DEBUG] GET /static/js/jspsych-graph.js
+2017-05-15 21:17:19 [45806] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-button-response.js
+2017-05-15 21:17:19 [45808] [DEBUG] GET /static/js/jspsych-delay.js
+2017-05-15 21:17:19 [45810] [DEBUG] GET /static/js/gaussian.js
+2017-05-15 21:17:19 [45806] [DEBUG] GET /static/lib/math.js
+2017-05-15 21:17:19 [45810] [DEBUG] GET /static/js/utils.js
+2017-05-15 21:17:20 [45810] [DEBUG] GET /static/js/psiturk.js
+2017-05-15 21:17:20 [45808] [DEBUG] GET /static/js/pseudorewards.js
+2017-05-15 21:17:20 [45806] [DEBUG] GET /static/js/experiment.js
+2017-05-15 21:17:20 [45810] [DEBUG] GET /static/lib/underscore-min.map
+2017-05-15 21:17:20 [45810] [DEBUG] GET /static/json/condition_1.json
+2017-05-15 21:17:20 [45806] [DEBUG] GET /static/lib/showdown.min.js.map
+2017-05-15 21:17:20 [45807] [DEBUG] GET /static/json/ObjectLevelPRs.json
+2017-05-15 21:17:20 [45810] [DEBUG] GET /sync/debugUHB3MD%3AdebugF96WSN
+2017-05-15 21:17:20,723 GET /sync route with id: debugUHB3MD:debugF96WSN
+2017-05-15 21:17:21 [45807] [DEBUG] GET /static/images/plane.png
+2017-05-15 21:31:47 [45810] [DEBUG] Closing connection. 
+2017-05-15 21:31:47 [45806] [DEBUG] Closing connection. 
+2017-05-15 21:31:47 [45810] [DEBUG] Closing connection. 
+2017-05-15 21:31:48 [45807] [DEBUG] GET /ad
+2017-05-15 21:31:48 [45810] [DEBUG] GET /static/css/bootstrap.min.css
+2017-05-15 21:31:48 [45808] [DEBUG] GET /static/images/berkeley.png
+2017-05-15 21:31:50 [45806] [DEBUG] GET /consent
+2017-05-15 21:31:50 [45807] [DEBUG] GET /static/css/style.css
+2017-05-15 21:31:50 [45810] [DEBUG] GET /static/fonts/glyphicons-halflings-regular.woff
+2017-05-15 21:32:04 [45807] [DEBUG] GET /exp
+2017-05-15 21:32:04,651 Accessing /exp: debug0QGKMT debugJR93XC debugQ0R2FS 
+2017-05-15 21:32:04,666 given Counter({(2, 0): 1, (1, 0): 1, (0, 0): 0, (3, 0): 0, (5, 0): 0, (4, 0): 0}) chose (5, 0)
+2017-05-15 21:32:04 [45806] [DEBUG] GET /static/lib/jquery-min.js
+2017-05-15 21:32:04 [45810] [DEBUG] GET /static/lib/underscore-min.js
+2017-05-15 21:32:04 [45807] [DEBUG] GET /static/lib/d3.v3.min.js
+2017-05-15 21:32:04 [45806] [DEBUG] GET /static/lib/fabric.min.js
+2017-05-15 21:32:04 [45810] [DEBUG] GET /static/lib/backbone-min.js
+2017-05-15 21:32:04 [45808] [DEBUG] GET /static/lib/showdown-min.js
+2017-05-15 21:32:04 [45807] [DEBUG] GET /static/css/bootstrap.min.css
+2017-05-15 21:32:04 [45810] [DEBUG] GET /static/css/style.css
+2017-05-15 21:32:04 [45808] [DEBUG] GET /static/js/jsPsych/css/jspsych.css
+2017-05-15 21:32:04 [45806] [DEBUG] GET /static/js/jsPsych/jspsych.js
+2017-05-15 21:32:04 [45807] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-text.js
+2017-05-15 21:32:04 [45808] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-instructions.js
+2017-05-15 21:32:04 [45807] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-survey-multi-choice.js
+2017-05-15 21:32:04 [45806] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-button-response.js
+2017-05-15 21:32:04 [45810] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-html.js
+2017-05-15 21:32:04 [45810] [DEBUG] GET /static/js/jspsych-delay.js
+2017-05-15 21:32:04 [45806] [DEBUG] GET /static/js/jspsych-graph.js
+2017-05-15 21:32:04 [45806] [DEBUG] GET /static/js/gaussian.js
+2017-05-15 21:32:04 [45808] [DEBUG] GET /static/lib/math.js
+2017-05-15 21:32:04 [45806] [DEBUG] GET /static/js/utils.js
+2017-05-15 21:32:04 [45807] [DEBUG] GET /static/js/psiturk.js
+2017-05-15 21:32:04 [45808] [DEBUG] GET /static/js/pseudorewards.js
+2017-05-15 21:32:04 [45810] [DEBUG] GET /static/js/experiment.js
+2017-05-15 21:32:04 [45807] [DEBUG] GET /static/lib/underscore-min.map
+2017-05-15 21:32:04 [45807] [DEBUG] GET /static/lib/showdown.min.js.map
+2017-05-15 21:32:05 [45806] [DEBUG] GET /static/json/condition_1.json
+2017-05-15 21:32:05 [45806] [DEBUG] GET /static/json/ObjectLevelPRs.json
+2017-05-15 21:32:05 [45807] [DEBUG] GET /sync/debugQ0R2FS%3AdebugJR93XC
+2017-05-15 21:32:05,061 GET /sync route with id: debugQ0R2FS:debugJR93XC
+2017-05-15 21:32:05 [45808] [DEBUG] GET /static/images/plane.png
+2017-05-15 23:03:02 [45803] [CRITICAL] WORKER TIMEOUT (pid:45808)
+2017-05-15 23:03:02 [45803] [CRITICAL] WORKER TIMEOUT (pid:45810)
+2017-05-15 23:03:02 [45803] [CRITICAL] WORKER TIMEOUT (pid:45806)
+2017-05-15 23:03:02 [45803] [CRITICAL] WORKER TIMEOUT (pid:45807)
+2017-05-15 23:03:02 [45806] [INFO] Worker exiting (pid: 45806)
+2017-05-15 23:03:02 [45808] [INFO] Worker exiting (pid: 45808)
+2017-05-15 23:03:02 [45807] [INFO] Worker exiting (pid: 45807)
+2017-05-15 23:03:02 [45810] [INFO] Worker exiting (pid: 45810)
+2017-05-15 23:03:02 [50301] [INFO] Booting worker with pid: 50301
+2017-05-15 23:03:02 [50302] [INFO] Booting worker with pid: 50302
+2017-05-15 23:03:02 [50303] [INFO] Booting worker with pid: 50303
+2017-05-15 23:03:02 [50304] [INFO] Booting worker with pid: 50304
+2017-05-15 23:03:03,625 /Library/Python/2.7/site-packages/psiturk/psiturk_js/psiturk.js
+2017-05-15 23:03:03,625 /Library/Python/2.7/site-packages/psiturk/psiturk_js/psiturk.js
+2017-05-15 23:03:03,625 /Library/Python/2.7/site-packages/psiturk/psiturk_js/psiturk.js
+2017-05-15 23:03:03,626 /Library/Python/2.7/site-packages/psiturk/psiturk_js/psiturk.js
+2017-05-16 08:30:56 [45803] [INFO] Handling signal: winch
+2017-05-16 08:30:56 [45803] [DEBUG] SIGWINCH ignored. Not daemonized
+2017-05-16 08:31:23 [50303] [DEBUG] Closing connection. 
+2017-05-16 08:31:23 [50302] [DEBUG] Closing connection. 
+2017-05-16 08:31:24 [50301] [DEBUG] GET /ad
+2017-05-16 08:31:24 [50303] [DEBUG] GET /static/css/bootstrap.min.css
+2017-05-16 08:31:24 [50304] [DEBUG] GET /static/images/berkeley.png
+2017-05-16 08:31:24 [50304] [DEBUG] Closing connection. 
+2017-05-16 08:31:25 [50302] [DEBUG] GET /consent
+2017-05-16 08:31:26 [50301] [DEBUG] GET /static/css/style.css
+2017-05-16 08:31:26 [50303] [DEBUG] GET /static/fonts/glyphicons-halflings-regular.woff
+2017-05-16 08:31:27 [50302] [DEBUG] GET /exp
+2017-05-16 08:31:27,722 Accessing /exp: debug8EBXBA debug3A2C3L debugGZSR41 
+2017-05-16 08:31:27,739 given Counter({(0, 0): 0, (3, 0): 0, (2, 0): 0, (5, 0): 0, (1, 0): 0, (4, 0): 0}) chose (5, 0)
+2017-05-16 08:31:27 [50302] [DEBUG] GET /static/lib/jquery-min.js
+2017-05-16 08:31:27 [50303] [DEBUG] GET /static/lib/backbone-min.js
+2017-05-16 08:31:27 [50304] [DEBUG] GET /static/lib/underscore-min.js
+2017-05-16 08:31:27 [50301] [DEBUG] GET /static/lib/d3.v3.min.js
+2017-05-16 08:31:27 [50303] [DEBUG] GET /static/lib/showdown-min.js
+2017-05-16 08:31:27 [50301] [DEBUG] GET /static/lib/fabric.min.js
+2017-05-16 08:31:27 [50304] [DEBUG] GET /static/js/jsPsych/css/jspsych.css
+2017-05-16 08:31:27 [50304] [DEBUG] GET /static/js/jsPsych/jspsych.js
+2017-05-16 08:31:27 [50303] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-text.js
+2017-05-16 08:31:27 [50302] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-html.js
+2017-05-16 08:31:27 [50304] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-instructions.js
+2017-05-16 08:31:27 [50302] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-survey-multi-choice.js
+2017-05-16 08:31:27 [50304] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-button-response.js
+2017-05-16 08:31:27 [50303] [DEBUG] GET /static/js/jspsych-graph.js
+2017-05-16 08:31:27 [50301] [DEBUG] GET /static/js/jspsych-delay.js
+2017-05-16 08:31:27 [50304] [DEBUG] GET /static/lib/math.js
+2017-05-16 08:31:27 [50302] [DEBUG] GET /static/js/gaussian.js
+2017-05-16 08:31:27 [50302] [DEBUG] GET /static/js/utils.js
+2017-05-16 08:31:27 [50303] [DEBUG] GET /static/js/psiturk.js
+2017-05-16 08:31:27 [50304] [DEBUG] GET /static/js/pseudorewards.js
+2017-05-16 08:31:27 [50301] [DEBUG] GET /static/js/experiment.js
+2017-05-16 08:31:28 [50302] [DEBUG] GET /static/json/condition_1.json
+2017-05-16 08:31:28 [50301] [DEBUG] GET /static/json/ObjectLevelPRs.json
+2017-05-16 08:31:28 [50301] [DEBUG] GET /sync/debugGZSR41%3Adebug3A2C3L
+2017-05-16 08:31:28,166 GET /sync route with id: debugGZSR41:debug3A2C3L
+2017-05-16 08:31:28 [50304] [DEBUG] GET /static/images/plane.png
+2017-05-16 08:31:55 [50304] [DEBUG] GET /static/css/bootstrap.min.css
+2017-05-16 08:31:55 [50301] [DEBUG] GET /static/css/style.css
+2017-05-16 08:31:55 [50303] [DEBUG] GET /static/js/jsPsych/css/jspsych.css
+2017-05-16 08:31:55 [50302] [DEBUG] GET /static/lib/underscore-min.map
+2017-05-16 08:31:55 [50301] [DEBUG] GET /static/lib/showdown.min.js.map
+2017-05-16 08:53:21 [50303] [DEBUG] GET /consent
+2017-05-16 08:53:21 [50302] [DEBUG] GET /static/css/bootstrap.min.css
+2017-05-16 08:53:21 [50303] [DEBUG] GET /static/css/style.css
+2017-05-16 08:53:21 [50304] [DEBUG] GET /static/fonts/glyphicons-halflings-regular.woff
+2017-05-16 08:53:23 [50302] [DEBUG] GET /exp
+2017-05-16 08:53:23,348 Accessing /exp: debug8EBXBA debug3A2C3L debugGZSR41 
+2017-05-16 08:53:23 [50302] [DEBUG] GET /static/lib/jquery-min.js
+2017-05-16 08:53:23 [50303] [DEBUG] GET /static/lib/backbone-min.js
+2017-05-16 08:53:23 [50301] [DEBUG] GET /static/lib/d3.v3.min.js
+2017-05-16 08:53:23 [50304] [DEBUG] GET /static/lib/underscore-min.js
+2017-05-16 08:53:23 [50302] [DEBUG] GET /static/lib/showdown-min.js
+2017-05-16 08:53:23 [50303] [DEBUG] GET /static/lib/fabric.min.js
+2017-05-16 08:53:23 [50301] [DEBUG] GET /static/js/jsPsych/css/jspsych.css
+2017-05-16 08:53:23 [50302] [DEBUG] GET /static/js/jsPsych/jspsych.js
+2017-05-16 08:53:23 [50304] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-text.js
+2017-05-16 08:53:23 [50303] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-html.js
+2017-05-16 08:53:23 [50301] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-instructions.js
+2017-05-16 08:53:23 [50302] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-survey-multi-choice.js
+2017-05-16 08:53:23 [50304] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-button-response.js
+2017-05-16 08:53:23 [50303] [DEBUG] GET /static/js/jspsych-graph.js
+2017-05-16 08:53:23 [50301] [DEBUG] GET /static/js/jspsych-delay.js
+2017-05-16 08:53:23 [50304] [DEBUG] GET /static/js/gaussian.js
+2017-05-16 08:53:23 [50303] [DEBUG] GET /static/lib/math.js
+2017-05-16 08:53:23 [50302] [DEBUG] GET /static/js/utils.js
+2017-05-16 08:53:23 [50301] [DEBUG] GET /static/js/psiturk.js
+2017-05-16 08:53:23 [50304] [DEBUG] GET /static/js/pseudorewards.js
+2017-05-16 08:53:23 [50302] [DEBUG] GET /static/js/experiment.js
+2017-05-16 08:53:23 [50303] [DEBUG] GET /static/json/condition_1.json
+2017-05-16 08:53:23 [50304] [DEBUG] GET /static/json/ObjectLevelPRs.json
+2017-05-16 08:53:23 [50303] [DEBUG] GET /sync/debugGZSR41%3Adebug3A2C3L
+2017-05-16 08:53:23,582 GET /sync route with id: debugGZSR41:debug3A2C3L
+2017-05-16 08:53:23 [50303] [DEBUG] GET /static/images/plane.png
+2017-05-16 08:53:36 [50302] [DEBUG] GET /static/css/bootstrap.min.css
+2017-05-16 08:53:36 [50303] [DEBUG] GET /static/css/style.css
+2017-05-16 08:53:36 [50301] [DEBUG] GET /static/js/jsPsych/css/jspsych.css
+2017-05-16 08:55:09 [50301] [DEBUG] GET /consent
+2017-05-16 08:55:09 [50301] [DEBUG] GET /static/css/bootstrap.min.css
+2017-05-16 08:55:09 [50302] [DEBUG] GET /static/css/style.css
+2017-05-16 08:55:09 [50302] [DEBUG] GET /static/fonts/glyphicons-halflings-regular.woff
+2017-05-16 08:55:10 [50303] [DEBUG] GET /exp
+2017-05-16 08:55:10,529 Accessing /exp: debug8EBXBA debug3A2C3L debugGZSR41 
+2017-05-16 08:55:10 [50303] [DEBUG] GET /static/lib/jquery-min.js
+2017-05-16 08:55:10 [50304] [DEBUG] GET /static/lib/underscore-min.js
+2017-05-16 08:55:10 [50301] [DEBUG] GET /static/lib/backbone-min.js
+2017-05-16 08:55:10 [50302] [DEBUG] GET /static/lib/d3.v3.min.js
+2017-05-16 08:55:10 [50303] [DEBUG] GET /static/lib/showdown-min.js
+2017-05-16 08:55:10 [50304] [DEBUG] GET /static/lib/fabric.min.js
+2017-05-16 08:55:10 [50301] [DEBUG] GET /static/js/jsPsych/css/jspsych.css
+2017-05-16 08:55:10 [50303] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-text.js
+2017-05-16 08:55:10 [50304] [DEBUG] GET /static/js/jsPsych/jspsych.js
+2017-05-16 08:55:10 [50304] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-html.js
+2017-05-16 08:55:10 [50301] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-instructions.js
+2017-05-16 08:55:10 [50303] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-survey-multi-choice.js
+2017-05-16 08:55:10 [50302] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-button-response.js
+2017-05-16 08:55:10 [50304] [DEBUG] GET /static/js/jspsych-graph.js
+2017-05-16 08:55:10 [50301] [DEBUG] GET /static/js/jspsych-delay.js
+2017-05-16 08:55:10 [50301] [DEBUG] GET /static/js/gaussian.js
+2017-05-16 08:55:10 [50304] [DEBUG] GET /static/lib/math.js
+2017-05-16 08:55:10 [50303] [DEBUG] GET /static/js/utils.js
+2017-05-16 08:55:10 [50302] [DEBUG] GET /static/js/psiturk.js
+2017-05-16 08:55:10 [50301] [DEBUG] GET /static/js/pseudorewards.js
+2017-05-16 08:55:10 [50304] [DEBUG] GET /static/js/experiment.js
+2017-05-16 08:55:10 [50304] [DEBUG] GET /static/json/condition_1.json
+2017-05-16 08:55:10 [50303] [DEBUG] GET /static/json/ObjectLevelPRs.json
+2017-05-16 08:55:10 [50302] [DEBUG] GET /sync/debugGZSR41%3Adebug3A2C3L
+2017-05-16 08:55:10,915 GET /sync route with id: debugGZSR41:debug3A2C3L
+2017-05-16 08:55:11 [50302] [DEBUG] GET /static/images/plane.png
+2017-05-16 08:55:26 [50301] [DEBUG] GET /static/css/bootstrap.min.css
+2017-05-16 08:55:26 [50303] [DEBUG] GET /static/css/style.css
+2017-05-16 08:55:26 [50302] [DEBUG] GET /static/js/jsPsych/css/jspsych.css
+2017-05-16 08:55:43 [50304] [DEBUG] GET /static/css/bootstrap.min.css
+2017-05-16 08:55:49 [50303] [DEBUG] GET /consent
+2017-05-16 08:55:49 [50304] [DEBUG] GET /static/css/style.css
+2017-05-16 08:55:49 [50303] [DEBUG] GET /static/fonts/glyphicons-halflings-regular.woff
+2017-05-16 08:55:53 [50303] [DEBUG] GET /static/css/bootstrap.min.css
+2017-05-16 08:55:57 [50301] [DEBUG] GET /exp
+2017-05-16 08:55:57,992 Accessing /exp: debug8EBXBA debug3A2C3L debugGZSR41 
+2017-05-16 08:55:58 [50301] [DEBUG] GET /static/lib/jquery-min.js
+2017-05-16 08:55:58 [50303] [DEBUG] GET /static/lib/underscore-min.js
+2017-05-16 08:55:58 [50302] [DEBUG] GET /static/lib/backbone-min.js
+2017-05-16 08:55:58 [50301] [DEBUG] GET /static/lib/showdown-min.js
+2017-05-16 08:55:58 [50304] [DEBUG] GET /static/lib/d3.v3.min.js
+2017-05-16 08:55:58 [50301] [DEBUG] GET /static/lib/fabric.min.js
+2017-05-16 08:55:58 [50303] [DEBUG] GET /static/js/jsPsych/css/jspsych.css
+2017-05-16 08:55:58 [50304] [DEBUG] GET /static/js/jsPsych/jspsych.js
+2017-05-16 08:55:58 [50303] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-text.js
+2017-05-16 08:55:58 [50302] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-instructions.js
+2017-05-16 08:55:58 [50301] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-html.js
+2017-05-16 08:55:58 [50304] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-survey-multi-choice.js
+2017-05-16 08:55:58 [50303] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-button-response.js
+2017-05-16 08:55:58 [50301] [DEBUG] GET /static/js/jspsych-graph.js
+2017-05-16 08:55:58 [50304] [DEBUG] GET /static/js/jspsych-delay.js
+2017-05-16 08:55:58 [50303] [DEBUG] GET /static/js/gaussian.js
+2017-05-16 08:55:58 [50302] [DEBUG] GET /static/lib/math.js
+2017-05-16 08:55:58 [50304] [DEBUG] GET /static/js/utils.js
+2017-05-16 08:55:58 [50301] [DEBUG] GET /static/js/psiturk.js
+2017-05-16 08:55:58 [50301] [DEBUG] GET /static/js/pseudorewards.js
+2017-05-16 08:55:58 [50304] [DEBUG] GET /static/js/experiment.js
+2017-05-16 08:55:58 [50302] [DEBUG] GET /static/lib/underscore-min.map
+2017-05-16 08:55:58 [50303] [DEBUG] GET /static/lib/showdown.min.js.map
+2017-05-16 08:55:58 [50303] [DEBUG] GET /static/json/condition_1.json
+2017-05-16 08:55:58 [50303] [DEBUG] GET /static/json/ObjectLevelPRs.json
+2017-05-16 08:55:58 [50303] [DEBUG] GET /sync/debugGZSR41%3Adebug3A2C3L
+2017-05-16 08:55:58,717 GET /sync route with id: debugGZSR41:debug3A2C3L
+2017-05-16 08:55:59 [50303] [DEBUG] GET /static/images/plane.png
+2017-05-16 09:17:27 [50304] [DEBUG] Closing connection. 
+2017-05-16 09:17:27 [50303] [DEBUG] Closing connection. 
+2017-05-16 09:17:28 [50304] [DEBUG] GET /ad
+2017-05-16 09:17:28 [50303] [DEBUG] GET /static/css/bootstrap.min.css
+2017-05-16 09:17:28 [50301] [DEBUG] GET /static/images/berkeley.png
+2017-05-16 09:17:28 [50301] [DEBUG] Closing connection. 
+2017-05-16 09:17:30 [50302] [DEBUG] GET /consent
+2017-05-16 09:17:30 [50304] [DEBUG] GET /static/css/style.css
+2017-05-16 09:17:30 [50303] [DEBUG] GET /static/fonts/glyphicons-halflings-regular.woff
+2017-05-16 09:17:32 [50301] [DEBUG] GET /exp
+2017-05-16 09:17:32,104 Accessing /exp: debug84NEFN debugQ3A1XR debug2YFUNF 
+2017-05-16 09:17:32,112 given Counter({(5, 0): 1, (0, 0): 0, (3, 0): 0, (2, 0): 0, (1, 0): 0, (4, 0): 0}) chose (2, 0)
+2017-05-16 09:17:32 [50301] [DEBUG] GET /static/lib/jquery-min.js
+2017-05-16 09:17:32 [50304] [DEBUG] GET /static/lib/underscore-min.js
+2017-05-16 09:17:32 [50302] [DEBUG] GET /static/lib/backbone-min.js
+2017-05-16 09:17:32 [50303] [DEBUG] GET /static/lib/d3.v3.min.js
+2017-05-16 09:17:32 [50304] [DEBUG] GET /static/lib/fabric.min.js
+2017-05-16 09:17:32 [50301] [DEBUG] GET /static/lib/showdown-min.js
+2017-05-16 09:17:32 [50302] [DEBUG] GET /static/js/jsPsych/css/jspsych.css
+2017-05-16 09:17:32 [50304] [DEBUG] GET /static/js/jsPsych/jspsych.js
+2017-05-16 09:17:32 [50301] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-text.js
+2017-05-16 09:17:32 [50303] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-html.js
+2017-05-16 09:17:32 [50302] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-instructions.js
+2017-05-16 09:17:32 [50304] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-survey-multi-choice.js
+2017-05-16 09:17:32 [50304] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-button-response.js
+2017-05-16 09:17:32 [50301] [DEBUG] GET /static/js/jspsych-graph.js
+2017-05-16 09:17:32 [50303] [DEBUG] GET /static/js/jspsych-delay.js
+2017-05-16 09:17:32 [50302] [DEBUG] GET /static/js/gaussian.js
+2017-05-16 09:17:32 [50304] [DEBUG] GET /static/lib/math.js
+2017-05-16 09:17:32 [50303] [DEBUG] GET /static/js/utils.js
+2017-05-16 09:17:32 [50304] [DEBUG] GET /static/js/psiturk.js
+2017-05-16 09:17:32 [50301] [DEBUG] GET /static/js/pseudorewards.js
+2017-05-16 09:17:32 [50303] [DEBUG] GET /static/js/experiment.js
+2017-05-16 09:17:32 [50303] [DEBUG] GET /static/json/condition_1.json
+2017-05-16 09:17:32 [50302] [DEBUG] GET /static/json/ObjectLevelPRs.json
+2017-05-16 09:17:32 [50303] [DEBUG] GET /sync/debug2YFUNF%3AdebugQ3A1XR
+2017-05-16 09:17:32,428 GET /sync route with id: debug2YFUNF:debugQ3A1XR
+2017-05-16 09:17:32 [50304] [DEBUG] GET /static/images/plane.png
+2017-05-16 09:17:40 [50301] [DEBUG] GET /static/css/bootstrap.min.css
+2017-05-16 09:17:40 [50302] [DEBUG] GET /static/css/style.css
+2017-05-16 09:17:40 [50301] [DEBUG] GET /static/lib/underscore-min.map
+2017-05-16 09:17:40 [50304] [DEBUG] GET /static/lib/showdown.min.js.map
+2017-05-16 09:18:27 [50301] [DEBUG] GET /consent
+2017-05-16 09:18:27 [50304] [DEBUG] GET /static/css/style.css
+2017-05-16 09:18:27 [50301] [DEBUG] GET /static/css/bootstrap.min.css
+2017-05-16 09:18:27 [50301] [DEBUG] GET /static/fonts/glyphicons-halflings-regular.woff
+2017-05-16 09:18:29 [50302] [DEBUG] GET /exp
+2017-05-16 09:18:29,466 Accessing /exp: debug84NEFN debugQ3A1XR debug2YFUNF 
+2017-05-16 09:18:29 [50302] [DEBUG] GET /static/lib/jquery-min.js
+2017-05-16 09:18:29 [50303] [DEBUG] GET /static/lib/underscore-min.js
+2017-05-16 09:18:29 [50301] [DEBUG] GET /static/lib/backbone-min.js
+2017-05-16 09:18:29 [50304] [DEBUG] GET /static/lib/d3.v3.min.js
+2017-05-16 09:18:29 [50302] [DEBUG] GET /static/lib/showdown-min.js
+2017-05-16 09:18:29 [50303] [DEBUG] GET /static/js/jsPsych/jspsych.js
+2017-05-16 09:18:29 [50304] [DEBUG] GET /static/js/jsPsych/css/jspsych.css
+2017-05-16 09:18:29 [50301] [DEBUG] GET /static/lib/fabric.min.js
+2017-05-16 09:18:29 [50302] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-text.js
+2017-05-16 09:18:29 [50303] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-html.js
+2017-05-16 09:18:29 [50304] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-instructions.js
+2017-05-16 09:18:29 [50301] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-survey-multi-choice.js
+2017-05-16 09:18:29 [50301] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-button-response.js
+2017-05-16 09:18:29 [50302] [DEBUG] GET /static/js/jspsych-graph.js
+2017-05-16 09:18:29 [50304] [DEBUG] GET /static/js/jspsych-delay.js
+2017-05-16 09:18:29 [50303] [DEBUG] GET /static/js/gaussian.js
+2017-05-16 09:18:29 [50301] [DEBUG] GET /static/lib/math.js
+2017-05-16 09:18:29 [50302] [DEBUG] GET /static/js/utils.js
+2017-05-16 09:18:29 [50301] [DEBUG] GET /static/js/psiturk.js
+2017-05-16 09:18:29 [50303] [DEBUG] GET /static/js/pseudorewards.js
+2017-05-16 09:18:29 [50304] [DEBUG] GET /static/js/experiment.js
+2017-05-16 09:18:29 [50303] [DEBUG] GET /static/json/condition_1.json
+2017-05-16 09:18:29 [50304] [DEBUG] GET /static/json/ObjectLevelPRs.json
+2017-05-16 09:18:29 [50302] [DEBUG] GET /sync/debug2YFUNF%3AdebugQ3A1XR
+2017-05-16 09:18:29,733 GET /sync route with id: debug2YFUNF:debugQ3A1XR
+2017-05-16 09:18:30 [50304] [DEBUG] GET /static/images/plane.png
+2017-05-16 09:18:45 [50301] [DEBUG] GET /static/css/bootstrap.min.css
+2017-05-16 09:18:45 [50302] [DEBUG] GET /static/css/style.css
+2017-05-16 09:18:45 [50304] [DEBUG] GET /static/js/jsPsych/css/jspsych.css
+2017-05-16 09:52:22 [50304] [DEBUG] Closing connection. 
+2017-05-16 09:52:22 [50303] [DEBUG] Closing connection. 
+2017-05-16 09:52:22 [50304] [DEBUG] GET /ad
+2017-05-16 09:52:22 [50302] [DEBUG] GET /static/css/bootstrap.min.css
+2017-05-16 09:52:22 [50301] [DEBUG] GET /static/images/berkeley.png
+2017-05-16 09:52:22 [50301] [DEBUG] Closing connection. 
+2017-05-16 09:52:24 [50303] [DEBUG] GET /consent
+2017-05-16 09:52:24 [50304] [DEBUG] GET /static/css/style.css
+2017-05-16 09:52:24 [50302] [DEBUG] GET /static/fonts/glyphicons-halflings-regular.woff
+2017-05-16 09:52:25 [50302] [DEBUG] GET /exp
+2017-05-16 09:52:25,791 Accessing /exp: debugPIH2LK debugJX7FEK debugAOLHBS 
+2017-05-16 09:52:25,829 given Counter({(2, 0): 1, (0, 0): 0, (3, 0): 0, (5, 0): 0, (1, 0): 0, (4, 0): 0}) chose (5, 0)
+2017-05-16 09:52:25 [50302] [DEBUG] GET /static/lib/jquery-min.js
+2017-05-16 09:52:25 [50304] [DEBUG] GET /static/lib/underscore-min.js
+2017-05-16 09:52:25 [50303] [DEBUG] GET /static/lib/backbone-min.js
+2017-05-16 09:52:25 [50301] [DEBUG] GET /static/lib/d3.v3.min.js
+2017-05-16 09:52:25 [50302] [DEBUG] GET /static/lib/showdown-min.js
+2017-05-16 09:52:25 [50304] [DEBUG] GET /static/js/jsPsych/css/jspsych.css
+2017-05-16 09:52:25 [50301] [DEBUG] GET /static/lib/fabric.min.js
+2017-05-16 09:52:25 [50302] [DEBUG] GET /static/js/jsPsych/jspsych.js
+2017-05-16 09:52:25 [50304] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-html.js
+2017-05-16 09:52:25 [50301] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-text.js
+2017-05-16 09:52:25 [50303] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-instructions.js
+2017-05-16 09:52:25 [50302] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-survey-multi-choice.js
+2017-05-16 09:52:25 [50303] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-button-response.js
+2017-05-16 09:52:25 [50304] [DEBUG] GET /static/js/jspsych-graph.js
+2017-05-16 09:52:25 [50301] [DEBUG] GET /static/js/gaussian.js
+2017-05-16 09:52:25 [50302] [DEBUG] GET /static/js/jspsych-delay.js
+2017-05-16 09:52:25 [50303] [DEBUG] GET /static/lib/math.js
+2017-05-16 09:52:25 [50302] [DEBUG] GET /static/js/psiturk.js
+2017-05-16 09:52:25 [50304] [DEBUG] GET /static/js/utils.js
+2017-05-16 09:52:26 [50303] [DEBUG] GET /static/js/pseudorewards.js
+2017-05-16 09:52:26 [50301] [DEBUG] GET /static/js/experiment.js
+2017-05-16 09:52:26 [50302] [DEBUG] GET /static/json/condition_1.json
+2017-05-16 09:52:26 [50301] [DEBUG] GET /static/json/ObjectLevelPRs.json
+2017-05-16 09:52:26 [50303] [DEBUG] GET /sync/debugAOLHBS%3AdebugJX7FEK
+2017-05-16 09:52:26,425 GET /sync route with id: debugAOLHBS:debugJX7FEK
+2017-05-16 09:52:26 [50302] [DEBUG] GET /static/images/plane.png
+2017-05-16 16:41:45 [50301] [DEBUG] Closing connection. 
+2017-05-16 16:41:45 [50302] [DEBUG] Closing connection. 
+2017-05-16 16:41:45 [50302] [DEBUG] GET /ad
+2017-05-16 16:41:45 [50301] [DEBUG] GET /static/images/berkeley.png
+2017-05-16 16:41:45 [50304] [DEBUG] GET /static/css/bootstrap.min.css
+2017-05-16 16:41:45 [50304] [DEBUG] Closing connection. 
+2017-05-16 16:41:47 [50303] [DEBUG] GET /consent
+2017-05-16 16:41:47 [50302] [DEBUG] GET /static/css/style.css
+2017-05-16 16:41:47 [50301] [DEBUG] GET /static/fonts/glyphicons-halflings-regular.woff
+2017-05-16 16:41:49 [50303] [DEBUG] GET /exp
+2017-05-16 16:41:49,752 Accessing /exp: debugTC53LC debugJ8XJCH debug5RVWTC 
+2017-05-16 16:41:49,772 given Counter({(0, 0): 0, (3, 0): 0, (2, 0): 0, (5, 0): 0, (1, 0): 0, (4, 0): 0}) chose (4, 0)
+2017-05-16 16:41:49 [50303] [DEBUG] GET /static/lib/jquery-min.js
+2017-05-16 16:41:49 [50301] [DEBUG] GET /static/lib/d3.v3.min.js
+2017-05-16 16:41:49 [50304] [DEBUG] GET /static/lib/showdown-min.js
+2017-05-16 16:41:49 [50302] [DEBUG] GET /static/lib/underscore-min.js
+2017-05-16 16:41:49 [50301] [DEBUG] GET /static/lib/fabric.min.js
+2017-05-16 16:41:49 [50304] [DEBUG] GET /static/lib/backbone-min.js
+2017-05-16 16:41:49 [50302] [DEBUG] GET /static/js/jsPsych/css/jspsych.css
+2017-05-16 16:41:49 [50301] [DEBUG] GET /static/js/jsPsych/jspsych.js
+2017-05-16 16:41:49 [50304] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-text.js
+2017-05-16 16:41:49 [50303] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-html.js
+2017-05-16 16:41:49 [50301] [DEBUG] GET /static/js/jspsych-graph.js
+2017-05-16 16:41:49 [50302] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-button-response.js
+2017-05-16 16:41:49 [50304] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-instructions.js
+2017-05-16 16:41:49 [50301] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-survey-multi-choice.js
+2017-05-16 16:41:49 [50303] [DEBUG] GET /static/js/gaussian.js
+2017-05-16 16:41:50 [50304] [DEBUG] GET /static/lib/math.js
+2017-05-16 16:41:50 [50303] [DEBUG] GET /static/js/jspsych-delay.js
+2017-05-16 16:41:50 [50301] [DEBUG] GET /static/js/psiturk.js
+2017-05-16 16:41:50 [50302] [DEBUG] GET /static/js/utils.js
+2017-05-16 16:41:50 [50304] [DEBUG] GET /static/js/pseudorewards.js
+2017-05-16 16:41:50 [50304] [DEBUG] GET /static/js/experiment.js
+2017-05-16 16:41:50 [50304] [DEBUG] GET /static/json/condition_1.json
+2017-05-16 16:41:50 [50302] [DEBUG] GET /static/json/ObjectLevelPRs.json
+2017-05-16 16:41:50 [50304] [DEBUG] GET /sync/debug5RVWTC%3AdebugJ8XJCH
+2017-05-16 16:41:50,815 GET /sync route with id: debug5RVWTC:debugJ8XJCH
+2017-05-16 16:41:51 [50304] [DEBUG] GET /static/images/plane.png
+2017-05-16 16:44:53 [50301] [DEBUG] GET /static/css/bootstrap.min.css
+2017-05-16 16:44:53 [50303] [DEBUG] GET /static/js/jsPsych/css/jspsych.css
+2017-05-16 16:44:53 [50302] [DEBUG] GET /static/css/style.css
+2017-05-16 16:44:53 [50301] [DEBUG] GET /static/lib/underscore-min.map
+2017-05-16 16:44:53 [50301] [DEBUG] GET /static/lib/showdown.min.js.map
+2017-05-16 16:58:04 [50303] [DEBUG] GET /consent
+2017-05-16 16:58:04 [50302] [DEBUG] GET /static/css/style.css
+2017-05-16 16:58:04 [50303] [DEBUG] GET /static/css/bootstrap.min.css
+2017-05-16 16:58:04 [50302] [DEBUG] GET /static/fonts/glyphicons-halflings-regular.woff
+2017-05-16 16:58:06 [50301] [DEBUG] GET /exp
+2017-05-16 16:58:06,518 Accessing /exp: debugTC53LC debugJ8XJCH debug5RVWTC 
+2017-05-16 16:58:06 [50301] [DEBUG] GET /static/lib/jquery-min.js
+2017-05-16 16:58:06 [50303] [DEBUG] GET /static/lib/underscore-min.js
+2017-05-16 16:58:06 [50304] [DEBUG] GET /static/lib/backbone-min.js
+2017-05-16 16:58:06 [50302] [DEBUG] GET /static/lib/d3.v3.min.js
+2017-05-16 16:58:06 [50301] [DEBUG] GET /static/lib/showdown-min.js
+2017-05-16 16:58:06 [50303] [DEBUG] GET /static/lib/fabric.min.js
+2017-05-16 16:58:06 [50302] [DEBUG] GET /static/js/jsPsych/css/jspsych.css
+2017-05-16 16:58:06 [50301] [DEBUG] GET /static/js/jsPsych/jspsych.js
+2017-05-16 16:58:06 [50303] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-text.js
+2017-05-16 16:58:06 [50304] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-html.js
+2017-05-16 16:58:06 [50301] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-instructions.js
+2017-05-16 16:58:06 [50302] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-survey-multi-choice.js
+2017-05-16 16:58:06 [50302] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-button-response.js
+2017-05-16 16:58:06 [50303] [DEBUG] GET /static/js/jspsych-delay.js
+2017-05-16 16:58:06 [50301] [DEBUG] GET /static/js/jspsych-graph.js
+2017-05-16 16:58:06 [50304] [DEBUG] GET /static/js/gaussian.js
+2017-05-16 16:58:06 [50303] [DEBUG] GET /static/lib/math.js
+2017-05-16 16:58:06 [50301] [DEBUG] GET /static/js/utils.js
+2017-05-16 16:58:06 [50303] [DEBUG] GET /static/js/psiturk.js
+2017-05-16 16:58:06 [50304] [DEBUG] GET /static/js/pseudorewards.js
+2017-05-16 16:58:06 [50301] [DEBUG] GET /static/js/experiment.js
+2017-05-16 16:58:06 [50304] [DEBUG] GET /static/json/condition_1.json
+2017-05-16 16:58:06 [50304] [DEBUG] GET /static/json/ObjectLevelPRs.json
+2017-05-16 16:58:06 [50302] [DEBUG] GET /sync/debug5RVWTC%3AdebugJ8XJCH
+2017-05-16 16:58:06,854 GET /sync route with id: debug5RVWTC:debugJ8XJCH
+2017-05-16 16:58:07 [50304] [DEBUG] GET /static/images/plane.png
+2017-05-16 17:42:18 [50304] [DEBUG] Closing connection. 
+2017-05-16 17:42:18 [50301] [DEBUG] Closing connection. 
+2017-05-16 17:42:19 [50303] [DEBUG] GET /ad
+2017-05-16 17:42:19 [50302] [DEBUG] GET /static/images/berkeley.png
+2017-05-16 17:42:19 [50301] [DEBUG] GET /static/css/bootstrap.min.css
+2017-05-16 17:42:19 [50302] [DEBUG] Closing connection. 
+2017-05-16 17:42:22 [50304] [DEBUG] GET /consent
+2017-05-16 17:42:22 [50303] [DEBUG] GET /static/css/style.css
+2017-05-16 17:42:22 [50301] [DEBUG] GET /static/fonts/glyphicons-halflings-regular.woff
+2017-05-16 17:42:23 [50302] [DEBUG] GET /exp
+2017-05-16 17:42:23,973 Accessing /exp: debugSMIQVM debug9RJ8NW debugUMH6SP 
+2017-05-16 17:42:23,979 given Counter({(0, 0): 0, (3, 0): 0, (2, 0): 0, (5, 0): 0, (1, 0): 0, (4, 0): 0}) chose (3, 0)
+2017-05-16 17:42:24 [50301] [DEBUG] GET /static/lib/jquery-min.js
+2017-05-16 17:42:24 [50304] [DEBUG] GET /static/lib/underscore-min.js
+2017-05-16 17:42:24 [50303] [DEBUG] GET /static/lib/backbone-min.js
+2017-05-16 17:42:24 [50301] [DEBUG] GET /static/lib/showdown-min.js
+2017-05-16 17:42:24 [50304] [DEBUG] GET /static/lib/fabric.min.js
+2017-05-16 17:42:24 [50302] [DEBUG] GET /static/lib/d3.v3.min.js
+2017-05-16 17:42:24 [50303] [DEBUG] GET /static/js/jsPsych/css/jspsych.css
+2017-05-16 17:42:24 [50301] [DEBUG] GET /static/js/jsPsych/jspsych.js
+2017-05-16 17:42:24 [50304] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-text.js
+2017-05-16 17:42:24 [50303] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-html.js
+2017-05-16 17:42:24 [50303] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-instructions.js
+2017-05-16 17:42:24 [50304] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-survey-multi-choice.js
+2017-05-16 17:42:24 [50303] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-button-response.js
+2017-05-16 17:42:24 [50301] [DEBUG] GET /static/js/jspsych-graph.js
+2017-05-16 17:42:24 [50302] [DEBUG] GET /static/js/jspsych-delay.js
+2017-05-16 17:42:24 [50303] [DEBUG] GET /static/js/gaussian.js
+2017-05-16 17:42:24 [50301] [DEBUG] GET /static/lib/math.js
+2017-05-16 17:42:24 [50302] [DEBUG] GET /static/js/utils.js
+2017-05-16 17:42:24 [50304] [DEBUG] GET /static/js/psiturk.js
+2017-05-16 17:42:24 [50304] [DEBUG] GET /static/js/pseudorewards.js
+2017-05-16 17:42:24 [50304] [DEBUG] GET /static/js/experiment.js
+2017-05-16 17:42:24 [50303] [DEBUG] GET /static/json/condition_1.json
+2017-05-16 17:42:24 [50303] [DEBUG] GET /static/json/ObjectLevelPRs.json
+2017-05-16 17:42:24 [50303] [DEBUG] GET /sync/debugUMH6SP%3Adebug9RJ8NW
+2017-05-16 17:42:24,420 GET /sync route with id: debugUMH6SP:debug9RJ8NW
+2017-05-16 17:42:24 [50302] [DEBUG] GET /static/images/plane.png
+2017-05-16 18:37:31 [50303] [DEBUG] Closing connection. 
+2017-05-16 18:37:31 [50302] [DEBUG] Closing connection. 
+2017-05-16 18:37:40 [45803] [INFO] Handling signal: winch
+2017-05-16 18:37:40 [45803] [DEBUG] SIGWINCH ignored. Not daemonized
+2017-05-16 18:37:40 [45803] [INFO] Handling signal: winch
+2017-05-16 18:37:40 [45803] [DEBUG] SIGWINCH ignored. Not daemonized
+2017-05-16 18:37:40 [45803] [INFO] Handling signal: winch
+2017-05-16 18:37:40 [45803] [DEBUG] SIGWINCH ignored. Not daemonized
+2017-05-16 18:37:47 [50301] [DEBUG] GET /ad
+2017-05-16 18:37:47 [50302] [DEBUG] GET /static/css/bootstrap.min.css
+2017-05-16 18:37:47 [50303] [DEBUG] GET /static/images/berkeley.png
+2017-05-16 18:37:47 [50303] [DEBUG] Closing connection. 
+2017-05-16 18:37:47 [50303] [DEBUG] Closing connection. 
+2017-05-16 18:37:48 [50304] [DEBUG] GET /consent
+2017-05-16 18:37:48 [50301] [DEBUG] GET /static/css/style.css
+2017-05-16 18:37:48 [50302] [DEBUG] GET /static/fonts/glyphicons-halflings-regular.woff
+2017-05-16 18:37:51 [50304] [DEBUG] GET /exp
+2017-05-16 18:37:51,303 Accessing /exp: debug41JA8M debugJR3UFE debugKUEU3U 
+2017-05-16 18:37:51,313 given Counter({(3, 0): 1, (0, 0): 0, (2, 0): 0, (5, 0): 0, (1, 0): 0, (4, 0): 0}) chose (1, 0)
+2017-05-16 18:37:51 [50304] [DEBUG] GET /static/lib/jquery-min.js
+2017-05-16 18:37:51 [50301] [DEBUG] GET /static/lib/underscore-min.js
+2017-05-16 18:37:51 [50303] [DEBUG] GET /static/lib/backbone-min.js
+2017-05-16 18:37:51 [50302] [DEBUG] GET /static/lib/d3.v3.min.js
+2017-05-16 18:37:51 [50304] [DEBUG] GET /static/lib/showdown-min.js
+2017-05-16 18:37:51 [50301] [DEBUG] GET /static/lib/fabric.min.js
+2017-05-16 18:37:51 [50303] [DEBUG] GET /static/js/jsPsych/css/jspsych.css
+2017-05-16 18:37:51 [50302] [DEBUG] GET /static/js/jsPsych/jspsych.js
+2017-05-16 18:37:51 [50304] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-text.js
+2017-05-16 18:37:51 [50301] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-html.js
+2017-05-16 18:37:51 [50304] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-instructions.js
+2017-05-16 18:37:51 [50301] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-survey-multi-choice.js
+2017-05-16 18:37:51 [50303] [DEBUG] GET /static/js/jsPsych/plugins/jspsych-button-response.js
+2017-05-16 18:37:51 [50302] [DEBUG] GET /static/js/jspsych-graph.js
+2017-05-16 18:37:51 [50304] [DEBUG] GET /static/js/jspsych-delay.js
+2017-05-16 18:37:51 [50303] [DEBUG] GET /static/js/gaussian.js
+2017-05-16 18:37:51 [50302] [DEBUG] GET /static/js/utils.js
+2017-05-16 18:37:51 [50303] [DEBUG] GET /static/lib/math.js
+2017-05-16 18:37:51 [50304] [DEBUG] GET /static/js/psiturk.js
+2017-05-16 18:37:51 [50301] [DEBUG] GET /static/js/pseudorewards.js
+2017-05-16 18:37:51 [50303] [DEBUG] GET /static/js/experiment.js
+2017-05-16 18:37:51 [50302] [DEBUG] GET /static/json/condition_1.json
+2017-05-16 18:37:51 [50304] [DEBUG] GET /static/json/ObjectLevelPRs.json
+2017-05-16 18:37:51 [50304] [DEBUG] GET /sync/debugKUEU3U%3AdebugJR3UFE
+2017-05-16 18:37:51,770 GET /sync route with id: debugKUEU3U:debugJR3UFE
+2017-05-16 18:37:52 [50301] [DEBUG] GET /static/images/plane.png
+2017-05-16 18:38:10 [50303] [DEBUG] GET /static/css/bootstrap.min.css
+2017-05-16 18:38:10 [50304] [DEBUG] GET /static/css/style.css
+2017-05-16 18:38:10 [50302] [DEBUG] GET /static/js/jsPsych/css/jspsych.css
+2017-05-16 18:38:10 [50304] [DEBUG] GET /static/lib/underscore-min.map
+2017-05-16 18:38:10 [50301] [DEBUG] GET /static/lib/showdown.min.js.map

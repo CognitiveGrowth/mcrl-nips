@@ -1,24 +1,30 @@
 classdef generalMDP < MDP
     
     properties
-        features_per_a;
-        action_features;
+        action_features = [];
         rewardCorrect = 1;
         rewardIncorrect = 0;
-        cost;
+        cost=0.001;
         discount = 1;
+        h;
+        nr_features;
         nr_arms;
     end
     methods
-        function mdp=generalMDP(nr_arms,gamma)
+        function mdp=generalMDP(nr_arms,gamma,nr_features,cost,h)
+            
+            if not(exist('cost','var'))
+                cost=0.001;
+            end
+            mdp.h = h;
             mdp.nr_arms=nr_arms;
-            mdp.cost = 1/100;
+            mdp.cost = cost;
             mdp.nr_actions=nr_arms+1; 
             mdp.actions = 1:nr_arms+1;
             mdp.gamma=gamma;
+            mdp.nr_features = nr_features;
             mdp.actions=1:mdp.nr_actions;
-            mdp.features_per_a = 6;
-            mdp.action_features= 1:nr_arms*mdp.features_per_a+8;
+            mdp.action_features= 1:nr_features;
         end
         
         function [s,mdp]=sampleS0(mdp)
@@ -26,12 +32,12 @@ classdef generalMDP < MDP
         end
         
         function [s0,mdp]=newEpisode(mdp)
-            mdp=generalMDP(mdp.nr_arms,mdp.gamma);
+            mdp=generalMDP(mdp.nr_arms,mdp.gamma,mdp.nr_features,mdp.cost,mdp.h);
             s0=mdp.sampleS0();
         end
         
         function true_or_false=isTerminalState(mdp,s)
-            true_or_false=s(1)+s(2)>7 || s(1) == -1;
+            true_or_false=sum(s(:))>2*mdp.nr_arms+mdp.h || s(1) == -1;
         end
         
         function ER=expectedReward(mdp,s,a)
@@ -91,8 +97,8 @@ classdef generalMDP < MDP
             actions=1:mdp.nr_actions;
         end
         
-        function [action_features]=extractActionFeatures(mdp,state,action)
-            action_features=feature_extractor(state,action,mdp);
+        function [action_features]=extractActionFeatures(mdp,state)
+            action_features=feature_extractor(state,action,mdp,selected_features);
         end
                 
     end

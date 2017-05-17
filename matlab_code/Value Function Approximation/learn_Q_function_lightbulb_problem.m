@@ -5,6 +5,7 @@ clear,close all,clc
 addpath('../MatlabTools/') %change to your directory for MatlabTools
 addpath('../metaMDP/')
 addpath('../Supervised/')
+addpath('../')
 
 
 load ../../results/lightbulb_fit.mat
