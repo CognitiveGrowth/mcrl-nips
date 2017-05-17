@@ -6,7 +6,7 @@ Fred Callaway
 
 Demonstrates the jspsych-mdp plugin
  */
-var DEBUG, PARAMS, blocks, psiturk,
+var DEBUG, PARAMS, blocks, condition, psiturk,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
 
@@ -16,10 +16,7 @@ console.log(condition);
 
 if (DEBUG) {
   console.log("X X X X X X X X X X X X X X X X X\n X X X X X DEBUG  MODE X X X X X\nX X X X X X X X X X X X X X X X X");
-<<<<<<< HEAD
-=======
   condition = 5;
->>>>>>> d4c59fe8fd45d84f2d2237264c1a2208cfc48058
 } else {
   console.log("# =============================== #\n# ========= NORMAL MODE ========= #\n# =============================== #");
 }
