@@ -617,13 +617,13 @@ function predictQValue(state,computation){
     feature_weights = null;
     switch(PARAMS.info_cost){
         case 0.01:
-            feature_weights = {VPI: 0.2560, VOC1: 0.6988, ER: 0.1766};
+            feature_weights = {VPI: 1.1261, VOC1: 1.0934, ER: 1.0142};
             break;
         case 1.6:
-            feature_weights = {VPI: 0.1006, VOC1: 0.5202, ER: 0.1686};
+            feature_weights = {VPI: 0.1852, VOC1: 0.3436, ER: 0.9455} //{VPI: 0.3199, VOC1: 0.3363, ER: 0.9178};//{VPI: 1.0734, VOC1: 0.0309, ER: 0.5921};
             break;
         case 2.8:
-            feature_weights = {VPI: -1.2980, VOC1: 0.3910, ER: 0.3197};
+            feature_weights = {VPI: -0.5920, VOC1: -0.1227, ER: 0.8685};
             break;
 
     console.log('weights', feature_weights)
@@ -655,7 +655,7 @@ function computeExpectedRewardOfActing(state){
 function computeMyopicVOC(state,c){
      
     if (c.is_click)  {
-        if (isNaN(state.observations[c.cell]) && c.cell>1){
+        if ((isNaN(state.observations[c.cell]) || state.observations[c.cell]==null)  && c.cell>1){
 
             if (_.contains(getDownStreamStates(state),c.cell)){
                 locations=getLocations(0)
@@ -770,7 +770,7 @@ else{
     ub=meta_MDP.mean_payoff+3*meta_MDP.std_payoff;
     delta_x=meta_MDP.std_payoff/20.0;
     
-    VOC=integral(lb,ub,delta_x,function(x){return normpdf(x,meta_MDP.mean_payoff,meta_MDP.std_payoff)*_.max([0, (mu_prior[a-1]-E_max+ETruncatedNormal(meta_MDP.mean_payoff,meta_MDP.std_payoff,x,meta_MDP.mean_payoff+5*meta_MDP.std_payoff))-mu_alpha])})-meta_MDP.cost_per_click;                                
+    VOC=integral(lb,ub,delta_x,function(x){return normPDF(x,meta_MDP.mean_payoff,meta_MDP.std_payoff)*_.max([0, (mu_prior[a-1]-E_max+ETruncatedNormal(meta_MDP.mean_payoff,meta_MDP.std_payoff,x,meta_MDP.mean_payoff+5*meta_MDP.std_payoff))-mu_alpha])})-meta_MDP.cost_per_click;                                
 }
 
 return VOC
@@ -825,11 +825,20 @@ if (state.mu_Q[state.s-1]==null)
     
 if (metalevel_action.cell==0)
     return 0
+
+if (state.mu_Q[state.s-1].length<=1){
+    return 0 //no choice --> no way that new information can change the decision
+}
     
 //sort mu_Q values in descending order
 mu_sorted = state.mu_Q[state.s-1].slice(0).sort(function(a, b){return b - a})
 max_val = mu_sorted[0]
-secondbest_val=mu_sorted[1]
+if (mu_sorted.length>=2){
+    secondbest_val=mu_sorted[1]
+}
+else{
+    secondbest_val=-Infinity
+}
 
 locations=getLocations(0);
 path_to_cell=locations[metalevel_action.cell].path

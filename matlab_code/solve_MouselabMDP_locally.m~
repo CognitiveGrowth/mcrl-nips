@@ -1,8 +1,8 @@
-function solve_MouselabMDP_SAVIO(c,init,continue_previous_run)
+function solve_MouselabMDP_locally(c,init,continue_previous_run)
 
 rng('shuffle')
 
-addpath('/global/home/users/flieder/matlab_code/MatlabTools/')
+addpath('MatlabTools/')
 %create meta-level MDP
 
 add_pseudorewards=false;

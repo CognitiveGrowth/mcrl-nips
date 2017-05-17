@@ -302,6 +302,71 @@ end
 %full-observation policy ($13.4 \pm 0.04$ vs. 16 inspections per trial, Z=-65.38, p=<0.0001).
 
 mean(avg_nr_observations.BSARSAQ(1:3))
+
+%% 
+load BO_c160n25.mat
+
+w_policy=[0.6,0.9,1]';
+glm_policy=BayesianGLM(3);
+glm_policy.sigma=0.0001;
+glm_policy.mu_n=w_policy;
+glm_policy.mu_0=w_policy;
+nr_episodes=1000;
+
+addpath([pwd,'/MatlabTools/'])
+%create meta-level MDP
+
+add_pseudorewards=false;
+pseudoreward_type='none';
+
+mean_payoff=4.5;
+std_payoff=10.6;
+
+load('MouselabMDPExperiment_normalized')
+
+actions_by_state{1}=[];
+actions_by_state{2}=[1];
+actions_by_state{3}=[2];
+actions_by_state{4}=[3];
+actions_by_state{5}=[4];
+actions_by_state{6}=[1,1];
+actions_by_state{7}=[2,2];
+actions_by_state{8}=[3,3];
+actions_by_state{9}=[4,4];
+actions_by_state{10}=[1,1,2];
+actions_by_state{11}=[1,1,4];
+actions_by_state{12}=[2,2,3];
+actions_by_state{13}=[2,2,4];
+actions_by_state{14}=[3,3,2];
+actions_by_state{15}=[3,3,4];
+actions_by_state{16}=[4,4,3];
+actions_by_state{17}=[4,4,1];
+for e=1:numel(experiment)
+    experiment(e).actions_by_state=actions_by_state;
+    experiment(e).hallway_states=2:9;
+    experiment(e).leafs=10:17;
+    experiment(e).parent_by_state=[1,1,1,1,1,2,3,4,5,6,6,7,7,8,8,9,9];
+end
+
+costs=[0.05,0.10,0.20,0.40,0.80,1.60];
+
+c=6;
+
+meta_MDP=MouselabMDPMetaMDPNIPS(add_pseudorewards,pseudoreward_type,mean_payoff,std_payoff,experiment);
+meta_MDP.cost_per_click=costs(c);
+
+feature_extractor=@(s,c,meta_MDP) meta_MDP.extractStateActionFeatures(s,c);
+
+[glm_Q,MSE,R_total]=BayesianValueFunctionRegression(meta_MDP,feature_extractor,nr_episodes,glm_policy)
+
+figure()
+bar(glm_Q.mu_n)
+set(gca,'XTickLabel',{'VPI','VOC_1','E[R|act,b]'},'FontSize',16)
+
+figure()
+plot(smooth(MSE,250))
+
+%%
 sqrt(sum(sem_nr_observations.BSARSAQ(1:3).^2)/9)
 Z=(mean(avg_nr_observations.BSARSAQ(1:3))-16)/sqrt(sum(sem_nr_observations.BSARSAQ(1:3).^2)/9)
 p=normcdf(Z)
