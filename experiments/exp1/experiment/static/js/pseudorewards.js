@@ -184,7 +184,7 @@ function computeDelay(initial_state,actions){
     delay=-meta_MDP.delay_per_point*total_PR
     console.log('delay', total_PR, delay)
     
-    // delay = delay*2
+    // delay = delay*10
     
     return delay
     

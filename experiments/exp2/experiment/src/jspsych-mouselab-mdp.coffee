@@ -14,7 +14,7 @@ jsPsych.plugins['mouselab-mdp'] = do ->
   PRINT = (args...) -> console.log args...
   NULL = (args...) -> null
   LOG_INFO = PRINT
-  LOG_DEBUG = PRINT
+  LOG_DEBUG = NULL
 
   # a scaling parameter, determines size of drawn objects
   SIZE = undefined
@@ -101,7 +101,8 @@ jsPsych.plugins['mouselab-mdp'] = do ->
         @edgeLabels='reward'  # object mapping from edge names (s0 + '__' + s1) to labels
         @edgeDisplay='always'  # one of 'never', 'hover', 'click', 'always'
         @edgeClickCost=0  # subtracted from score every time an edge is clicked
-
+        @trialID=null
+        @minTime = (if DEBUG then 5 else 45)
         
         @keys=KEYS  # mapping from actions to keycodes
         @trialIndex=TRIAL_INDEX  # number of trial (starts from 1)
@@ -119,6 +120,7 @@ jsPsych.plugins['mouselab-mdp'] = do ->
 
       @invKeys = _.invert @keys
       @data =
+        trialID: @trialID
         trialIndex: @trialIndex
         score: 0
         path: []
@@ -147,10 +149,14 @@ jsPsych.plugins['mouselab-mdp'] = do ->
         class: 'mouselab-header'
         html: leftMessage).appendTo @display
 
+      # @centerMessage = $('<div>',
+      #   id: 'mouselab-msg-center'
+      #   class: 'mouselab-header'
+      #   html: centerMessage).appendTo @display
       @centerMessage = $('<div>',
         id: 'mouselab-msg-center'
         class: 'mouselab-header'
-        html: centerMessage).appendTo @display
+        html: 'Time: <span id=graph-time/>').appendTo @display
 
       @rightMessage = $('<div>',
         id: 'mouselab-msg-right',
@@ -170,6 +176,15 @@ jsPsych.plugins['mouselab-mdp'] = do ->
       mdp = this
       LOG_INFO 'new MouselabMDP', this
 
+      # feedback element
+      $('#jspsych-target').append """
+      <div id="graph-feedback" class="modal">
+        <div id="graph-feedback-content" class="modal-content">
+          <h3>Default</h3>
+        </div>
+      </div>
+      """
+
 
     # ---------- Responding to user input ---------- #
 
@@ -180,6 +195,7 @@ jsPsych.plugins['mouselab-mdp'] = do ->
       @data.actionTimes.push (Date.now() - @initTime)
 
       [r, s1] = @graph[s0][a]
+      # [r, s1] = @getOutcome s0, a
       LOG_DEBUG "#{s0}, #{a} -> #{r}, #{s1}"
 
       s1g = @states[s1]
@@ -194,13 +210,13 @@ jsPsych.plugins['mouselab-mdp'] = do ->
     clickState: (g, s) =>
       LOG_DEBUG "clickState #{s}"
       if @stateLabels and @stateDisplay is 'click' and not g.label.text
-        g.setLabel @stateLabels[s]
+        g.setLabel (@getStateLabel s)
         @recordQuery 'click', 'state', s
 
     mouseoverState: (g, s) =>
       LOG_DEBUG "mouseoverState #{s}"
       if @stateLabels and @stateDisplay is 'hover'
-        g.setLabel @stateLabels[s]
+        g.setLabel (@getStateLabel s)
         @recordQuery 'mouseover', 'state', s
 
     mouseoutState: (g, s) =>
@@ -232,6 +248,28 @@ jsPsych.plugins['mouselab-mdp'] = do ->
         String(r)
       else
         @edgeLabels["#{s0}__#{s1}"]
+
+    getStateLabel: (s) =>
+      if @stateLabels?
+        switch @stateLabels
+          when 'custom'
+            ':)'
+          when 'reward'
+            @getReward null, null, s
+          else
+            @stateLabels[s]
+      else ''
+
+    getReward: (s0, a, s1) =>
+      return @stateRewards[s1]
+
+    getOutcome: (s0, a) =>
+      [r, s1] = @graph[s0][a]
+      if @getReward
+        r = getReward s0, a, s1
+      return [r, s1]
+
+
 
     recordQuery: (queryType, targetType, target) =>
       @canvas.renderAll()
@@ -282,10 +320,11 @@ jsPsych.plugins['mouselab-mdp'] = do ->
 
     run: =>
       LOG_DEBUG 'run'
-      @buildMap()
+      do @buildMap
+      do @startTimer
       fabric.Image.fromURL @playerImage, ((img) =>
         @initPlayer img
-        @canvas.renderAll()
+        do @canvas.renderAll
         @initTime = Date.now()
         @arrive @initial
       )
@@ -295,6 +334,22 @@ jsPsych.plugins['mouselab-mdp'] = do ->
       @canvas.add obj
       return obj
 
+    startTimer: =>
+      @timeLeft = @minTime
+      intervalID = undefined
+
+      tick = =>
+        if @freeze then return
+        @timeLeft -= 1
+        $('#graph-time').html @timeLeft
+        $('#graph-time').css 'color', (redGreen (-@timeLeft + .1))  # red if > 0
+        if @timeLeft is 0
+          window.clearInterval intervalID
+          @checkFinished()
+      
+      $('#graph-time').html @timeLeft
+      $('#graph-time').css 'color', (redGreen (-@timeLeft + .1))
+      intervalID = window.setInterval tick, 1000
 
     # Draws the player image.
     initPlayer: (img) =>
@@ -320,14 +375,13 @@ jsPsych.plugins['mouselab-mdp'] = do ->
         [x, y] = location
         @states[s] = @draw new State s, x, y,
           fill: '#bbb'
-          label: if @stateDisplay is 'always' then @stateLabels[s] else ''
+          label: if @stateDisplay is 'always' then (@getStateLabel s) else ''
 
-      console.log '@graph', @graph
-      console.log '@states', @states
+      LOG_DEBUG '@graph', @graph
+      LOG_DEBUG '@states', @states
 
       for s0, actions of @graph
         for a, [r, s1] of actions
-          console.log 's1', s1
           @draw new Edge @states[s0], r, @states[s1],
             label: if @edgeDisplay is 'always' then @getEdgeLabel s0, r, s1 else ''
 

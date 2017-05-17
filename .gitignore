@@ -1,10 +1,10 @@
 .DS_Store
 .ipynb_checkpoints/
-experiment/__pycache__/
-experiment/*/__pycache__/
-experiment/experiment/participants.db
-experiment/experiment/server.log
-experiment/experiment/.psiturk_history
+__pycache__/
+participants.db
+server.log
+.psiturk_history
 experiment/.nips.sublime-project
 experiment/.nips.sublime-workspace
 experiment/scratch.ipynb
+__pycache__/

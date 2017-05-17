@@ -24,23 +24,20 @@ class Stims(Stimulator):
         }
 
     def trials(self, params):
-        yield {'branch': 3, 'depth': 4, 'first': 'down'}
-        # for depth in 
-        return
-        for d in range(1,6):
-            yield {'branch': 2, 'depth': d}
-        for d in range(1, 3):
-            yield {'branch': 3, 'depth': d}
-
+        for d in range(2, 4):
+            yield {'depth': d,
+                   'kind': 'cross'}
 
     # ---------- Create stimuli ---------- #
 
     def trial(self, params):
+        params.pop('trial')
         graph, layout = build(**params)
         return {
             'graph': graph,
             'layout': rescale(layout),
-            'stateLabels': dict(zip(graph.keys(), graph.keys())),
+            # 'stateLabels': dict(zip(graph.keys(), graph.keys())),
+            'stateLabels': 'reward',
             'stateDisplay': 'always',
             'edgeDisplay': 'never',
             'initial': '0'

@@ -9,6 +9,10 @@ from collections import defaultdict
 
 
 # ---------- Constructing environments ---------- #
+DIRECTIONS = ('up', 'right', 'down', 'left')
+ACTIONS = dict(zip(DIRECTIONS, it.count()))
+
+
 BRANCH_DIRS = {
     2: {'up': ('right', 'left'),
         'right': ('up', 'down'),
@@ -19,9 +23,8 @@ BRANCH_DIRS = {
         'right': ('up', 'right', 'down'),
         'down': ('right', 'down', 'left'),
         'left': ('up', 'down', 'left'),
-        'all': ('up', 'right', 'down', 'left')}
+        'all': DIRECTIONS}
 }
-ACTIONS = dict(zip(BRANCH_DIRS[3]['all'], it.count()))
 
 def move_xy(x, y, direction, dist=1):
     return {
@@ -39,26 +42,58 @@ def dist(branch, depth):
     else:
         return 2 ** (depth/2 - 0.5)
     
-def build(branch, depth, first='up', **kwargs):
-    """Returns graph and layout to be used in Mouselab-MDP."""
-    graph = {}
-    layout = {}
-    names = it.count()
-    
-    def node(d, x, y, prev_dir):
-        r = 0  # reward is 0 for now
-        name = str(next(names))
-        layout[name] = (x, y)
-        graph[name] = {}
-        if d > 0:
-            for direction in BRANCH_DIRS[branch][prev_dir]:
-                x1, y1 = move_xy(x, y, direction, dist(branch, d))
-                graph[name][direction] = (r, node(d-1, x1, y1, direction))
-                                        
-        return name
-    
-    node(depth, 0, 0, first)
-    return graph, layout
+class Layouts:
+    def cross(depth):
+        graph = {}
+        layout = {}
+        names = it.count()
+
+        def direct(prev):
+            if prev == 'all':
+                yield from DIRECTIONS
+            else:
+                yield prev
+        
+        def node(d, x, y, prev_dir):
+            r = 0  # reward is 0 for now
+            name = str(next(names))
+            layout[name] = (x, y)
+            graph[name] = {}
+            if d > 0:
+                for direction in direct(prev_dir):
+                    x1, y1 = move_xy(x, y, direction, 1)
+                    graph[name][direction] = (r, node(d-1, x1, y1, direction))
+                                            
+            return name
+        
+        node(depth, 0, 0, 'all')
+        return graph, layout
+
+
+    def tree(branch, depth, first='up', **kwargs):
+        graph = {}
+        layout = {}
+        names = it.count()
+
+        def node(d, x, y, prev_dir):
+            r = 0  # reward is 0 for now
+            name = str(next(names))
+            layout[name] = (x, y)
+            graph[name] = {}
+            if d > 0:
+                for direction in BRANCH_DIRS[branch][prev_dir]:
+                    x1, y1 = move_xy(x, y, direction, dist(branch, d))
+                    graph[name][direction] = (r, node(d-1, x1, y1, direction))
+                                            
+            return name
+
+        node(depth, 0, 0, first)
+        return graph, layout
+
+
+def build(kind, **kwargs):
+    return getattr(Layouts, kind)(**kwargs)
+
 
 # ---------- Information about environments ---------- #
 
@@ -110,11 +145,12 @@ def available_actions(graph):
 
 
 
-def main():
+
+def trees():
     paths = defaultdict(dict)
     for branch in (2, 3):
         for depth in range(1, 6):
-            graph, layout = build(branch, depth)
+            graph, layout = build('tree', branch, depth)
             name = 'b{}d{}'.format(branch, depth)
 
             mat_dict = {
@@ -132,6 +168,9 @@ def main():
     with open('experiment/static/json/paths.json', 'w+') as f:
         json.dump(paths, f)
 
+def main():
+    from pprint import pprint
+    pprint(build_cross(2))
 
 if __name__ == '__main__':
     main()

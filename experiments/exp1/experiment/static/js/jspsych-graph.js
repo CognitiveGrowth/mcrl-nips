@@ -357,22 +357,32 @@ jsPsych.plugins['graph'] = (function() {
       };
       if (PARAMS.PR_type) {
         head = (function() {
-          if (result.planned_too_little) {
-            if (!result.planned_too_much) {
-              return redGreenSpan("You should have gathered more information!", -1);
+          if (PARAMS.smart_message) {
+            if (result.planned_too_little) {
+              if (!result.planned_too_much) {
+                return redGreenSpan("You should have gathered more information!", -1);
+              } else {
+                return redGreenSpan("You gathered too little relevant and too much irrelevant information!", -1);
+              }
             } else {
-              return redGreenSpan("You gathered too little relevant and too much irrelevant information!", -1);
+              if (result.planned_too_much) {
+                return redGreenSpan("You considered irrelevant outcomes.", -1);
+              } else {
+                return redGreenSpan("You gathered enough information!", 1);
+              }
             }
           } else {
-            if (result.planned_too_much) {
-              return redGreenSpan("You considered irrelevant outcomes.", -1);
-            } else {
-              return redGreenSpan("You gathered enough information!", 1);
-            }
+            return redGreenSpan("Poor planning!", -1);
           }
         })();
         penalty = result.delay ? "<p>" + result.delay + " second penalty</p>" : void 0;
-        info = "Given the information you collected, your decision was " + (result.information_used_correctly ? redGreenSpan('optimal.', 1) : redGreenSpan('suboptimal.', -1));
+        info = (function() {
+          if (PARAMS.smart_message) {
+            return "Given the information you collected, your decision was " + (result.information_used_correctly ? redGreenSpan('optimal.', 1) : redGreenSpan('suboptimal.', -1));
+          } else {
+            return '';
+          }
+        })();
         msg = "<h3>" + head + "</h3>\n<b>" + penalty + "</b>\n" + info;
       } else {
         msg = "Please wait " + result.delay + " seconds.";
