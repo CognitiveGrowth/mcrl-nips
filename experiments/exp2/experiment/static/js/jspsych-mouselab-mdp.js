@@ -101,7 +101,6 @@ jsPsych.plugins['mouselab-mdp'] = (function() {
       this.displayFeedback = bind(this.displayFeedback, this);
       this.recordQuery = bind(this.recordQuery, this);
       this.getOutcome = bind(this.getOutcome, this);
-      this.getReward = bind(this.getReward, this);
       this.getStateLabel = bind(this.getStateLabel, this);
       this.getEdgeLabel = bind(this.getEdgeLabel, this);
       this.mouseoutEdge = bind(this.mouseoutEdge, this);
@@ -111,8 +110,8 @@ jsPsych.plugins['mouselab-mdp'] = (function() {
       this.mouseoverState = bind(this.mouseoverState, this);
       this.clickState = bind(this.clickState, this);
       this.handleKey = bind(this.handleKey, this);
-      var centerMessage, leftMessage, lowerMessage, ref, ref1, ref10, ref11, ref12, ref13, ref14, ref15, ref16, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, rightMessage;
-      this.display = config.display, this.graph = config.graph, this.layout = config.layout, this.initial = config.initial, this.stateLabels = (ref = config.stateLabels) != null ? ref : null, this.stateDisplay = (ref1 = config.stateDisplay) != null ? ref1 : 'never', this.stateClickCost = (ref2 = config.stateClickCost) != null ? ref2 : 0, this.edgeLabels = (ref3 = config.edgeLabels) != null ? ref3 : 'reward', this.edgeDisplay = (ref4 = config.edgeDisplay) != null ? ref4 : 'always', this.edgeClickCost = (ref5 = config.edgeClickCost) != null ? ref5 : 0, this.trialID = (ref6 = config.trialID) != null ? ref6 : null, this.keys = (ref7 = config.keys) != null ? ref7 : KEYS, this.trialIndex = (ref8 = config.trialIndex) != null ? ref8 : TRIAL_INDEX, this.playerImage = (ref9 = config.playerImage) != null ? ref9 : 'static/images/plane.png', SIZE = (ref10 = config.SIZE) != null ? ref10 : 100, leftMessage = (ref11 = config.leftMessage) != null ? ref11 : 'Round: 1/1', centerMessage = (ref12 = config.centerMessage) != null ? ref12 : '&nbsp;', rightMessage = (ref13 = config.rightMessage) != null ? ref13 : 'Score: <span id=mouselab-score/>', lowerMessage = (ref14 = config.lowerMessage) != null ? ref14 : KEY_DESCRIPTION, this.minTime = (ref15 = config.minTime) != null ? ref15 : (DEBUG ? 5 : 45), this.feedback = (ref16 = config.feedback) != null ? ref16 : true;
+      var centerMessage, leftMessage, lowerMessage, ref, ref1, ref10, ref11, ref12, ref13, ref14, ref15, ref16, ref17, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, rightMessage;
+      this.display = config.display, this.graph = config.graph, this.layout = config.layout, this.initial = config.initial, this.stateLabels = (ref = config.stateLabels) != null ? ref : null, this.stateDisplay = (ref1 = config.stateDisplay) != null ? ref1 : 'never', this.stateClickCost = (ref2 = config.stateClickCost) != null ? ref2 : 0, this.edgeLabels = (ref3 = config.edgeLabels) != null ? ref3 : 'reward', this.edgeDisplay = (ref4 = config.edgeDisplay) != null ? ref4 : 'always', this.edgeClickCost = (ref5 = config.edgeClickCost) != null ? ref5 : 0, this.trialID = (ref6 = config.trialID) != null ? ref6 : null, this.stateRewards = (ref7 = config.stateRewards) != null ? ref7 : null, this.keys = (ref8 = config.keys) != null ? ref8 : KEYS, this.trialIndex = (ref9 = config.trialIndex) != null ? ref9 : TRIAL_INDEX, this.playerImage = (ref10 = config.playerImage) != null ? ref10 : 'static/images/plane.png', SIZE = (ref11 = config.SIZE) != null ? ref11 : 120, leftMessage = (ref12 = config.leftMessage) != null ? ref12 : 'Round: 1/1', centerMessage = (ref13 = config.centerMessage) != null ? ref13 : '&nbsp;', rightMessage = (ref14 = config.rightMessage) != null ? ref14 : 'Score: <span id=mouselab-score/>', lowerMessage = (ref15 = config.lowerMessage) != null ? ref15 : KEY_DESCRIPTION, this.minTime = (ref16 = config.minTime) != null ? ref16 : (DEBUG ? 5 : 45), this.feedback = (ref17 = config.feedback) != null ? ref17 : true;
       checkObj(this);
       this.invKeys = _.invert(this.keys);
       this.data = {
@@ -165,7 +164,7 @@ jsPsych.plugins['mouselab-mdp'] = (function() {
       this.centerMessage = $('<div>', {
         id: 'mouselab-msg-center',
         "class": 'mouselab-header',
-        html: 'Time: <span id=graph-time/>'
+        html: 'Time: <span id=mdp-time/>'
       }).appendTo(this.display);
       this.rightMessage = $('<div>', {
         id: 'mouselab-msg-right',
@@ -193,7 +192,7 @@ jsPsych.plugins['mouselab-mdp'] = (function() {
       LOG_DEBUG('handleKey', s0, a);
       this.data.actions.push(a);
       this.data.actionTimes.push(Date.now() - this.initTime);
-      ref = this.graph[s0][a], r = ref[0], s1 = ref[1];
+      ref = this.getOutcome(s0, a), r = ref[0], s1 = ref[1];
       LOG_DEBUG(s0 + ", " + a + " -> " + r + ", " + s1);
       s1g = this.states[s1];
       return this.player.animate({
@@ -214,6 +213,7 @@ jsPsych.plugins['mouselab-mdp'] = (function() {
     MouselabMDP.prototype.clickState = function(g, s) {
       LOG_DEBUG("clickState " + s);
       if (this.stateLabels && this.stateDisplay === 'click' && !g.label.text) {
+        this.addScore(-this.stateClickCost);
         g.setLabel(this.getStateLabel(s));
         return this.recordQuery('click', 'state', s);
       }
@@ -273,7 +273,7 @@ jsPsych.plugins['mouselab-mdp'] = (function() {
           case 'custom':
             return ':)';
           case 'reward':
-            return '®';
+            return this.stateRewards[s];
           default:
             return this.stateLabels[s];
         }
@@ -282,15 +282,11 @@ jsPsych.plugins['mouselab-mdp'] = (function() {
       }
     };
 
-    MouselabMDP.prototype.getReward = function(s0, a, s1) {
-      return this.graph[s0][a];
-    };
-
     MouselabMDP.prototype.getOutcome = function(s0, a) {
       var r, ref, s1;
       ref = this.graph[s0][a], r = ref[0], s1 = ref[1];
-      if (this.getReward) {
-        r = getReward(s0, a, s1);
+      if (this.stateRewards) {
+        r = this.stateRewards[s1];
       }
       return [r, s1];
     };
@@ -345,21 +341,21 @@ jsPsych.plugins['mouselab-mdp'] = (function() {
       }
       if (this.feedback && result.delay >= 1) {
         this.freeze = true;
-        $('#graph-feedback').css({
+        $('#mdp-feedback').css({
           display: 'block'
         });
-        $('#graph-feedback-content').html(msg);
+        $('#mdp-feedback-content').html(msg);
         return setTimeout(((function(_this) {
           return function() {
             _this.freeze = false;
-            $('#graph-feedback').css({
+            $('#mdp-feedback').css({
               display: 'none'
             });
             return _this.arrive(s1);
           };
         })(this)), result.delay * 1000);
       } else {
-        $('#graph-feedback').css({
+        $('#mdp-feedback').css({
           display: 'none'
         });
         return this.arrive(s1);
@@ -408,7 +404,7 @@ jsPsych.plugins['mouselab-mdp'] = (function() {
 
     MouselabMDP.prototype.addScore = function(v) {
       this.data.score = round(this.data.score + v);
-      $('#mouselab-score').html('$' + this.data.score);
+      $('#mouselab-score').html('$' + this.data.score.toFixed(2));
       return $('#mouselab-score').css('color', redGreen(this.data.score));
     };
 
@@ -441,16 +437,16 @@ jsPsych.plugins['mouselab-mdp'] = (function() {
             return;
           }
           _this.timeLeft -= 1;
-          $('#graph-time').html(_this.timeLeft);
-          $('#graph-time').css('color', redGreen(-_this.timeLeft + .1));
+          $('#mdp-time').html(_this.timeLeft);
+          $('#mdp-time').css('color', redGreen(-_this.timeLeft + .1));
           if (_this.timeLeft === 0) {
             window.clearInterval(intervalID);
             return _this.checkFinished();
           }
         };
       })(this);
-      $('#graph-time').html(this.timeLeft);
-      $('#graph-time').css('color', redGreen(-this.timeLeft + .1));
+      $('#mdp-time').html(this.timeLeft);
+      $('#mdp-time').css('color', redGreen(-this.timeLeft + .1));
       return intervalID = window.setInterval(tick, 1000);
     };
 

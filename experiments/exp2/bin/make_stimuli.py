@@ -37,8 +37,10 @@ class Stims(Stimulator):
             'graph': graph,
             'layout': rescale(layout),
             # 'stateLabels': dict(zip(graph.keys(), graph.keys())),
+            'stateRewards': dict(zip(graph.keys(), map(int, graph.keys()))),
             'stateLabels': 'reward',
-            'stateDisplay': 'always',
+            'stateDisplay': 'click',
+            'stateClickCost': 0.05,
             'edgeDisplay': 'never',
             'initial': '0'
         }

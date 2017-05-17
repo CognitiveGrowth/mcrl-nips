@@ -144,8 +144,6 @@ def available_actions(graph):
     return X
 
 
-
-
 def trees():
     paths = defaultdict(dict)
     for branch in (2, 3):

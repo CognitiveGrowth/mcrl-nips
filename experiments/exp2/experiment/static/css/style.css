@@ -42,16 +42,16 @@
 }
 
 #mouselab-msg-left {
-  width: 20%;
+  width: 30%;
   text-align: left;
 }
 
 #mouselab-msg-right {
-    width: 20%;
+    width: 30%;
     text-align: right;
 }
 #mouselab-msg-center {
-    width: 60%;
+    width: 40%;
     text-align: center;
 }
 

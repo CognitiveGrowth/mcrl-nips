@@ -102,11 +102,13 @@ jsPsych.plugins['mouselab-mdp'] = do ->
         @edgeDisplay='always'  # one of 'never', 'hover', 'click', 'always'
         @edgeClickCost=0  # subtracted from score every time an edge is clicked
         @trialID=null
+
+        @stateRewards=null
         
         @keys=KEYS  # mapping from actions to keycodes
         @trialIndex=TRIAL_INDEX  # number of trial (starts from 1)
         @playerImage='static/images/plane.png'
-        SIZE=100  # determines the size of states, text, etc...
+        SIZE=120  # determines the size of states, text, etc...
 
         leftMessage='Round: 1/1'
         centerMessage='&nbsp;'
@@ -159,7 +161,7 @@ jsPsych.plugins['mouselab-mdp'] = do ->
       @centerMessage = $('<div>',
         id: 'mouselab-msg-center'
         class: 'mouselab-header'
-        html: 'Time: <span id=graph-time/>').appendTo @display
+        html: 'Time: <span id=mdp-time/>').appendTo @display
 
       @rightMessage = $('<div>',
         id: 'mouselab-msg-right',
@@ -197,8 +199,7 @@ jsPsych.plugins['mouselab-mdp'] = do ->
       @data.actions.push a
       @data.actionTimes.push (Date.now() - @initTime)
 
-      [r, s1] = @graph[s0][a]
-      # [r, s1] = @getOutcome s0, a
+      [r, s1] = @getOutcome s0, a
       LOG_DEBUG "#{s0}, #{a} -> #{r}, #{s1}"
 
       s1g = @states[s1]
@@ -214,6 +215,7 @@ jsPsych.plugins['mouselab-mdp'] = do ->
     clickState: (g, s) =>
       LOG_DEBUG "clickState #{s}"
       if @stateLabels and @stateDisplay is 'click' and not g.label.text
+        @addScore -@stateClickCost
         g.setLabel (@getStateLabel s)
         @recordQuery 'click', 'state', s
 
@@ -259,20 +261,22 @@ jsPsych.plugins['mouselab-mdp'] = do ->
           when 'custom'
             ':)'
           when 'reward'
-            # @getReward null, null, s
-            '®'
+            @stateRewards[s]
+            # '®'
           else
             @stateLabels[s]
       else ''
 
-    getReward: (s0, a, s1) =>
-      # return @stateRewards[s1]
-      return @graph[s0][a]
+    # getReward: (s0, a, s1) =>
+    #   if @stateRewards
+    #     @stateRewards[s1]
+    #   else
+    #     @graph[s0][a]
 
     getOutcome: (s0, a) =>
       [r, s1] = @graph[s0][a]
-      if @getReward
-        r = getReward s0, a, s1
+      if @stateRewards
+        r = @stateRewards[s1]
       return [r, s1]
 
 
@@ -342,8 +346,8 @@ jsPsych.plugins['mouselab-mdp'] = do ->
 
       if @feedback and result.delay>=1        
           @freeze = true
-          $('#graph-feedback').css display: 'block'
-          $('#graph-feedback-content')
+          $('#mdp-feedback').css display: 'block'
+          $('#mdp-feedback-content')
             # .css
             #   'background-color': if mistake then RED else GREEN
             #   color: 'white'
@@ -351,11 +355,11 @@ jsPsych.plugins['mouselab-mdp'] = do ->
 
           setTimeout (=>
             @freeze = false
-            $('#graph-feedback').css(display: 'none')
+            $('#mdp-feedback').css(display: 'none')
             @arrive s1
           ), result.delay * 1000
       else
-            $('#graph-feedback').css(display: 'none')
+            $('#mdp-feedback').css(display: 'none')
             @arrive s1
 
 
@@ -392,7 +396,7 @@ jsPsych.plugins['mouselab-mdp'] = do ->
 
     addScore: (v) =>
       @data.score = round (@data.score + v)
-      $('#mouselab-score').html '$' + @data.score
+      $('#mouselab-score').html '$' + @data.score.toFixed(2)
       $('#mouselab-score').css 'color', redGreen @data.score
 
 
@@ -421,14 +425,14 @@ jsPsych.plugins['mouselab-mdp'] = do ->
       tick = =>
         if @freeze then return
         @timeLeft -= 1
-        $('#graph-time').html @timeLeft
-        $('#graph-time').css 'color', (redGreen (-@timeLeft + .1))  # red if > 0
+        $('#mdp-time').html @timeLeft
+        $('#mdp-time').css 'color', (redGreen (-@timeLeft + .1))  # red if > 0
         if @timeLeft is 0
           window.clearInterval intervalID
           @checkFinished()
       
-      $('#graph-time').html @timeLeft
-      $('#graph-time').css 'color', (redGreen (-@timeLeft + .1))
+      $('#mdp-time').html @timeLeft
+      $('#mdp-time').css 'color', (redGreen (-@timeLeft + .1))
       intervalID = window.setInterval tick, 1000
 
     # Draws the player image.
