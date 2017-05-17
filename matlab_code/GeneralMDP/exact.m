@@ -22,9 +22,14 @@ for c=1:numel(costs)
         end
     end
     
-    for s=1:nr_states-1
+    exact_PR = nan(nr_states,nr_states,nr_arms+1);
+    for s=1:nr_states
         for a=1:nr_arms+1
-            exact_PR(s,a)=Q_star(s,a)-values(s);
+            next_s = find(not(transition(s,:,a) == 0));
+            for isp=1:numel(next_s)
+                sp = next_s(isp);
+                exact_PR(s,sp,a)=values(sp,1)-values(s,1);
+            end
         end
     end
     
