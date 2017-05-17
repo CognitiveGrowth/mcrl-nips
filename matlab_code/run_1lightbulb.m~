@@ -1,6 +1,6 @@
 clear;
 
-load('../results/lightbulb_problem.mat')
+% load('../results/lightbulb_problem.mat')
 % load('../results/lightbulb_fit.mat')
 load ~/Downloads/lightbulb_fit.mat
 

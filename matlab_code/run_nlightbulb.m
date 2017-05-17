@@ -1,14 +1,13 @@
 clear;
 
-load('../results/lightbulb_problem.mat')
-% load('../results/lightbulb_fit.mat')
-load ~/Downloads/lightbulb_fit.mat
+load('../results/nlightbulb_problem.mat')
+load('../results/nlightbulb_fit.mat')
 
 alpha       = 0.1;   % learning rate
 gamma       = 1;  % discount factor
 epsilon     = 0.25;  % probability of a random action selection
-PRs_opt = squeeze(lightbulb_mdp(10).optimal_PR(:,1,:));
-PRs_aprx = [lightbulb_problem(10).approximate_PRs;[0,0]];
+PRs_opt = squeeze(lightbulb_mdp(1).optimal_PR(:,1,:));
+PRs_aprx = [lightbulb_problem(1).approximate_PRs;[0,0]];
 horizon = size(PRs_opt,2);
 PRs_none = zeros(size(PRs_opt));
 pi_star = lightbulb_mdp.pi_star;
