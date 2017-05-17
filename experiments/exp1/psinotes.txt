@@ -1,5 +1,27 @@
 *****************************
   Creating live HIT
+    HITid: 3I6NF2WGIGW3D9S3WB84MKQ3J5MG50
+    Max workers: 90
+    Reward: $0.75
+    Duration: 0.75 hours
+    Fee: $27.00
+    ________________________
+    Total: $94.50
+
+
+CANCELED
+*****************************
+  Creating live HIT
+    HITid: 363A7XIFV4MJ1CUFG2Y7UW9ZYYBVAA
+    Max workers: 90
+    Reward: $0.75
+    Duration: 1.0 hours
+    Fee: $27.00
+    ________________________
+    Total: $94.50
+
+*****************************
+  Creating live HIT
     HITid: 37ZQELHEQ0Y7V8UVBE2LT6AM6CYNM5
     Max workers: 9
     Reward: $0.50
