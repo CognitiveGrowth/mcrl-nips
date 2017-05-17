@@ -1,17 +1,17 @@
 addpath('./GeneralMDP/')
 load('file')
 
-costs=0.01;
+costs=[0.01];
 
 for c=1:numel(costs)
     cost = costs(c);
-    nTrials = 30;
+    nTrials = 6;
     rewardCorrect = 1;
     rewardIncorrect = 0;
     cost = costs(c);
     
     discount = 1;
-    [values, policy] = mdp_finite_horizon (transition, rewards, discount, 7);
+    [values, policy] = mdp_finite_horizon (transition, rewards, discount, nTrials+1);
 
     s = length(states);
     steps = sum(states(s-1,:));
