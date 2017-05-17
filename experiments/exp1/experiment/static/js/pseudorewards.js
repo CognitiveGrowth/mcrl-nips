@@ -147,6 +147,7 @@ function getPR(state,actions){
     
     for (a in actions){
         if (actions[a].is_move){
+            //if (isNaN(environment_model.observations[actions[a].move.next_state-1]) || environment_model.observations[actions[a].move.next_state-1]==null){
             if (isNaN(environment_model.observations[actions[a].move.next_state-1]) || environment_model.observations[actions[a].move.next_state-1]==null){
                 var ER=meta_MDP.mean_payoff
             }
@@ -603,7 +604,7 @@ function valueFunction(state,environment_model){
             
             available_actions=getActions(state)
             for (a in available_actions){
-                Q_hat.push(predictQValue(state,available_actions[a]))
+                Q_hat.push(predictQValue(state,available_actions[a],environment_model))
             }
             
             console.log('Q_hat', Q_hat)
@@ -613,7 +614,7 @@ function valueFunction(state,environment_model){
     return V
 }
 
-function predictQValue(state,computation){
+function predictQValue(state,computation,environment_model){
     feature_weights = null;
     switch(PARAMS.info_cost){
         case 0.01:
@@ -630,15 +631,82 @@ function predictQValue(state,computation){
 
     }
     
-    VPI = computeVPI(state,computation)
-    VOC1 = computeMyopicVOC(state,computation)
-    ER = computeExpectedRewardOfActing(state,computation)
+    var VPI = computeVPI(state,computation,environment_model)
+    var VOC1 = computeMyopicVOC(state,computation,environment_model)
+    var ER = computeExpectedRewardOfActing(state,environment_model)
     
     var Q_hat= feature_weights.VPI*VPI+feature_weights.VOC1*VOC1 + feature_weights.ER*ER
     return Q_hat
 }
 
-function computeExpectedRewardOfActing(state){
+function computeExpectedRewardOfActing(state,environment_model){
+    var plan = makePlan(state,environment_model)
+    var ER = evaluatePlan(state,plan,environment_model)
+    
+    return ER
+}
+
+function makePlan(state,environment_model){
+    var plan = new Array()
+
+    var location_nr=state.s;
+    var step=state.step;
+    
+    var current_state=state;
+    while (step<=state.nr_steps){
+        var max_Q = _.max(environment_model.mu_Q[location_nr-1])        
+        var a=_.indexOf(environment_model.mu_Q[location_nr-1],max_Q)        
+        var actions=getActions(current_state)
+        
+        var action_nrs=new Array()
+        var available_actions=new Array()
+        for (i in actions){
+            if (actions[i].is_move){                
+                act=actions[i]
+                available_actions.push(act)
+                action_nrs.push(act.move.action_nr)                          
+            }
+        }
+        action_nrs.sort()        
+        action_nr=action_nrs[a]
+        
+        for (i in available_actions){
+            if (available_actions[i].move.action_nr==action_nr){
+                action = available_actions[i]
+                plan.push(action)  
+            }
+        }
+        
+        current_state = getNextState(current_state,action,false)
+        location_nr=current_state.s
+        step=step+1;
+    }
+    
+    return plan
+}
+
+function evaluatePlan(state,plan,environment_model){
+    
+    var ER=0
+
+    var current_state=state
+    for (var a in plan){
+        var action = plan[a]
+        current_state=getNextState(current_state,action,false)
+        
+        if (isNaN(environment_model.observations[current_state.s-1]) | environment_model.observations[current_state.s-1]==null){
+            ER+=meta_MDP.mean_payoff
+        }
+        else{
+            ER+=environment_model.observations[current_state.s-1]
+        }
+            
+    }
+    
+    return ER
+}
+
+function computeExpectedRewardOfActingOld(state){
     
     if (state.mu_Q[state.s-1] == null){
         return 0
@@ -661,7 +729,7 @@ function computeMyopicVOC(state,c){
                 locations=getLocations(0)
                 path=locations[c.cell].path;
 
-                a=path[state.step-1];                        
+                var a=path[state.step-1];                        
                 mu_prior=state.mu_Q[state.s-1];
 
 
