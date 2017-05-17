@@ -250,7 +250,7 @@ do ->  # big closure to prevent polluting global namespace
 
 
   main = new MDPBlock
-    timeline: _.shuffle TRIALS #nonmyopic[...6] .concat myopic[...2]
+    timeline: (if DEBUG then TRIALS else _.shuffle TRIALS) #nonmyopic[...6] .concat myopic[...2]
 
   # delay = new Block
     # type: 'delay'

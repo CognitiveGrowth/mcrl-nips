@@ -172,7 +172,7 @@ blocks = void 0;
     }
   });
   main = new MDPBlock({
-    timeline: _.shuffle(TRIALS)
+    timeline: (DEBUG ? TRIALS : _.shuffle(TRIALS))
   });
   finish = new Block({
     type: 'button-response',
