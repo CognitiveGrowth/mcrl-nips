@@ -362,24 +362,29 @@ jsPsych.plugins['graph'] = do ->
       
       if PARAMS.PR_type
         head = do ->
-          if result.planned_too_little
-            if !result.planned_too_much
-                redGreenSpan "You should have gathered more information!", -1            
+          if PARAMS.smart_message
+            if result.planned_too_little
+              if !result.planned_too_much
+                  redGreenSpan "You should have gathered more information!", -1            
+              else
+                  redGreenSpan "You gathered too little relevant and too much irrelevant information!", -1            
             else
-                redGreenSpan "You gathered too little relevant and too much irrelevant information!", -1            
+              if result.planned_too_much
+                  redGreenSpan "You considered irrelevant outcomes.", -1                    
+              else
+                  redGreenSpan "You gathered enough information!", 1
           else
-            if result.planned_too_much
-                redGreenSpan "You considered irrelevant outcomes.", -1                    
-            else
-                redGreenSpan "You gathered enough information!", 1
+            redGreenSpan "Poor planning!", -1
 
         penalty = if result.delay then "<p>#{result.delay} second penalty</p>"
-        info = \
-          "Given the information you collected, your decision was " + \
-          if result.information_used_correctly
-            redGreenSpan 'optimal.', 1
-          else
-            redGreenSpan 'suboptimal.', -1
+        info = do ->
+          if PARAMS.smart_message
+            "Given the information you collected, your decision was " + \
+            if result.information_used_correctly
+              redGreenSpan 'optimal.', 1
+            else
+              redGreenSpan 'suboptimal.', -1
+          else ''
 
         msg = """
           <h3>#{head}</h3>

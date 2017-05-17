@@ -15,7 +15,6 @@ if DEBUG
    X X X X X DEBUG  MODE X X X X X
   X X X X X X X X X X X X X X X X X
   """
-  condition = 1
 else
   console.log """
   # =============================== #
@@ -35,6 +34,12 @@ do ->  # big closure to prevent polluting global namespace
   PARAMS =
     PR_type: condition % 3
     info_cost: [0.01, 1.6, 2.8][condition // 3]
+
+  if DEBUG
+    PARAMS =
+      PR_type: 2
+      info_cost: 1.6
+
   TRIALS = expData.trials
   psiturk.recordUnstructuredData 'params', PARAMS
 
@@ -55,7 +60,7 @@ do ->  # big closure to prevent polluting global namespace
     debug: -> if DEBUG then "`DEBUG`" else ''
 
     feedback: ->
-      if PARAMS.feedback
+      if PARAMS.PR_type
         [markdown """
           # Instructions
 
@@ -78,12 +83,12 @@ do ->  # big closure to prevent polluting global namespace
           best route, given the limited information available. <b>If you perform
           optimally, no feedback will be shown and you can proceed immediately.</b>
 
-          <div align="center"><img src="static/js/images/instruction_images/Slide4.png" width=600></div>
+          <div align="center"><img src="static/images/feedback.png" width=600></div>
         """]
       else []
 
     constantDelay: ->
-      if PARAMS.feedback
+      if PARAMS.PR_type
         ""
       else
         "Note: there will be short delays after taking some flights."
@@ -175,16 +180,14 @@ do ->  # big closure to prevent polluting global namespace
       markdown """
         # Instructions
 
-        There are three more important things to understand:
-        1. You must spend at least 45 seconds on each round.</b> As shown below,
-           there will be a countdown timer. You won’t be able to proceed to the
-           next round before the countdown has finished, but you can take as
-           much time as you like afterwards.
-        2. You will earn <u>REAL MONEY</u> for your flights.</b> Specifically,
+        There are two more important things to understand:
+        1. You must spend at least 45 seconds on each round. A countdown timer
+           will show you how much more time you must spend on the round. You
+           won’t be able to proceed to the next round before the countdown has
+           finished, but you can take as much time as you like afterwards.
+        2. </b>You will earn <u>real money</u> for your flights.</b> Specifically,
            one of the 12 rounds will be chosen at random and you will receive 5%
            of your earnings in that round as a bonus payment.
-
-        <div align="center"><img src="static/js/images/instruction_images/Slide3.png" width=600></div>
 
          You may proceed to take an entry quiz, or go back to review the instructions.
       """
