@@ -71,6 +71,7 @@ $(window).on 'load', ->
 
     if DEBUG or DEMO
       createStartButton()
+      PARAMS.message = true
     else
       console.log 'Testing saveData'
       ERROR = null

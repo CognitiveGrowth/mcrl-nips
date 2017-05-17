@@ -102,7 +102,6 @@ jsPsych.plugins['mouselab-mdp'] = do ->
         @edgeDisplay='always'  # one of 'never', 'hover', 'click', 'always'
         @edgeClickCost=0  # subtracted from score every time an edge is clicked
         @trialID=null
-        @minTime = (if DEBUG then 5 else 45)
         
         @keys=KEYS  # mapping from actions to keycodes
         @trialIndex=TRIAL_INDEX  # number of trial (starts from 1)
@@ -113,6 +112,9 @@ jsPsych.plugins['mouselab-mdp'] = do ->
         centerMessage='&nbsp;'
         rightMessage='Score: <span id=mouselab-score/>'
         lowerMessage=KEY_DESCRIPTION
+
+        @minTime=(if DEBUG then 5 else 45)
+        @feedback=true
       } = config
 
       # _.extend this, config
@@ -120,6 +122,7 @@ jsPsych.plugins['mouselab-mdp'] = do ->
 
       @invKeys = _.invert @keys
       @data =
+        delays: []
         trialID: @trialID
         trialIndex: @trialIndex
         score: 0
@@ -204,7 +207,8 @@ jsPsych.plugins['mouselab-mdp'] = do ->
           onChange: @canvas.renderAll.bind(@canvas)
           onComplete: =>
             @addScore r
-            @arrive s1
+            @displayFeedback a, s1
+            # @arrive s1
 
     # Called when a state is clicked on.
     clickState: (g, s) =>
@@ -255,13 +259,15 @@ jsPsych.plugins['mouselab-mdp'] = do ->
           when 'custom'
             ':)'
           when 'reward'
-            @getReward null, null, s
+            # @getReward null, null, s
+            '®'
           else
             @stateLabels[s]
       else ''
 
     getReward: (s0, a, s1) =>
-      return @stateRewards[s1]
+      # return @stateRewards[s1]
+      return @graph[s0][a]
 
     getOutcome: (s0, a) =>
       [r, s1] = @graph[s0][a]
@@ -277,6 +283,80 @@ jsPsych.plugins['mouselab-mdp'] = do ->
       # @data["#{queryType}_#{targetType}_#{target}"]
       @data.queries[queryType][targetType].target.push target
       @data.queries[queryType][targetType].time.push Date.now() - @initTime
+
+    displayFeedback: (a, s1) =>
+      # feedback = registerMove a
+      # console.log 'feedback', feedback
+    
+      # if PARAMS.PR_type
+      #   result =
+      #     delay: Math.round feedback.delay
+      # else
+      #   result =
+      #     delay: switch @nMoves
+      #       when 1 then 8
+      #       when 2 then 0
+      #       when 3 then 1
+
+      result =
+        delay: 0
+          
+      @data.delays.push(result.delay)
+            
+      redGreenSpan = (txt, val) ->
+        "<span style='color: #{redGreen val}; font-weight: bold;'>#{txt}</span>"
+      
+      if PARAMS.message
+        head = do ->
+          if PARAMS.message is 'full'
+            if result.planned_too_little
+              if !result.planned_too_much
+                  redGreenSpan "You should have gathered more information!", -1            
+              else
+                  redGreenSpan "You gathered too little relevant and too much irrelevant information!", -1            
+            else
+              if result.planned_too_much
+                  redGreenSpan "You considered irrelevant outcomes.", -1                    
+              else
+                  redGreenSpan "You gathered enough information!", 1
+          else
+            redGreenSpan "Poor planning!", -1
+
+        penalty = if result.delay then "<p>#{result.delay} second penalty</p>"
+        info = do ->
+          if PARAMS.smart_message
+            "Given the information you collected, your decision was " + \
+            if result.information_used_correctly
+              redGreenSpan 'optimal.', 1
+            else
+              redGreenSpan 'suboptimal.', -1
+          else ''
+
+        msg = """
+          <h3>#{head}</h3>
+          <b>#{penalty}</b>
+          #{info}
+        """
+      else
+        msg = "Please wait "+result.delay+" seconds."  
+
+      if @feedback and result.delay>=1        
+          @freeze = true
+          $('#graph-feedback').css display: 'block'
+          $('#graph-feedback-content')
+            # .css
+            #   'background-color': if mistake then RED else GREEN
+            #   color: 'white'
+            .html msg
+
+          setTimeout (=>
+            @freeze = false
+            $('#graph-feedback').css(display: 'none')
+            @arrive s1
+          ), result.delay * 1000
+      else
+            $('#graph-feedback').css(display: 'none')
+            @arrive s1
 
 
 
@@ -402,8 +482,10 @@ jsPsych.plugins['mouselab-mdp'] = do ->
           jsPsych.finishTrial @data
 
     checkFinished: =>
-      if @complete
-        @endTrial()
+      if @complete and @timeLeft? and @timeLeft > 0
+        @lowerMessage.html """Waiting for the timer to expire..."""
+      if @complete and @timeLeft <= 0
+        do @endTrial
 
 
   #  =========================== #

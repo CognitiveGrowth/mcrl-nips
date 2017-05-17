@@ -53,7 +53,8 @@ $(window).on('load', function() {
     BLOCKS = expData.blocks;
     psiturk.recordUnstructuredData('params', PARAMS);
     if (DEBUG || DEMO) {
-      return createStartButton();
+      createStartButton();
+      return PARAMS.message = true;
     } else {
       console.log('Testing saveData');
       ERROR = null;
