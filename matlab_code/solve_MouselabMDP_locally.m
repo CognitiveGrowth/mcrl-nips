@@ -1,8 +1,8 @@
-function solve_MouselabMDP_SAVIO(c,init,continue_previous_run)
+function solve_MouselabMDP_locally(c,init,continue_previous_run)
 
 rng('shuffle')
 
-addpath('/global/home/users/flieder/matlab_code/MatlabTools/')
+addpath('MatlabTools')
 %create meta-level MDP
 
 add_pseudorewards=false;
@@ -11,7 +11,7 @@ pseudoreward_type='none';
 mean_payoff=4.5;
 std_payoff=10.6;
 
-load('/global/home/users/flieder/matlab_code/MouselabMDPExperiment_normalized')
+load('MouselabMDPExperiment_normalized')
 
 actions_by_state{1}=[];
 actions_by_state{2}=[1];
@@ -78,7 +78,7 @@ first_episode=1; last_rep=nr_training_episodes;
 for rep=1:nr_reps
 
     if continue_previous_run
-        load(['/global/home/users/flieder/results/MouselabMDPFitBayesianSARSA',...
+        load(['../results/MouselabMDPFitBayesianSARSA',...
         int2str(round(100*c)),'_',int2str(init_mu),'.mat'])
         glm=result.glm;
     else
@@ -156,7 +156,7 @@ title(['Bayesian SARSA without PR, ',int2str(nr_episodes),' episodes'],'FontSize
 if nr_reps==1
     best_run=1;
 end
-nr_episodes_evaluation=250;%2000;
+nr_episodes_evaluation=2000;%2000;
 meta_MDP.object_level_MDP=meta_MDP.object_level_MDPs(1);
 policy=@(state,mdp) contextualThompsonSampling(state,meta_MDP,glm(best_run));
 [R_total_evaluation,problems_evaluation,states_evaluation,chosen_actions_evaluation,indices_evaluation]=...
@@ -169,7 +169,7 @@ nr_observations_learned_policy=[mean(indices_evaluation.nr_acquisitions),...
 %result.policy=policy;
 result.reward=reward_learned_policy;
 result.weights=weights;
-result.features={'VPI','VOC','E[R|act,b]'};
+result.features={'VPI','VOC','E[R|act,b]','1'};
 result.nr_observations=nr_observations_learned_policy;
 result.returns=R_total_evaluation;
 result.cost_per_click=c;
@@ -177,7 +177,7 @@ result.glm=glm;
 
 do_save=true;
 if do_save
-    save(['/global/home/users/flieder/results/MouselabMDPFitBayesianSARSA',...
+    save(['../results/MouselabMDPFitBayesianSARSA',...
         int2str(round(100*c)),'_',int2str(m_init),'_',int2str(s_init),...
         '.mat'],'result','-v7.3')
 end
