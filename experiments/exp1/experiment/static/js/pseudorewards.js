@@ -138,6 +138,8 @@ function metaMDP(){
 
 function getPR(state,action_sequence){
     
+    meta_MDP.cost_per_click=PARAMS.info_cost
+    
     var PRs = new Array()
     
     var current_state = deepCopy(state)
