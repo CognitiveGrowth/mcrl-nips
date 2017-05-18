@@ -154,7 +154,33 @@ function getPR(state,action_sequence){
         }
         var V_s = _.max(Q_values)
         
-        PRs.push(Q_a-V_s)
+        var PR = Q_a-V_s
+        //PR=0 if there is only one possible move and it was taken
+        if (action_sequence[i].is_move & current_state.mu_Q[current_state.s-1].length==1){
+            PR = 0;    
+        }
+        //if you chose the option with the higher none value in the last step, then PR=0
+        var is_last_step=current_state.step==current_state.nr_steps
+        
+        if(action.is_move & is_last_step){        
+            var children=getDownStreamStates(current_state)
+            var observed_all_children = true
+            var child_rewards= new Array()
+            for (c in children){
+                var child_value = state.observations[children[c]-1]
+                child_rewards.push(child_value)
+                if (isNaN(child_value) | child_value == null){
+                    var observed_everything=false
+                    break
+                }
+            }        
+            var chose_well = state.observations[action_sequence[i].move.next_state-1] == _.max(child_rewards)
+
+            if (is_last_step & observed_all_children & chose_well){
+                PR=0
+            }
+        }
+        PRs.push(PR)
         
         current_state = getNextState(current_state,action_sequence[i])
     }

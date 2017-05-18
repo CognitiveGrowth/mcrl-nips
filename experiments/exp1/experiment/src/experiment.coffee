@@ -7,7 +7,7 @@ Demonstrates the jspsych-mdp plugin
 ###
 # coffeelint: disable=max_line_length, indentation
 
-DEBUG = false
+DEBUG = true
 console.log condition
 if DEBUG
   console.log """
@@ -278,7 +278,7 @@ do ->  # big closure to prevent polluting global namespace
       # instructions
       # delay
       # debug_slide
-      instruct_loop
+      #instruct_loop
       # quiz
       main
       # finish
