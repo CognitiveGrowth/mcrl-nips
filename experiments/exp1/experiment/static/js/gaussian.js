@@ -180,9 +180,9 @@ function ETruncatedNormal(mu,sigma,x_min,x_max){
                      
                      
 function getMaxOfArray(numArray) {
-  return Math.max.apply(null, numArray);
+  return _.max(numArray)//Math.max.apply(null, numArray);
 }
         
 function getMinOfArray(numArray) {
-  return Math.min.apply(null, numArray);
+  return _.min(numArray)//Math.min.apply(null, numArray);
 }
