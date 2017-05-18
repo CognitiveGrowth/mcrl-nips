@@ -22,14 +22,16 @@ for c=1:numel(costs)
         end
     end
     
-    exact_PR = nan(nr_states,nr_states,nr_arms+1);
+    exact_PR = nan(nr_states,nr_arms+1);
     for s=1:nr_states
         for a=1:nr_arms+1
             next_s = find(not(transition(s,:,a) == 0));
+            evp = 0;
             for isp=1:numel(next_s)
                 sp = next_s(isp);
-                exact_PR(s,sp,a)=values(sp,1)-values(s,1);
+                evp = evp + transition(s,sp,a)*values(sp,1);
             end
+            exact_PR(s,a) = evp-values(s,1);
         end
     end
     

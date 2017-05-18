@@ -401,7 +401,7 @@ jsPsych.plugins['graph'] = (function() {
             });
             return _this.arrive(s1);
           };
-        })(this)), result.delay * 1000);
+        })(this)), (DEBUG ? 1000 : result.delay * 1000));
       } else {
         $('#graph-feedback').css({
           display: 'none'

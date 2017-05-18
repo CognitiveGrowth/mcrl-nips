@@ -408,7 +408,7 @@ jsPsych.plugins['graph'] = do ->
             @freeze = false
             $('#graph-feedback').css(display: 'none')
             @arrive s1
-          ), result.delay * 1000
+          ), (if DEBUG then 1000 else result.delay * 1000)
       else
             $('#graph-feedback').css(display: 'none')
             @arrive s1

@@ -1,6 +1,6 @@
 [HIT Configuration]
 title = Flight Planning
-description = This HIT takes about 20 minutes. You will play an airplane flight simulation game for 8 rounds. You will decide where to fly your plane in order to maximize earnings. This pays $0.50 plus a performance bonus of up to $5.00.
+description = This HIT takes about 10 minutes. You will play an airplane flight simulation game for 8 rounds. You will decide where to fly your plane in order to maximize earnings. This pays $0.75 plus a performance bonus of up to $5.00.
 amt_keywords = psychology, experiment
 lifetime = 24
 us_only = true
@@ -26,9 +26,9 @@ login_pw = cocotastic90
 threads = 4
 
 [Task Parameters]
-experiment_code_version = 1E
+experiment_code_version = N2
 num_counters = 1
-num_conds = 6
+num_conds = 9
 
 [Shell Parameters]
 launch_in_sandbox_mode = false

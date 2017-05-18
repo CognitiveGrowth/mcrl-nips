@@ -7,7 +7,7 @@ Demonstrates the jspsych-mdp plugin
 ###
 # coffeelint: disable=max_line_length, indentation
 
-DEBUG = true
+DEBUG = false
 console.log condition
 if DEBUG
   console.log """
@@ -39,9 +39,10 @@ do ->  # big closure to prevent polluting global namespace
   if DEBUG
     PARAMS =
       PR_type: 2
-      info_cost: 2.8
+      info_cost: 0.01
 
   TRIALS = expData.trials
+  N_TRIALS  = TRIALS.length
   psiturk.recordUnstructuredData 'params', PARAMS
 
   # $(window).resize -> checkWindowSize 900, 700, $('#jspsych-target')
@@ -75,14 +76,13 @@ do ->  # big closure to prevent polluting global namespace
           2. Whether you flew along the best route given your current location and
              the information you had about the values of other locations.
 
-          In the example below, not enough relevant values were observed, and as a
-          result there is a 15 second timeout penalty. <b>The duration of the
-          timeout penalty is proportional to how poorly you planned your
+          In the example below, not enough relevant values were observed, and
+          as a result there is a 41 second timeout penalty. <b>The duration of
+          the timeout penalty is proportional to how poorly you planned your
           route:</b> the more money you could have earned from observing more
-          values and/or choosing a better route, the longer the delay. The second
-          feedback in the example below indicates the plane was flown along the
-          best route, given the limited information available. <b>If you perform
-          optimally, no feedback will be shown and you can proceed immediately.</b>
+          values and/or choosing a better route, the longer the delay. <b>If
+          you perform optimally, no feedback will be shown and you can proceed
+          immediately.</b>
 
           <div align="center"><img src="static/images/feedback.png" width=600></div>
         """]
@@ -163,7 +163,7 @@ do ->  # big closure to prevent polluting global namespace
       markdown """
         # Instructions
 
-        You will play the game for 8 rounds. The value of every location will
+        You will play the game for #{N_TRIALS} rounds. The value of every location will
         change from each round to the next. At the begining of each round, the
         value of every location will be hidden, and you will only discover the
         value of the locations you click on. The example below shows the value
@@ -221,7 +221,8 @@ do ->  # big closure to prevent polluting global namespace
        '5% of my score on a random round']
       ['Whether I observed the rewards of relevant locations.'
        'Whether I chose the move that was best according to the information I had.'
-       'The duration of the delay is proportional to how much more money I could have earned by planning and deciding better.'
+       'The length of the day is based on how much more money I could have earned by planning and deciding better.'
+       # 'The duration of the delay is proportional to how much more money I could have earned by planning and deciding better.'
        'All of the above.']
     ]
     required: [true, true, true, true, true, true]
@@ -277,7 +278,7 @@ do ->  # big closure to prevent polluting global namespace
       # instructions
       # delay
       # debug_slide
-      # instruct_loop
+      instruct_loop
       # quiz
       main
       # finish
@@ -286,7 +287,6 @@ do ->  # big closure to prevent polluting global namespace
     experiment_timeline = [
       instruct_loop
       main
-      #retention
       finish
     ]
 
