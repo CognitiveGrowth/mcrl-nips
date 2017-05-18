@@ -697,6 +697,8 @@ function predictQValue(state,computation,environment_model){
 
     }
     
+    meta_MDP.cost_per_click = PARAMS.info_cost
+    
     var VPI = computeVPI(state,computation,environment_model)
     var VOC1 = computeMyopicVOC(state,computation,environment_model)
     var ER = computeExpectedRewardOfActing(state,environment_model)
