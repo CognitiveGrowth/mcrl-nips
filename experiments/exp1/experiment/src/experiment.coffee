@@ -39,7 +39,7 @@ do ->  # big closure to prevent polluting global namespace
   if DEBUG
     PARAMS =
       PR_type: 2
-      info_cost: 0.01
+      info_cost: 1.6
 
   TRIALS = expData.trials
   N_TRIALS  = TRIALS.length
@@ -187,7 +187,7 @@ do ->  # big closure to prevent polluting global namespace
            won’t be able to proceed to the next round before the countdown has
            finished, but you can take as much time as you like afterwards.
         2. </b>You will earn <u>real money</u> for your flights.</b> Specifically,
-           one of the 12 rounds will be chosen at random and you will receive 5%
+           one of the #{N_TRIALS} rounds will be chosen at random and you will receive 5%
            of your earnings in that round as a bonus payment.
 
          You may proceed to take an entry quiz, or go back to review the instructions.
@@ -221,8 +221,7 @@ do ->  # big closure to prevent polluting global namespace
        '5% of my score on a random round']
       ['Whether I observed the rewards of relevant locations.'
        'Whether I chose the move that was best according to the information I had.'
-       'The length of the day is based on how much more money I could have earned by planning and deciding better.'
-       # 'The duration of the delay is proportional to how much more money I could have earned by planning and deciding better.'
+       'The length of the delay is based on how much more money I could have earned by planning and deciding better.'
        'All of the above.']
     ]
     required: [true, true, true, true, true, true]
@@ -278,7 +277,6 @@ do ->  # big closure to prevent polluting global namespace
       # instructions
       # delay
       # debug_slide
-      #instruct_loop
       # quiz
       main
       # finish
