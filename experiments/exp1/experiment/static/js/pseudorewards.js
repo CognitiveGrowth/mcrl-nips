@@ -134,7 +134,37 @@ function metaMDP(){
     return meta_MDP;
 }
 
-function getPR(state,actions){
+
+function getPR(state,action_sequence){
+    
+    var PRs = new Array()
+    
+    var current_state = state
+    
+    for (var i in action_sequence){
+        
+        Q_a=predictQValue(current_state,action_sequence[i],current_state)
+        
+        var available_actions=getActions(state)
+        
+        var Q_values = new Array()
+        for (var a in available_actions)
+        {
+            Q_values.push(predictQValue(current_state,available_actions[a],current_state)) 
+        }
+        var V_s = _.max(Q_values)
+        
+        PRs.push(Q_a-V_s)
+        
+        current_state = getNextState(current_state,action_sequence[i])
+    }
+    
+    return sum(PRs)
+    
+}
+
+/*
+function getPROld(state,actions){
     meta_MDP.cost_per_click = PARAMS.info_cost
   
     var next_state=getNextState(state,actions,true)
@@ -168,6 +198,8 @@ function getPR(state,actions){
     //To improve the quality of the feedback, we could use E[V(S_{t+1})] instead of V(s_{t+1}).
     //This would take longer to compute and would also be more effort to implement.
 }
+*/
+
 
 function computeDelay(initial_state,actions){   
     //returns the delay in seconds corresponding to the PR for starting in initial_state and taking the actions in the array actions
