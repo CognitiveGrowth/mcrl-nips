@@ -33,8 +33,10 @@ blocks = undefined
 do ->  # big closure to prevent polluting global namespace
   expData = loadJson 'static/json/condition_1.json'
   PARAMS =
-    PR_type: condition % 3
-    info_cost: [0.01, 1.6, 2.8][condition // 3]
+    PR_type: condition
+    info_cost: 1.6
+    # PR_type: condition % 3
+    # info_cost: [0.01, 1.6, 2.8][condition // 3]
 
   if DEBUG
     PARAMS =

@@ -31,8 +31,8 @@ blocks = void 0;
   var BONUS, Block, MDPBlock, N_TRIALS, QuizLoop, TRIALS, TextBlock, calculateBonus, debug_slide, expData, experiment_timeline, finish, fmtMoney, instruct_loop, instructions, main, prompt_resubmit, quiz, reprompt, save_data, text;
   expData = loadJson('static/json/condition_1.json');
   PARAMS = {
-    PR_type: condition % 3,
-    info_cost: [0.01, 1.6, 2.8][Math.floor(condition / 3)]
+    PR_type: condition,
+    info_cost: 1.6
   };
   if (DEBUG) {
     PARAMS = {
