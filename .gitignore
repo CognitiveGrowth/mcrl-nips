@@ -7,4 +7,4 @@ server.log
 experiment/.nips.sublime-project
 experiment/.nips.sublime-workspace
 experiment/scratch.ipynb
-__pycache__/
+*.pyc
