@@ -126,7 +126,7 @@ for m=1:size(mus,2)
                 saveas(fig_Q,['../../results/figures/QFitnProblemBayesianSARSA_c',int2str(c),'.png'])
 
                 %% Compute approximate PRs
-                approximate_PR = nan(nr_states,nr_states,nr_arms+1);
+                approximate_PR = nan(nr_states,nr_arms+1);
                 for s=1:nr_states
                     for a=1:nr_arms+1
                         next_s = find(not(nlightbulb_mdp(c).T(s,:,a) == 0));
