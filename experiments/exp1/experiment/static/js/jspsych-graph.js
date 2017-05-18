@@ -387,7 +387,7 @@ jsPsych.plugins['graph'] = (function() {
       } else {
         msg = "Please wait " + result.delay + " seconds.";
       }
-      if (this.feedback && result.delay >= 1) {
+      if (this.feedback && result.delay >= 5) {
         this.freeze = true;
         $('#graph-feedback').css({
           display: 'block'

@@ -394,7 +394,7 @@ jsPsych.plugins['graph'] = do ->
       else
         msg = "Please wait "+result.delay+" seconds."  
 
-      if @feedback and result.delay>=1        
+      if @feedback and result.delay>=5        
           @freeze = true
           $('#graph-feedback').css display: 'block'
 
