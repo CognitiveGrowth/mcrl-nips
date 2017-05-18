@@ -6,12 +6,13 @@ switch n
     case 1
         load('../results/lightbulb_problem.mat')
         load('../results/lightbulb_fit.mat')
-        PRs_opt = squeeze(lightbulb_mdp(10).optimal_PR(:,1,:));
-        PRs_aprx = [lightbulb_problem(10).approximate_PRs;[0,0]];
-        pi_star = lightbulb_mdp.pi_star;
-        S = lightbulb_mdp.states;
-        T = lightbulb_mdp.T;
-        R = lightbulb_mdp.R;
+        c = 10;
+        PRs_opt = squeeze(lightbulb_mdp(c).optimal_PR(:,1,:));
+        PRs_aprx = [lightbulb_problem(c).approximate_PRs;[0,0]];
+        pi_star = lightbulb_mdp(c).pi_star;
+        S = lightbulb_mdp(c).states;
+        T = lightbulb_mdp(c).T;
+        R = lightbulb_mdp(c).R;
     case 3
         load('../results/nlightbulb_problem.mat') % exact
         load('../results/nlightbulb_fit.mat') % approximate
@@ -29,11 +30,11 @@ epsilon     = 0.25;  % probability of a random action selection
 nEpisodes = 1000;
 
 nActions = size(T,3);
-nSims = 240;
+nSims = 2000;
 
 PRs_none = zeros(size(PRs_opt));
-% PRs_opt = PRs_opt + R;
-% PRs_aprx = PRs_aprx + R;
+PRs_opt = PRs_opt + R;
+PRs_aprx = PRs_aprx + R;
 
 R_noPR = nan(nSims,nEpisodes);
 parfor i = 1:nSims
@@ -87,4 +88,4 @@ h = errorbar(smooth(mean(R_optPi),20),smooth(sem(R_optPi),20),'g'); h.CapSize = 
 legend('no PRs','approximate PRs','optimal PRs','optimal policy','location','southeast')
 xlabel('learning episode','fontsize',18)
 ylabel('reward','fontsize',18)
-% saveas(gcf,['../results/figures/',num2str(n),'lightbulb_simulations_',num2str(nEpisodes),'Episodes'],'png');
+saveas(gcf,['../results/figures/',num2str(n),'lightbulb_simulations_',num2str(nEpisodes),'Episodes'],'png');
