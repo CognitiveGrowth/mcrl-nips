@@ -7,7 +7,7 @@ Demonstrates the jspsych-mdp plugin
 ###
 # coffeelint: disable=max_line_length, indentation
 
-DEBUG = true
+DEBUG = false
 console.log condition
 if DEBUG
   console.log """
@@ -34,7 +34,7 @@ do ->  # big closure to prevent polluting global namespace
   expData = loadJson 'static/json/condition_1.json'
   PARAMS =
     PR_type: condition
-    info_cost: 1.6
+    info_cost: 2.8
     # PR_type: condition % 3
     # info_cost: [0.01, 1.6, 2.8][condition // 3]
 
@@ -204,7 +204,6 @@ do ->  # big closure to prevent polluting global namespace
     """
     type: 'survey-multi-choice'  # note: I've edited this jspysch file
     questions: [
-      "How many flights are there per round?"
       "True or false: The hidden values will change each time I start a new round."
       "How much does it cost to observe each hidden value?"
       "How many hidden values am I allowed to observe in each round?"
@@ -213,7 +212,6 @@ do ->  # big closure to prevent polluting global namespace
         "What does the feedback teach you?"
     ] else [])
     options: [
-      ['1', '2', '3', '4']
       ['True', 'False']
       ['$0.01', '$0.05', '$1.60', '$2.80']
       ['At most 1', 'At most 5', 'At most 10', 'At most 15', 'As many or as few as I wish']
@@ -226,9 +224,8 @@ do ->  # big closure to prevent polluting global namespace
        'The length of the delay is based on how much more money I could have earned by planning and deciding better.'
        'All of the above.']
     ]
-    required: [true, true, true, true, true, true]
+    required: [true, true, true, true, true]
     correct: [
-      '3'
       'True'
       fmtMoney PARAMS.info_cost
       'As many or as few as I wish'
