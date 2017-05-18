@@ -48,7 +48,7 @@ for i = 1:size(values,1) %second_to_last_state % loop over states
         end
         expected_value_sample = value_next_state1*prob_next_state1 + ...
             value_next_state2*prob_next_state2;
-        pseudoR_matrix1(i,j) = discount*expected_value_sample - value_this_state + expected_reward;
+        pseudoR_matrix1(i,j) = discount*expected_value_sample - value_this_state;% + expected_reward;
     end
     
 end
@@ -72,7 +72,7 @@ for i = 1:size(values,1) %second_to_last_state % loop over states
             value_next_state = values(next_state,j+1);
         end                
         
-        pseudoR_matrix2(i,j) = discount*value_next_state - value_this_state + expected_reward;
+        pseudoR_matrix2(i,j) = discount*value_next_state - value_this_state;% + expected_reward;
     end
     
 end
