@@ -41,7 +41,7 @@ do ->  # big closure to prevent polluting global namespace
   if DEBUG
     PARAMS =
       PR_type: 2
-      info_cost: 1.6
+      info_cost: 2.8
 
   TRIALS = expData.trials
   N_TRIALS  = TRIALS.length

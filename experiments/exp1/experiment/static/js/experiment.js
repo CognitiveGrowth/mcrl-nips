@@ -37,7 +37,7 @@ blocks = void 0;
   if (DEBUG) {
     PARAMS = {
       PR_type: 2,
-      info_cost: 1.6
+      info_cost: 2.8
     };
   }
   TRIALS = expData.trials;

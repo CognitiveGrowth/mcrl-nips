@@ -16,7 +16,7 @@ database_url = mysql://fredcallaway:cocotastic90@mysql.cocosci.dreamhosters.com/
 table_name = participants
 
 [Server Parameters]
-host = cocosci-mcrl.dreamhosters.com
+host = cocosci-fred.dreamhosters.com
 port = 80
 cutoff_time = 60
 logfile = passenger_wsgi.log
