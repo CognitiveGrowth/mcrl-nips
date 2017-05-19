@@ -125,7 +125,7 @@ for m=1:size(mus,2)
                 saveas(fig_Q,['../../results/figures/QFitnProblemBayesianSARSA_c',int2str(c),'.fig'])
                 saveas(fig_Q,['../../results/figures/QFitnProblemBayesianSARSA_c',int2str(c),'.png'])
 
-                %% Compute approximate PRs
+                %% Compute approximate PRs (without rewards)
                 approximate_PR = nan(nr_states,nr_arms+1);
                 for s=1:nr_states
                     for a=1:nr_arms+1
@@ -138,6 +138,21 @@ for m=1:size(mus,2)
                         approximate_PR(s,a) = evp-V_hat(s);
                     end
                 end
+                
+%                 approximate_PR = nan(nr_states,nr_arms+1);
+%                 approximate_PR_Q = nan(nr_states,nr_arms+1);
+%                 for s=1:nr_states
+%                     for a=1:nr_arms+1
+%                         approximate_PR_Q(s,a) = Q_hat(s,a) - V_hat(s);
+%                         next_s = find(not(nlightbulb_mdp(c).T(s,:,a) == 0));
+%                         evp = 0;
+%                         for isp=1:numel(next_s)
+%                             sp = next_s(isp);
+%                             evp = evp + nlightbulb_mdp(c).T(s,sp,a)*V_hat(sp);
+%                         end
+%                         approximate_PR(s,a) = evp-V_hat(s)+nlightbulb_mdp(c).R(s,a);
+%                     end
+%                 end
                 
                 nlightbulb_problem(c).approximate_PRs=approximate_PR;
             end
