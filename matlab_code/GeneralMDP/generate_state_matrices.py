@@ -94,13 +94,14 @@ def states(n_balls,n_arms,rewardCorrect=1.0,cost=-1,constantArm=-1):
 
     return S,T,R
 
-n_balls=int(sys.argv[1])
-n_arms=int(sys.argv[2])
-rc=float(sys.argv[3])
-co=float(sys.argv[4])
-ca=float(sys.argv[5])
-print(n_balls,n_arms,rc,co,ca)
-print(n_st(n_balls,n_arms))
-s = states(n_balls,n_arms,rc,co,ca)
-a = {'states':s[0],'transition':s[1],'rewards':s[2]}
-scipy.io.savemat('./generalMDP/file',a)
+if __name__ == '__main__':
+    n_balls=int(sys.argv[1])
+    n_arms=int(sys.argv[2])
+    rc=float(sys.argv[3])
+    co=float(sys.argv[4])
+    ca=float(sys.argv[5])
+    print(n_balls,n_arms,rc,co,ca)
+    print(n_st(n_balls,n_arms))
+    s = states(n_balls,n_arms,rc,co,ca)
+    a = {'states':s[0],'transition':s[1],'rewards':s[2]}
+    scipy.io.savemat('./generalMDP/file',a)
