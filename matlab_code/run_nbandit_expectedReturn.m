@@ -1,11 +1,11 @@
 clear;
 
-load ../results/2lightbulb_problem.mat
-Q_star_2 = nlightbulb_mdp.Q_star;
-S_2 = nlightbulb_mdp.states;
-T_2 = nlightbulb_mdp.T;
-R_2 = nlightbulb_mdp.R;
-load ../results/nlightbulb_problem.mat
+% load ../results/2lightbulb_problem.mat
+% Q_star_2 = nlightbulb_mdp.Q_star;
+% S_2 = nlightbulb_mdp.states;
+% T_2 = nlightbulb_mdp.T;
+% R_2 = nlightbulb_mdp.R;
+% load ../results/nlightbulb_problem.mat
 
 %%
 nSims = 1000;
@@ -13,36 +13,36 @@ epsilon     = 0.25;  % probability of a random action selection
 
 for n = 2:4
     disp(num2str(n))
-    switch n
-        case 2
-            load ../results/2lightbulb_fit.mat
+%     switch n
+%         case 2
+%             load ../results/2lightbulb_fit.mat
+%             Q_hat = nlightbulb_problem.Q_hat_BSARSA;
+%             Q_star = Q_star_2;
+%             S = S_2;
+%             T = T_2;
+%             R = R_2;
+%         case 3
+            load(['../results/',num2str(n),'lightbulb_fit.mat'])
             Q_hat = nlightbulb_problem.Q_hat_BSARSA;
-            Q_star = Q_star_2;
-            S = S_2;
-            T = T_2;
-            R = R_2;
-        case 3
-            load ../results/nlightbulb_fit.mat
-            Q_hat = nlightbulb_problem.Q_hat_BSARSA;
-            Q_star = nlightbulb_mdp(1).Q_star;
-            S = nlightbulb_mdp(1).states;
-            T = nlightbulb_mdp(1).T;
-            R = nlightbulb_mdp(1).R;
-        case 4
-            load ../results/4lightbulb_fit.mat
-            Q_hat = nlightbulb_problem.Q_hat_BSARSA;
-            Q_star = nlightbulb_mdp(2).Q_star;
-            S = nlightbulb_mdp(2).states;
-            T = nlightbulb_mdp(2).T;
-            R = nlightbulb_mdp(2).R;
-        case 5
-            load ../results/5lightbulb_fit.mat
-            Q_hat = nlightbulb_problem.Q_hat_BSARSA;
-            Q_star = nlightbulb_mdp(3).Q_star;
-            S = nlightbulb_mdp(3).states;
-            T = nlightbulb_mdp(3).T;
-            R = nlightbulb_mdp(3).R;
-    end
+            Q_star = nlightbulb_problem.mdp.Q_star;
+            S = nlightbulb_problem.mdp.states;
+            T = nlightbulb_problem.mdp.T;
+            R = nlightbulb_problem.mdp.R;
+%         case 4
+%             load ../results/4lightbulb_fit.mat
+%             Q_hat = nlightbulb_problem.Q_hat_BSARSA;
+%             Q_star = nlightbulb_mdp(2).Q_star;
+%             S = nlightbulb_mdp(2).states;
+%             T = nlightbulb_mdp(2).T;
+%             R = nlightbulb_mdp(2).R;
+%         case 5
+%             load ../results/5lightbulb_fit.mat
+%             Q_hat = nlightbulb_problem.Q_hat_BSARSA;
+%             Q_star = nlightbulb_mdp(3).Q_star;
+%             S = nlightbulb_mdp(3).states;
+%             T = nlightbulb_mdp(3).T;
+%             R = nlightbulb_mdp(3).R;
+%     end
     nActions = size(T,3);
     nStates = size(T,1);
     for p = 1:2

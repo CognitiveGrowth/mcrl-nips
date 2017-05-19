@@ -1,0 +1,83 @@
+clear;
+
+nObs = 0:6;
+nSims = 1000;
+epsilon     = 0.25;  % probability of a random action selection
+DQ = nan(numel(nObs),nSims,2);
+for n = 1:2
+    switch n
+        case 1
+            load('../results/lightbulb_problem.mat')
+            S = lightbulb_mdp(1).states;
+            T = lightbulb_mdp(1).T;
+            R = lightbulb_mdp(1).R;
+            pi_star = lightbulb_mdp.pi_star;
+        case 2
+            load ../results/nlightbulb_problem.mat
+            Q = nlightbulb_mdp(1).Q_star;
+            S = nlightbulb_mdp(1).states;
+            T = nlightbulb_mdp(1).T;
+            R = nlightbulb_mdp(1).R;
+            pi_star = nlightbulb_mdp.pi_star;
+    end
+    
+    nStates = size(T,1);
+    nActions = size(R,2);
+    
+    for o = 1:numel(nObs)
+        disp(num2str(o))
+        nOb = nObs(o);
+        for i = 1:nSims
+            s = 1;
+            numObs(i,n) = 0;
+            while true
+                a = pi_star(s);
+                numObs(i,n) = numObs(i,n)+1;
+                DQ_opt(i,n) = R(s,end);
+                if a == nActions
+                    break
+                end
+                s = randsample(nStates,1,true,T(s,:,a));
+            end
+        end
+        for i = 1:nSims
+            s = 1;
+            for j = 1:nOb
+                if n == 1
+                    a = 1;
+                else
+                    [~,a] = sort(Q(s,:),'descend');
+                    if a(1) == nActions
+                        a = a(2);
+                    else
+                        a = a(1);
+                    end
+                end
+                s = randsample(nStates,1,true,T(s,:,a));
+            end
+            DQ(o,i,n) = R(s,end);
+        end
+    end
+end
+
+%%
+figure; hold on
+BLUE = [0,50,98]/255;
+GOLD = [253,181,21]/255;
+h1 = errorbar(mean(DQ(:,:,1),2),sem(DQ(:,:,1),2),'color',BLUE,'linewidth',3);
+h2 = errorbar(mean(DQ(:,:,2),2),sem(DQ(:,:,2),2),'color',GOLD,'linewidth',3);
+h3 = errorbar(mean(numObs(:,1)),mean(DQ_opt(:,1)),sem(DQ_opt(:,1)));
+set(h3,'CapSize',0,'color',BLUE,'marker','*','linewidth',3)
+h = herrorbar(mean(numObs(:,1)),mean(DQ_opt(:,1)),sem(numObs(:,1)));
+set(h,'color',BLUE,'marker','.','linewidth',3)
+h4 = errorbar(mean(numObs(:,2)),mean(DQ_opt(:,2)),sem(DQ_opt(:,2)));
+set(h4,'CapSize',0,'color',GOLD,'marker','*','linewidth',3)
+h = herrorbar(mean(numObs(:,2)),mean(DQ_opt(:,2)),sem(numObs(:,2)));
+set(h,'color',GOLD,'marker','.','linewidth',3)
+errorbar(1,mean(DQ(1,:,1),
+
+legend([h1,h3,h2,h4],'1-lightbulb','optimal','3-bandit','optimal','location','southeast')
+xlabel('number of observations','fontsize',18)
+ylabel('decision quality [% correct]','fontsize',18)
+% set(gca,'xtick',nObs)
+% saveas(gcf,['../results/figures/decisionQuality_observations'],'png');
