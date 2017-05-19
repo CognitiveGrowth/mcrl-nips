@@ -1,6 +1,8 @@
 addpath('./MatlabTools/')
 addpath('../')
 
+clear all
+
 nr_arms= 5;
 nr_balls = 6;
 cost = 0.01;
