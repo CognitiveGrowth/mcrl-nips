@@ -27,26 +27,29 @@ for i=1:nr_episodes
                 
         %1. Choose action
         [actions,mdp]=mdp.getActions(s);
-        action=policy(s,mdp);
-        chosen_actions{i}(t)=action;
+        actions=policy(s,mdp);
         
-        if action.is_decision_mechanism
-            [state,decision]=mdp.decide(s,action); 
-            chosen_actions{i}(t).move=decision;
-            chosen_actions{i}(t).from_state=state.s;
-        end
+        for a=1:numel(actions)
+            action=actions(a);
+            chosen_actions{i}(t)=action;
             
-        %2. Observe outcome
-        [r,s_next,PR]=mdp.simulateTransition(s,action);
-        if action.is_decision_mechanism
-            chosen_actions{i}(t).state=s_next.s;
+            if action.is_decision_mechanism
+                [state,decision]=mdp.decide(s,action);
+                chosen_actions{i}(t).move=decision;
+                chosen_actions{i}(t).from_state=state.s;
+            end
+            
+            %2. Observe outcome
+            [r,s_next,PR]=mdp.simulateTransition(s,action);
+            if action.is_decision_mechanism
+                chosen_actions{i}(t).state=s_next.s;
+            end
+            
+            R_total(i)=R_total(i)+r;
+            nr_observations=nr_observations+1;
+            
+            s=s_next;
         end
-        
-        R_total(i)=R_total(i)+r;
-        nr_observations=nr_observations+1;
-        
-        s=s_next;        
-        
     end
     
     %EV(choice)/[max_g EV(g)]

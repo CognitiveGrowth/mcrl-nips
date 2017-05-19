@@ -240,14 +240,27 @@ BSARSA_results.glms=best_glms;
 
 save('../results/BSARSA_results_Mouselab.mat','BSARSA_results')
 
+
+%meta-greedy policy
+costs=[0.01,0.05,0.10,0.20,0.40,0.80,1.60,2.00,2.40,2.80,3.20,6.40,12.80];
+parfor c=1:length(costs)
+    [ER_meta_greedy(c,:),result_meta_greedy(c)]=evaluatePolicy([0;1;1],costs(c),1000)
+end
+
+%no-deliberation policy
+avg_reward_per_step=4.5; nr_steps=3;
+performance_no_deliberation=nr_steps*avg_reward_per_step*ones(size(costs));
+
+
 fig=figure(),
 errorbar(costs',avg_performance.BSARSAQ,sem_performance.BSARSAQ,'LineWidth',3),hold on
 errorbar(costs',avg_performance.full_observation,sem_performance.full_observation,'LineWidth',3),hold on
+plot(costs',performance_no_deliberation,'LineWidth',3),hold on
 xlim([0.01,3.3])
 set(gca,'FontSize',16,'XScale','log')
 xlabel('Cost per Click','FontSize',16)
 ylabel('Expected return','FontSize',16)
-legend('BSARSA','Full-Observation Policy')
+legend('BSARSA','Full-Deliberation Policy','No-Deliberation Policy')
 saveas(fig,'../results/figures/MouselabEvaluation.fig')
 saveas(fig,'../results/figures/MouselabEvaluation.png')
 

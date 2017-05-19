@@ -17,9 +17,9 @@ sigma0=sqrt(nr_cells)*sigma_reward;
 
 [E_max,std_max]=EVofMaxOfGaussians([mu_reward;mu_reward],[sigma_reward;sigma_reward]);
 
-resolution=sigma0/50;
+resolution=sigma0/10;
 mu_values=(mu_reward-2*sigma0):resolution:(mu_reward+2*sigma0);
-sigma_values=sigma_reward*(0:nr_cells);
+sigma_values=sigma_reward*(0:0.5:2*nr_cells);
 [MUs,SIGMAs]=meshgrid(mu_values,sigma_values);
 
 sample_values=(mu_reward-3*sigma0):resolution:(mu_reward+3*sigma0);
@@ -127,7 +127,7 @@ for from=1:(nr_states-1)
                     p_samples=pdf_samples*resolution; %probability mass function
                     
                     posterior_means  = (from_state.mu + sample_values - mu_reward );
-                    posterior_sigmas = sqrt(from_state.sigma^2-std_max^2)*ones(size(posterior_means));
+                    posterior_sigmas = sqrt(max(0,from_state.sigma^2-std_max^2))*ones(size(posterior_means));
                 end
             end
             
@@ -154,6 +154,7 @@ for from=1:(nr_states-1)
         
     else
         T(from,:,2:end)=repmat([zeros(1,nr_states-1),1],[1,1,nr_actions-1]);
+        R(from,end,2:end)=-cost;
     end
     
     %reward of acting

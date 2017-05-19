@@ -876,14 +876,14 @@ if (appears_best){
 
     //To change the decision, the sampled value would have to be less than ub
     ub=mu_beta+meta_MDP.mean_payoff-mu_alpha;                
-    VOC=meta_MDP.std_payoff**2*normPDF(ub,meta_MDP.mean_payoff,meta_MDP.std_payoff)- (mu_alpha-mu_beta)*normCDF(ub,meta_MDP.mean_payoff,meta_MDP.std_payoff);
+    VOC=meta_MDP.std_payoff**2*normPDF(ub,meta_MDP.mean_payoff,meta_MDP.std_payoff)- (mu_alpha-mu_beta)*normCDF(ub,meta_MDP.mean_payoff,meta_MDP.std_payoff) - meta_MDP.cost_per_click;
 }
 else{
     //information is valuable if it reveals that action is optimal
     
     //To change the decision, the sampled value would have to be larger than lb.
     lb=mu_alpha+meta_MDP.mean_payoff-mu_prior[a-1];                
-    VOC=meta_MDP.std_payoff**2*normPDF(lb,meta_MDP.mean_payoff,meta_MDP.std_payoff)- (mu_alpha-mu_prior[a-1])*(1-normCDF(lb,meta_MDP.mean_payoff,meta_MDP.std_payoff));
+    VOC=meta_MDP.std_payoff**2*normPDF(lb,meta_MDP.mean_payoff,meta_MDP.std_payoff)- (mu_alpha-mu_prior[a-1])*(1-normCDF(lb,meta_MDP.mean_payoff,meta_MDP.std_payoff))- meta_MDP.cost_per_click;
 }
     
 return VOC
