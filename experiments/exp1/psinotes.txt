@@ -1,5 +1,25 @@
 *****************************
   Creating live HIT
+    HITid: 35U0MRQMUJ783GOGQL3PVRT4NFKOV7
+    Max workers: 30
+    Reward: $0.75
+    Duration: 0.75 hours
+    Fee: $9.00
+    ________________________
+    Total: $31.50
+
+*****************************
+  Creating live HIT
+    HITid: 322ZSN9Z5GKPMVA926O1GBZE934T4M
+    Max workers: 30
+    Reward: $0.75
+    Duration: 1.0 hours
+    Fee: $9.00
+    ________________________
+    Total: $31.50
+
+*****************************
+  Creating live HIT
     HITid: 3YGYP136419YSO7NGMY2F54WCZ2NRY
     Max workers: 9
     Reward: $0.75

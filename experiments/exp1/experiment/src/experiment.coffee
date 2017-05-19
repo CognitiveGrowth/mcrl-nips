@@ -7,7 +7,7 @@ Demonstrates the jspsych-mdp plugin
 ###
 # coffeelint: disable=max_line_length, indentation
 
-DEBUG = false
+DEBUG = true
 console.log condition
 if DEBUG
   console.log """

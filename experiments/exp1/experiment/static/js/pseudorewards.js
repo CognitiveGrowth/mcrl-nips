@@ -89,7 +89,7 @@ function metaMDP(){
             this.object_level_MDP=this.object_level_MDPs[problem_nr]
             this.locations=getLocations(problem_nr)            
             
-            subject_value_of_1h=40; //50 dollars worth of subjective utility per hour
+            subject_value_of_1h=20; //50 dollars worth of subjective utility per hour
             nr_trials = Object.size(this.object_level_MDPs)
             sec_per_h=3600
             this.delay_per_point = 0.05/(subject_value_of_1h*nr_trials)*sec_per_h;
