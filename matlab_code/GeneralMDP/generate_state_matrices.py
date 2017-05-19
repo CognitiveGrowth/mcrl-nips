@@ -17,7 +17,7 @@ def check(T,b):
     else:
         return -1
 
-def states(n_balls,n_arms,rewardCorrect=1.0,cost=-1):
+def states(n_balls,n_arms,rewardCorrect=1.0,cost=-1,constantArm=-1):
 
     if cost == -1: # Set cost to horizon-bounding value by default
         cost = rewardCorrect/n_balls
@@ -69,6 +69,7 @@ def states(n_balls,n_arms,rewardCorrect=1.0,cost=-1):
     t[-1,:] = 1
     T1[-1] = t
 
+    # Guessing action always leads to the terminal state
     T2 = np.zeros((n_states+1,n_states+1,1))
     T2[:,-1] = 1
 
@@ -79,14 +80,27 @@ def states(n_balls,n_arms,rewardCorrect=1.0,cost=-1):
     R[:,-1] = rewardCorrect*p
     R[-1,:] = 0
 
+    # Constant arm case
+    if constantArm != -1:
+        # Constant arm always leads to the terminal state
+        T3 = np.zeros((n_states+1,n_states+1,1))
+        T3[:,-1] = 1
+        T = np.concatenate((T,T3),axis=2)
+
+        #Constant arm has constant rewards
+        Rc = constantArm*np.ones((n_states+1,1))
+        Rc[-1] = 0
+        R = np.concatenate((R,Rc),axis=1)
 
     return S,T,R
 
 n_balls=int(sys.argv[1])
 n_arms=int(sys.argv[2])
-co=float(sys.argv[3])
-print(co)
+rc=float(sys.argv[3])
+co=float(sys.argv[4])
+ca=float(sys.argv[5])
+print(n_balls,n_arms,rc,co,ca)
 print(n_st(n_balls,n_arms))
-s = states(n_balls,n_arms,cost=co)
+s = states(n_balls,n_arms,rc,co,ca)
 a = {'states':s[0],'transition':s[1],'rewards':s[2]}
 scipy.io.savemat('./generalMDP/file',a)
