@@ -6,7 +6,7 @@ switch n
     case 1
         load('../results/lightbulb_problem.mat')
         load('../results/lightbulb_fit.mat')
-        c = 10;
+        c = 11;
         PRs_opt = squeeze(lightbulb_mdp(c).optimal_PR(:,1,:));
         PRs_aprx = [lightbulb_problem(c).approximate_PRs;[0,0]];
         pi_star = lightbulb_mdp(c).pi_star;

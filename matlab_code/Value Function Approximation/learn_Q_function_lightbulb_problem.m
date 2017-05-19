@@ -19,7 +19,7 @@ selected_features=[1;2;4];
 
 nr_features=numel(selected_features);
 
-costs=logspace(-3,-1,10);
+costs=logspace(-3,-1,10);%0.01;%
 
 for c=1:numel(costs)
     
@@ -96,4 +96,4 @@ for c=1:numel(costs)
     
     lightbulb_problem(c).approximate_PRs=approximate_PR;
 end
-save('../../results/lightbulb_fit.mat','lightbulb_problem')
+save('../../results/lightbulb_fit_.mat','lightbulb_problem')
