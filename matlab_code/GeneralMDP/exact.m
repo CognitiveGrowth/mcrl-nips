@@ -12,7 +12,7 @@ discount = 1;
 
 % nr_arms= 3;
 % nr_balls = 6;
-% cost = 0.05;
+% cost = 0.01;
 %% Call Python Script 
 
 commandStr = ['python ./GeneralMDP/generate_state_matrices.py ',...
@@ -26,9 +26,9 @@ load('./GeneralMDP/file')
 
 nr_states = size(states,1);
 nr_arms = size(states,2)/2;
-nTrials = sum(states(end-1,:))-2*nr_arms;
+% nTrials = sum(states(end-1,:))-2*nr_arms;
 
-[values, policy] = mdp_finite_horizon (transition, rewards, discount, nTrials+1);
+[values, policy] = mdp_finite_horizon (transition, rewards, discount, nr_balls+1);
 Q_star=getQFromV(values(:,1),transition,rewards);
 
 %% Check if Early Terminated
