@@ -11,7 +11,7 @@ result_display=true; result_save=true; plot_func=false; plot_point=false;
 
 addpath(pwd)
 
-GPO_path='MatlabTools/Gaussian_Optimization/'
+GPO_path='MatlabTools/Gaussian_Optimization/';
 addpath(genpath(GPO_path))
 cd(GPO_path)
 [x, fx, X_sample, F_sample, result] = ...

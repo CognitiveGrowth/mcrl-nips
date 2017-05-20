@@ -1,5 +1,8 @@
 function policySearchMouselabMDPSavio(c)
 
+addpath('/global/home/users/flieder/matlab_code/')
+addpath('/global/home/users/flieder/matlab_code/MatlabTools/')
+
 %% Direct Policy Search
 nr_episodes=1000;
 ER_hat=@(w) evaluatePolicy([w(:);1],c,nr_episodes);
@@ -8,8 +11,6 @@ d=2;
 x_input_domain = [-1 1; -1 1];
 nb_iter=25;
 result_display=true; result_save=true; plot_func=false; plot_point=false;
-
-addpath(pwd)
 
 GPO_path='/global/home/users/flieder/matlab_code/MatlabTools/Gaussian_Optimization/'
 addpath(genpath(GPO_path))

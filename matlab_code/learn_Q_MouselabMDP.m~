@@ -240,27 +240,54 @@ BSARSA_results.glms=best_glms;
 
 save('../results/BSARSA_results_Mouselab.mat','BSARSA_results')
 
-
+%%
 %meta-greedy policy
 costs=[0.01,0.05,0.10,0.20,0.40,0.80,1.60,2.00,2.40,2.80,3.20,6.40,12.80];
 parfor c=1:length(costs)
     [ER_meta_greedy(c,:),result_meta_greedy(c)]=evaluatePolicy([0;1;1],costs(c),1000)
+end
+save('../results/result_meta_greedy.mat','result_meta_greedy')
+
+for i=1:numel(result_meta_greedy)
+    sem_ER_greedy(i)=result_meta_greedy(i).reward(2);
+    avg_ER_greedy(i)=result_meta_greedy(i).reward(1);
 end
 
 %no-deliberation policy
 avg_reward_per_step=4.5; nr_steps=3;
 performance_no_deliberation=nr_steps*avg_reward_per_step*ones(size(costs));
 
+costs_BO=[0.01,1.60,2.80,12.80, 0.0500    0.2000    0.8000    2.4000];
+for c=5:numel(costs_BO)
+    load(['../results/BO_c',int2str(100*costs_BO(c)),'n',int2str(nb_iter),'.mat'])
+    BO_results(c)=BO
+    ER_BO(c)=BO.ER    
+end
+
+parfor c=5:8
+    [ER_BO_validation(c,:),result_BO_validation(c)]=evaluatePolicy(BO_results(c).w_hat,costs_BO(c),1000)
+end
+
+temp=[result_BO_validation.reward];
+ER_BO_validation=temp(1:2:end)
+sem_BO_validation=temp(2:2:end)
+
+BO_validation.ER=ER_BO_validation;
+BO_validation.sem=sem_BO_validation;
+save('../results/BO_validation.mat','BO_validation')
 
 fig=figure(),
+errorbar(costs_BO',BO_validation.ER,BO_validation.sem,'LineWidth',3),hold on
 errorbar(costs',avg_performance.BSARSAQ,sem_performance.BSARSAQ,'LineWidth',3),hold on
 errorbar(costs',avg_performance.full_observation,sem_performance.full_observation,'LineWidth',3),hold on
+errorbar(costs,avg_ER_greedy,sem_ER_greedy,'LineWidth',3),hold on
 plot(costs',performance_no_deliberation,'LineWidth',3),hold on
-xlim([0.01,3.3])
+xlim([0.01,12.8])
+ylim([0,40])
 set(gca,'FontSize',16,'XScale','log')
 xlabel('Cost per Click','FontSize',16)
 ylabel('Expected return','FontSize',16)
-legend('BSARSA','Full-Deliberation Policy','No-Deliberation Policy')
+legend('BO','BSARSA','Full-Deliberation Policy','Meta-Greedy Policy','No-Deliberation Policy','location','West')
 saveas(fig,'../results/figures/MouselabEvaluation.fig')
 saveas(fig,'../results/figures/MouselabEvaluation.png')
 
@@ -380,17 +407,84 @@ figure()
 plot(smooth(MSE,250))
 
 %%
-sqrt(sum(sem_nr_observations.BSARSAQ(1:3).^2)/9)
-Z=(mean(avg_nr_observations.BSARSAQ(1:3))-16)/sqrt(sum(sem_nr_observations.BSARSAQ(1:3).^2)/9)
-p=normcdf(Z)
+load('../results/BO_validation')
+load('../results/result_meta_greedy')
+
+for i=1:numel(result_meta_greedy)
+    sem_ER_greedy(i)=result_meta_greedy(i).reward(2);
+    avg_ER_greedy(i)=result_meta_greedy(i).reward(1);
+end
+
+for c=1:numel(costs)
+    load(['../results/BSARSA_evaluation',int2str(100*costs(c)),'.mat'])
+    avg_performance.BSARSAQ_validation(c)=result.reward(1);
+    sem_performance.BSARSAQ_validation(c)=result.reward(2);
+    
+    cost=costs(c);
+    load(['../results/full_observation_benchmark',int2str(100*cost),'.mat'])
+        
+    avg_performance.full_observation(c)=full_observation_benchmark.reward(1);
+    sem_performance.full_observation(c)=full_observation_benchmark.reward(2);
+    
+    t_validation(c)=(avg_performance.BSARSAQ_validation(c)-avg_performance.full_observation(c))/...
+        sqrt(sem_performance.BSARSAQ_validation(c)^2+sem_performance.full_observation(c)^2);
+    
+    p_validation(c)=1-normcdf(t_validation(c));
+        
+end
+
+costs=[0.01,0.05,0.10,0.20,0.40,0.80,1.60,2.00,2.40,2.80,3.20,6.40,12.80];
+
+%no-deliberation policy
+avg_reward_per_step=4.5; nr_steps=3;
+performance_no_deliberation=nr_steps*avg_reward_per_step*ones(size(costs));
+
+[costs_]=costs_BO
 
 fig=figure(),
+errorbar(costs_BO',BO_validation.ER,BO_validation.sem,'LineWidth',3),hold on
 errorbar(costs',avg_performance.BSARSAQ_validation,sem_performance.BSARSAQ_validation,'LineWidth',3),hold on
 errorbar(costs',avg_performance.full_observation,sem_performance.full_observation,'LineWidth',3),hold on
-xlim([0.01,3.3])
+errorbar(costs,avg_ER_greedy,sem_ER_greedy,'LineWidth',3),hold on
+plot(costs',performance_no_deliberation,'LineWidth',3),hold on
+xlim([0.01,13])
+ylim([0,40])
 set(gca,'FontSize',16,'XScale','log')
 xlabel('Cost per Click','FontSize',16)
 ylabel('Expected return','FontSize',16)
-legend('BSARSA','Full-Observation Policy','Location','West')
+legend('BO','BSARSA','Full-Deliberation Policy','Meta-Greedy Policy','No-Deliberation Policy','location','West')
 saveas(fig,'../results/figures/MouselabValidation.fig')
 saveas(fig,'../results/figures/MouselabValidation.png')
+
+for c_ind=1:numel(costs_BO)
+    BO_ind=find(costs_BO==costs_BO(c_ind));
+    greedy_ind=find(costs==costs_BO(c_ind));
+    t_BO_vs_greedy(c_ind)=(BO_validation.ER(BO_ind)-avg_ER_greedy(greedy_ind))./sqrt(BO_validation.sem(BO_ind).^2+...
+        sem_ER_greedy(greedy_int).^2);
+    p(c_ind)=1-normcdf(abs(t_BO_vs_greedy(c_ind)))
+end
+
+threshold=0.05/13
+[p<threshold; t_BO_vs_greedy; costs]
+
+
+
+%test performance of BSARSA against the performance of the meta-greedy
+%policy and the full-observation policy
+t_BSARSA_vs_greedy=(avg_performance.BSARSAQ_validation-avg_ER_greedy)./sqrt(sem_performance.BSARSAQ_validation.^2+...
+    sem_ER_greedy.^2);
+p=1-normcdf(abs(t_BSARSA_vs_greedy))
+threshold=0.05/13
+[p<threshold; t_BSARSA_vs_greedy; costs]
+
+t_BSARSA_vs_full_observation=(avg_performance.BSARSAQ_validation-avg_performance.full_observation)./...
+    sqrt(sem_performance.BSARSAQ_validation.^2+sem_performance.full_observation.^2);
+p=1-normcdf(abs(t_BSARSA_vs_full_observation))
+threshold=0.05/13
+[p<threshold; t_BSARSA_vs_full_observation; costs]
+
+t_BSARSA_vs_greedy=(avg_performance.BSARSAQ_validation-avg_ER_greedy)./sqrt(sem_performance.BSARSAQ_validation.^2+...
+    sem_ER_greedy.^2);
+p=1-normcdf(abs(t_BSARSA_vs_greedy))
+threshold=0.05/13
+[p<threshold; t_BSARSA_vs_greedy; costs]

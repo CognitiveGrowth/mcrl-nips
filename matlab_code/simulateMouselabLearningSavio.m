@@ -1,4 +1,4 @@
-function simulateMouselabLearningSavio(rep,condition)
+function simulateMouselabLearningSavio(rep,condition,with_PR)
 
 addpath('/global/home/users/flieder/matlab_code/MatlabTools/')
 %create meta-level MDP
@@ -9,17 +9,17 @@ pseudoreward_type='featureBased';
 mean_payoff=4.5;
 std_payoff=10.6;
 
-weights_low_cost.VPI=1.2065;
-weights_low_cost.VOC1=2.1510;
-weights_low_cost.ER=1.5298;
+weights_low_cost.VPI=1.8668;
+weights_low_cost.VOC1=-0.2205;
+weights_low_cost.ER=1.0034;
 
-weights_medium_cost.VPI=0.6118;
-weights_medium_cost.VOC1=1.2708;
-weights_medium_cost.ER=1.3215;
+weights_medium_cost.VPI=0.6979;
+weights_medium_cost.VOC1=-0.0840;
+weights_medium_cost.ER=0.9584;
 
-weights_high_cost.VPI=0.6779;
-weights_high_cost.VOC1=0.7060;
-weights_high_cost.ER=1.2655;
+weights_high_cost.VPI=0.3171;
+weights_high_cost.VOC1=-0.1872;
+weights_high_cost.ER=0.9375;
 
 load('/global/home/users/flieder/matlab_code/MouselabMDPExperiment_normalized')
 
@@ -79,29 +79,34 @@ feature_extractor=@(s,c,meta_MDP) meta_MDP.extractStateActionFeatures(s,c);
 
 %load MouselabMDPMetaMDPTestFeb-17-2017
 
-nr_training_episodes=5000;
+nr_training_episodes=1000;
 nr_reps=1;
 first_episode=1; last_rep=nr_training_episodes;
 for rep=1:nr_reps
-    glm(rep)=glm0;
-    tic()
-    [glm_with_PR(rep),MSE_with_PR(first_episode:nr_training_episodes,rep),...
-        returns_with_PR(first_episode:nr_training_episodes,rep)]=BayesianSARSAQ(...
-        meta_MDP_with_PR,feature_extractor,nr_training_episodes-first_episode+1,glm(rep));
-    disp(['Repetition ',int2str(rep),' took ',int2str(round(toc()/60)),' minutes.'])
     
-    [glm_without_PR(rep),MSE_without_PR(first_episode:nr_training_episodes,rep),...
-        returns_without_PR(first_episode:nr_training_episodes,rep)]=BayesianSARSAQ(...
-        meta_MDP_without_PR,feature_extractor,nr_training_episodes-first_episode+1,glm(rep));
-
+    glm(rep)=glm0;
+    
+    if with_PR
+        tic()
+        [glm_with_PR(rep),MSE_with_PR(first_episode:nr_training_episodes,rep),...
+            returns_with_PR(first_episode:nr_training_episodes,rep)]=BayesianSARSAQ(...
+            meta_MDP_with_PR,feature_extractor,nr_training_episodes-first_episode+1,glm(rep));
+        disp(['Repetition ',int2str(rep),' took ',int2str(round(toc()/60)),' minutes.'])
+    else
+        [glm_without_PR(rep),MSE_without_PR(first_episode:nr_training_episodes,rep),...
+            returns_without_PR(first_episode:nr_training_episodes,rep)]=BayesianSARSAQ(...
+            meta_MDP_without_PR,feature_extractor,nr_training_episodes-first_episode+1,glm(rep));
+    end
 end
 
-result.avg_return_with_PR=[mean(returns_with_PR(:)),sem(returns_with_PR(:))];
-result.avg_return_without_PR=[mean(returns_without_PR(:)),sem(returns_without_PR(:))];
+if with_PR
+    result.avg_return_with_PR=[mean(returns_with_PR(:)),sem(returns_with_PR(:))];
+    result.returns_with_PR=returns_with_PR;
+else
+    result.avg_return_without_PR=[mean(returns_without_PR(:)),sem(returns_without_PR(:))];
+    result.returns_without_PR=returns_without_PR;
+end
 
-result.returns_with_PR=returns_with_PR;
-result.returns_without_PR=returns_without_PR;
-
-save(['/global/home/users/flieder/results/MouselabLearningWithPR_rep',int2str(rep),'_condition',int2str(condition)],'result') 
+save(['/global/home/users/flieder/results/MouselabLearningWithPR_rep',int2str(rep),'_condition',int2str(condition)],'result')
 
 end
