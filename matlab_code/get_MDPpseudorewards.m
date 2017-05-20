@@ -51,6 +51,12 @@ for c=1:numel(costs)
     S(s+1,:) = [-1,-1];
     min_trial(s+1) = 30;
     
+    for j = 1:s
+        if sum(S(j,:)) == nTrials+1
+            R(j,1) = R(j,2);
+        end
+    end
+    
     
     [values, policy] = mdp_finite_horizon (P, R, discount, nTrials);
     

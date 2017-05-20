@@ -60,9 +60,15 @@ def states(n_balls,n_arms,rewardCorrect=1.0,cost=-1,constantArm=-1):
 
     S = np.vstack((S,-np.ones((1,n_arms*2)))) #Add the terminal state
 
+    R = -cost*np.ones((n_states+1,n_arms+1))
+    p = np.max([[s[2*j]/(s[2*j+1]+s[2*j]) for j in range(n_arms)] for s in S],1)
+    R[:,-1] = rewardCorrect*p
+    R[-1,:] = 0
+
     for i in range(n_states):
         if np.sum(S[i]) >= 2*n_arms+n_balls:
             T1[i,-1] = np.ones(n_arms)
+            R[i,:] = R[i,-1]
 
     # The terminal state always goes back to itself
     t = np.zeros((n_states+1,n_arms))
@@ -74,11 +80,6 @@ def states(n_balls,n_arms,rewardCorrect=1.0,cost=-1,constantArm=-1):
     T2[:,-1] = 1
 
     T = np.concatenate((T1,T2),axis=2)
-
-    R = -cost*np.ones((n_states+1,n_arms+1))
-    p = np.max([[s[2*j]/(s[2*j+1]+s[2*j]) for j in range(n_arms)] for s in S],1)
-    R[:,-1] = rewardCorrect*p
-    R[-1,:] = 0
 
     # Constant arm case
     if constantArm != -1:
@@ -94,13 +95,14 @@ def states(n_balls,n_arms,rewardCorrect=1.0,cost=-1,constantArm=-1):
 
     return S,T,R
 
-n_balls=int(sys.argv[1])
-n_arms=int(sys.argv[2])
-rc=float(sys.argv[3])
-co=float(sys.argv[4])
-ca=float(sys.argv[5])
-print(n_balls,n_arms,rc,co,ca)
-print(n_st(n_balls,n_arms))
-s = states(n_balls,n_arms,rc,co,ca)
-a = {'states':s[0],'transition':s[1],'rewards':s[2]}
-scipy.io.savemat('./generalMDP/file',a)
+if __name__ == '__main__':
+    n_balls=int(sys.argv[1])
+    n_arms=int(sys.argv[2])
+    rc=float(sys.argv[3])
+    co=float(sys.argv[4])
+    ca=float(sys.argv[5])
+    print(n_balls,n_arms,rc,co,ca)
+    print(n_st(n_balls,n_arms))
+    s = states(n_balls,n_arms,rc,co,ca)
+    a = {'states':s[0],'transition':s[1],'rewards':s[2]}
+    scipy.io.savemat('./generalMDP/file',a)
