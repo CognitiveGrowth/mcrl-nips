@@ -102,11 +102,12 @@ end
 if with_PR
     result.avg_return_with_PR=[mean(returns_with_PR(:)),sem(returns_with_PR(:))];
     result.returns_with_PR=returns_with_PR;
+    save(['/global/home/users/flieder/results/learning/MouselabLearningWithPR_rep',int2str(rep),'_condition',int2str(condition),'.mat'],'result')
 else
     result.avg_return_without_PR=[mean(returns_without_PR(:)),sem(returns_without_PR(:))];
     result.returns_without_PR=returns_without_PR;
+    save(['/global/home/users/flieder/results/learning/MouselabLearningWithoutPR_rep',int2str(rep),'_condition',int2str(condition),'.mat'],'result')
 end
 
-save(['/global/home/users/flieder/results/MouselabLearningWithPR_rep',int2str(rep),'_condition',int2str(condition)],'result')
 
 end

@@ -2,7 +2,7 @@ function [ER_hat,result]=evaluatePolicy(w,c,nr_episodes_evaluation)
 
 rng('shuffle')
 
-addpath('MatlabTools')
+%addpath('MatlabTools')
 
 %load('/global/home/users/flieder/results/BSARSA_results_Mouselab.mat')
 %c=BSARSA_results.costs(c_index);

@@ -274,6 +274,7 @@ sem_BO_validation=temp(2:2:end)
 
 BO_validation.ER=ER_BO_validation;
 BO_validation.sem=sem_BO_validation;
+BO_validation.cost=costs_BO;
 save('../results/BO_validation.mat','BO_validation')
 
 fig=figure(),
@@ -311,7 +312,6 @@ legend(result.features)
 ylabel('Weights','FontSize',16)
 saveas(fig_w,'../results/figures/MouselabEvaluationBestWeights.fig')
 saveas(fig_w,'../results/figures/MouselabEvaluationBestWeights.png')
-
 
 %The policy learned by Bayesian SARSA algorithm achieved a significantly
 %higher average return than the full-observation policy ($36.73 \pm 0.09$ vs. 
@@ -406,25 +406,39 @@ set(gca,'XTickLabel',{'VPI','VOC_1','E[R|act,b]'},'FontSize',16)
 figure()
 plot(smooth(MSE,250))
 
-%%
-load('../results/BO_validation')
-load('../results/result_meta_greedy')
-
-for i=1:numel(result_meta_greedy)
-    sem_ER_greedy(i)=result_meta_greedy(i).reward(2);
-    avg_ER_greedy(i)=result_meta_greedy(i).reward(1);
+%% 
+costs=[0.01,0.05*power(2,0:8)];
+blinkered.costs=costs;
+for c=1:numel(costs)
+    load(['../results/performance_blinkered_approximation_c',int2str(100*costs(c)),'.mat'])
+    blinkered.ER(c)=result.ER(1);
+    blinkered.sem_ER(c)=result.ER(2);
+    blinkered.nr_computations(c)=result.nr_computations(1);
+    blinkered.sem_nr_computations(c)=result.nr_computations(2);
 end
 
+save('../results/blinkered.mat','blinkered')
+
+%%
+costs=[0.01,0.05,0.10,0.20,0.40,0.80,1.60,2.00,2.40,2.80,3.20,6.40,12.80];
 for c=1:numel(costs)
     load(['../results/BSARSA_evaluation',int2str(100*costs(c)),'.mat'])
     avg_performance.BSARSAQ_validation(c)=result.reward(1);
     sem_performance.BSARSAQ_validation(c)=result.reward(2);
+    
+    BSARSA.ER(c)=result.reward(1);
+    BSARSA.sem_ER(c)=result.reward(2);
+    BSARSA.cost(c)=costs(c);
     
     cost=costs(c);
     load(['../results/full_observation_benchmark',int2str(100*cost),'.mat'])
         
     avg_performance.full_observation(c)=full_observation_benchmark.reward(1);
     sem_performance.full_observation(c)=full_observation_benchmark.reward(2);
+    
+    full_observation.ER(c)=full_observation_benchmark.reward(1);
+    full_observation.sem_ER(c)=full_observation_benchmark.reward(2);
+    full_observation.cost(c)=costs(c);
     
     t_validation(c)=(avg_performance.BSARSAQ_validation(c)-avg_performance.full_observation(c))/...
         sqrt(sem_performance.BSARSAQ_validation(c)^2+sem_performance.full_observation(c)^2);
@@ -433,59 +447,29 @@ for c=1:numel(costs)
         
 end
 
+save('../results/BSARSA.mat','BSARSA')
+save('../results/full_observation.mat','full_observation')
+
+%%
+load('../results/result_meta_greedy')
+for i=1:numel(result_meta_greedy)
+    sem_ER_greedy(i)=result_meta_greedy(i).reward(2);
+    avg_ER_greedy(i)=result_meta_greedy(i).reward(1);
+end
+
 costs=[0.01,0.05,0.10,0.20,0.40,0.80,1.60,2.00,2.40,2.80,3.20,6.40,12.80];
+
+greedy.ER=avg_ER_greedy;
+greedy.sem_ER=sem_ER_greedy;
+greedy.cost=costs;
+save('../results/greedy.mat','greedy')
 
 %no-deliberation policy
 avg_reward_per_step=4.5; nr_steps=3;
 performance_no_deliberation=nr_steps*avg_reward_per_step*ones(size(costs));
 
-[costs_BO_sorted,order]=sort(costs_BO);
+no_deliberation.ER=performance_no_deliberation;
+no_deliberation.sem_ER=zeros(size(performance_no_deliberation));
+no_deliberation.cost=costs;
 
-
-fig=figure(),
-errorbar(costs_BO_sorted',BO_validation.ER(order),BO_validation.sem(order),'LineWidth',3),hold on
-errorbar(costs',avg_performance.BSARSAQ_validation,sem_performance.BSARSAQ_validation,'LineWidth',3),hold on
-errorbar(costs',avg_performance.full_observation,sem_performance.full_observation,'LineWidth',3),hold on
-errorbar(costs,avg_ER_greedy,sem_ER_greedy,'LineWidth',3),hold on
-plot(costs',performance_no_deliberation,'LineWidth',3),hold on
-xlim([0.01,13])
-ylim([0,40])
-set(gca,'FontSize',16,'XScale','log')
-xlabel('Cost per Click','FontSize',16)
-ylabel('Expected return','FontSize',16)
-legend('BO','BSARSA','Full-Deliberation Policy','Meta-Greedy Policy','No-Deliberation Policy','location','West')
-saveas(fig,'../results/figures/MouselabValidation.fig')
-saveas(fig,'../results/figures/MouselabValidation.png')
-
-for c_ind=1:numel(costs_BO)
-    BO_ind=find(costs_BO==costs_BO(c_ind));
-    greedy_ind=find(costs==costs_BO(c_ind));
-    t_BO_vs_greedy(c_ind)=(BO_validation.ER(BO_ind)-avg_ER_greedy(greedy_ind))./sqrt(BO_validation.sem(BO_ind).^2+...
-        sem_ER_greedy(greedy_int).^2);
-    p(c_ind)=1-normcdf(abs(t_BO_vs_greedy(c_ind)))
-end
-
-threshold=0.05/13
-[p<threshold; t_BO_vs_greedy; costs]
-
-
-
-%test performance of BSARSA against the performance of the meta-greedy
-%policy and the full-observation policy
-t_BSARSA_vs_greedy=(avg_performance.BSARSAQ_validation-avg_ER_greedy)./sqrt(sem_performance.BSARSAQ_validation.^2+...
-    sem_ER_greedy.^2);
-p=1-normcdf(abs(t_BSARSA_vs_greedy))
-threshold=0.05/13
-[p<threshold; t_BSARSA_vs_greedy; costs]
-
-t_BSARSA_vs_full_observation=(avg_performance.BSARSAQ_validation-avg_performance.full_observation)./...
-    sqrt(sem_performance.BSARSAQ_validation.^2+sem_performance.full_observation.^2);
-p=1-normcdf(abs(t_BSARSA_vs_full_observation))
-threshold=0.05/13
-[p<threshold; t_BSARSA_vs_full_observation; costs]
-
-t_BSARSA_vs_greedy=(avg_performance.BSARSAQ_validation-avg_ER_greedy)./sqrt(sem_performance.BSARSAQ_validation.^2+...
-    sem_ER_greedy.^2);
-p=1-normcdf(abs(t_BSARSA_vs_greedy))
-threshold=0.05/13
-[p<threshold; t_BSARSA_vs_greedy; costs]
+save('../results/no_deliberation.mat','no_deliberation')
