@@ -783,7 +783,7 @@ function evaluatePlan(state,plan){
             ER+=meta_MDP.mean_payoff
         }
         else{
-            ER+=environment_model.observations[current_state.s-1]
+            ER+=state.observations[current_state.s-1]
         }
             
     }
