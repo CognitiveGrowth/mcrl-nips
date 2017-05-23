@@ -383,6 +383,9 @@ function registerClick(cell_nr){
 }
 
 function getNextState(state,actions,update_belief){
+    //getNextState(s,actions,update_belief) returns the state that results from taking a series of actions in state s without changing state s
+    //If update_belief is false, then the location will be udpated but mu_Q and sigma_Q won't be updated.
+    
     
     if (update_belief === undefined){
         var update_belief=true;
@@ -443,6 +446,8 @@ function getActions(state){
 }
 
 function getMoves(current_location){
+    //returns the moves available in the current location
+    
     //moves
     var moves=new Array()
     
@@ -564,6 +569,10 @@ function updateBelief(meta_MDP,state,new_observations){
         mu_Q(s,a): expected return of starting in object-level state s and performing object-level action a according to meta_MDP.observations and meta_MDP.p_payoffs 
         mu_V(s): expected return of starting in object-level state s and following the optimal object-level policy according to meta_MDP.observations and meta_MDP.p_payoffs. The expectation is taken with respect to the probability distribution encoded by the meta-level state and the ?optimal policy? maximizes the reward expected according to the probability distribution encoded by the meta-level state
         sigma_Q(s,a), sigma_V(s): uncertainty around the expectations mu_Q(s,a) and mu_V(s).
+        
+        The value of new_observations should not affect the result, it is only used to speed up the computation.
+        
+        This function should be equivalent to the updateBelief method of MouselabMDPMetaMDPNIPS.m
     */
     
     //0. Determine which beliefs have to be updated
@@ -633,6 +642,7 @@ function updateBelief(meta_MDP,state,new_observations){
 }
 
 function valueFunction(state,environment_model){        
+    //returns the approximate value function V_PR(state | environment model)  specified by PARAMS.PR_type. state is the argument of the value function and the value is computed with respect to the information in environment_model.
     
     switch(PARAMS.PR_type){
         case 1: //PRs based on the full-observation policy
@@ -1070,6 +1080,8 @@ function costOfPlanning(state,planning_horizon){
 }
 
 function getDownStreamStates(state){
+    //returns all states that can be reached from state
+    
     var downstream=[];
 
     var states=meta_MDP.locations;
@@ -1092,6 +1104,8 @@ function getDownStreamStates(state){
 }
 
 function getUpStreamStates(observed_states){
+    //returns all states from which any of the observed_states can be reached
+    
     var upstream=[];
 
     var states=meta_MDP.locations
