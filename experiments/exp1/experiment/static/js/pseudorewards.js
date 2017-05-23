@@ -720,8 +720,8 @@ function predictQValue(state,computation){
 
 function computeExpectedRewardOfActing(state){
     //returns the sum of the rewards the agent expects to receive for acting without further deliberation according to the belief encoded by the current state.
-    var plan = makePlan(state,environment_model)
-    var ER = evaluatePlan(state,plan,environment_model)
+    var plan = makePlan(state)
+    var ER = evaluatePlan(state,plan)
     
     return ER
 }
