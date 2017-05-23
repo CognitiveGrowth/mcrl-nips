@@ -137,6 +137,9 @@ function metaMDP(){
 
 
 function getPR(state,action_sequence){
+    //getPR returns the sum of the pseudo-rewards taking a sequence of actions in a given state. The result should be zero if all actions are optimal and negative otherwise. 
+    //state: state struct
+    //action_sequence: array of action structs
     
     meta_MDP.cost_per_click=PARAMS.info_cost
     
@@ -276,7 +279,11 @@ function getObjectLevelPR(problem_nr,initial_state,actions){
     return PRs        
 }
 
-function registerMove(direction){
+function registerMove(direction){    
+    //returns the delay and type of feedback message
+    //adds the move to the array moves
+    //updates the state of meta_MDP
+    //direction is a string ("right","up","left", or "down")
     
     var last_move=action_was_move.lastIndexOf(true)
     
@@ -682,7 +689,9 @@ function valueFunction(state,environment_model){
     return V
 }
 
-function predictQValue(state,computation,environment_model){
+function predictQValue(state,computation){
+    //predictQValue(s,c) returns the Q-value our feature-based approximation predicts for performing computation c in state s.
+    
     feature_weights = null;
     switch(PARAMS.info_cost){
         case 0.01:
@@ -701,31 +710,34 @@ function predictQValue(state,computation,environment_model){
     
     meta_MDP.cost_per_click = PARAMS.info_cost
     
-    var VPI = computeVPI(state,computation,environment_model)
-    var VOC1 = computeMyopicVOC(state,computation,environment_model)
-    var ER = computeExpectedRewardOfActing(state,environment_model)
+    var VPI = computeVPI(state,computation)
+    var VOC1 = computeMyopicVOC(state,computation)
+    var ER = computeExpectedRewardOfActing(state)
     
     var Q_hat= feature_weights.VPI*VPI+feature_weights.VOC1*VOC1 + feature_weights.ER*ER
     return Q_hat
 }
 
-function computeExpectedRewardOfActing(state,environment_model){
+function computeExpectedRewardOfActing(state){
+    //returns the sum of the rewards the agent expects to receive for acting without further deliberation according to the belief encoded by the current state.
     var plan = makePlan(state,environment_model)
     var ER = evaluatePlan(state,plan,environment_model)
     
     return ER
 }
 
-function makePlan(state,environment_model){
+function makePlan(state){
+    //makePlan(state) returns an array of action structs. Each action has the highest state.mu_Q(location,:) value for the location in which it is chosen.
+    
     var plan = new Array()
 
     var location_nr=state.s;
     var step=state.step;
     
-    var current_state=state;
+    var current_state=deepCopy(state);
     while (step<=state.nr_steps){
-        var max_Q = _.max(environment_model.mu_Q[location_nr-1])        
-        var a=_.indexOf(environment_model.mu_Q[location_nr-1],max_Q)        
+        var max_Q = _.max(state.mu_Q[location_nr-1])        
+        var a=_.indexOf(state.mu_Q[location_nr-1],max_Q)        
         
         var available_actions=getMoves(meta_MDP.locations[current_state.s])
         //var action = available_actions[a]
@@ -756,16 +768,18 @@ function makePlan(state,environment_model){
     return plan
 }
 
-function evaluatePlan(state,plan,environment_model){
+function evaluatePlan(state,plan){
+    //evaluatePlan(s,plan) determines the reward the agent expects to receive for executing the plan from the current location according to the beliefs encoded by state s. The expected reward is the sum of observed or unobserved rewards along the path. If the reward is unobserved, then it is replaced by the avg. payoff.
+    //plan is an array containing action structs, each of which is a valid move.
     
     var ER=0
 
-    var current_state=state
+    var current_state=deepCopy(state)
     for (var a in plan){
         var action = plan[a]
         current_state=getNextState(current_state,action,false)
         
-        if (isNaN(environment_model.observations[current_state.s-1]) | environment_model.observations[current_state.s-1]==null){
+        if (isNaN(state.observations[current_state.s-1]) | state.observations[current_state.s-1]==null){
             ER+=meta_MDP.mean_payoff
         }
         else{

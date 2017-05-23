@@ -50,7 +50,8 @@ meta_MDP.cost_per_click=c;
 
 %nr_episodes_evaluation=1000;%2000;
 meta_MDP.object_level_MDP=meta_MDP.object_level_MDPs(1);
-policy=@(state,mdp) contextualThompsonSampling(state,meta_MDP,glm);
+%policy=@(state,mdp) contextualThompsonSampling(state,meta_MDP,glm);
+policy=@(state,mdp) deterministicPolicy(state,meta_MDP,w);
 [R_total_evaluation,problems_evaluation,states_evaluation,chosen_actions_evaluation,indices_evaluation]=...
     inspectPolicyGeneral(meta_MDP,policy,nr_episodes_evaluation);
 

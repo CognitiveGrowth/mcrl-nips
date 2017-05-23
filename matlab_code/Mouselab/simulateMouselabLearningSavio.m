@@ -1,4 +1,4 @@
-function simulateMouselabLearningSavio(rep,condition,with_PR)
+function simulateMouselabLearningSavio(repetition,condition,with_PR)
 
 addpath('/global/home/users/flieder/matlab_code/MatlabTools/')
 %create meta-level MDP
@@ -80,7 +80,7 @@ feature_extractor=@(s,c,meta_MDP) meta_MDP.extractStateActionFeatures(s,c);
 %load MouselabMDPMetaMDPTestFeb-17-2017
 
 nr_training_episodes=1000;
-nr_reps=1;
+ nr_reps=1;
 first_episode=1; last_rep=nr_training_episodes;
 for rep=1:nr_reps
     
@@ -102,11 +102,11 @@ end
 if with_PR
     result.avg_return_with_PR=[mean(returns_with_PR(:)),sem(returns_with_PR(:))];
     result.returns_with_PR=returns_with_PR;
-    save(['/global/home/users/flieder/results/learning/MouselabLearningWithPR_rep',int2str(rep),'_condition',int2str(condition),'.mat'],'result')
+    save(['/global/home/users/flieder/results/learning/MouselabLearningWithPR_rep',int2str(repetition),'_condition',int2str(condition),'.mat'],'result')
 else
     result.avg_return_without_PR=[mean(returns_without_PR(:)),sem(returns_without_PR(:))];
     result.returns_without_PR=returns_without_PR;
-    save(['/global/home/users/flieder/results/learning/MouselabLearningWithoutPR_rep',int2str(rep),'_condition',int2str(condition),'.mat'],'result')
+    save(['/global/home/users/flieder/results/learning/MouselabLearningWithoutPR_rep',int2str(repetition),'_condition',int2str(condition),'.mat'],'result')
 end
 
 
