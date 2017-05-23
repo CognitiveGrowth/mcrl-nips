@@ -413,6 +413,8 @@ action_feature_names={'Expected regret','regret reduction','VOC',...
         
         function [r,next_state,PR]=simulateTransition(meta_MDP,state,c)
             
+            start_state=state;
+            
             if c.is_computation
                 if isnan(state.observations(c.state)) %not observed yet
                     
@@ -477,7 +479,7 @@ action_feature_names={'Expected regret','regret reduction','VOC',...
                 elseif strcmp(meta_MDP.pseudoreward_type,'regretReduction')
                     PR=meta_MDP.regretReduction(state,next_state);
                 elseif strcmp(meta_MDP.pseudoreward_type,'featureBased')
-                    PR = meta_MDP.featureBasedPR(state,c);
+                    PR = meta_MDP.featureBasedPR(start_state,c);
                 end
             else
                 PR=0;
@@ -1357,7 +1359,7 @@ action_feature_names={'Expected regret','regret reduction','VOC',...
             
             Qs=zeros(numel(available_actions),1);
             for a=1:numel(available_actions)
-                Qs(a)=predictQ(meta_MDP,state,available_actions(a));
+                Qs(a)=meta_MDP.predictQ(state,available_actions(a));
             end
             
             PR=Q_c-max(Qs);
