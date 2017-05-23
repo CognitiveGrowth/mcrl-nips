@@ -791,6 +791,7 @@ function evaluatePlan(state,plan){
     return ER
 }
 
+/*
 function computeExpectedRewardOfActingOld(state){
     
     if (state.mu_Q[state.s-1] == null){
@@ -804,8 +805,10 @@ function computeExpectedRewardOfActingOld(state){
         return _.max(state.mu_Q[state.s-1])
     }
 }
+*/
 
 function computeMyopicVOC(state,c){
+    //Computes the myoptic VOC (VOC1, Equation 4 in the NIPS paper) in a highly efficient manner. VOC1 is -cost(c) if the computation cannot improve the decision. VOC1 is positive if the expected improvement in decision quality from a single computation is higher than the cost of computation and negative else. The output should be identical to the outputs of the method myopicVOC of MouselabMDPMetaMDPNIPS in Matlab.
      
     if (c.is_click)  {
         
@@ -878,6 +881,7 @@ function myopicVOCAdditive(mu_prior,a){
 //mu_prior: prior means of returns of available actions
 //sigma_prior: prior uncertainty of returns of available actions
 //a: action about which more information is being collected
+//This function should behave in the same way as the method myopicVOCAdditive of MouselabMDPMetaMDPNIPS.m.
 
 mu_sorted = mu_prior.slice(0).sort(function(a, b){return b - a})
 mu_alpha = mu_sorted[0]
@@ -894,7 +898,6 @@ if (appears_best){
 }
 else{
     //information is valuable if it reveals that action is optimal
-    
     //To change the decision, the sampled value would have to be larger than lb.
     lb=mu_alpha+meta_MDP.mean_payoff-mu_prior[a-1];                
     VOC=meta_MDP.std_payoff**2*normPDF(lb,meta_MDP.mean_payoff,meta_MDP.std_payoff)- (mu_alpha-mu_prior[a-1])*(1-normCDF(lb,meta_MDP.mean_payoff,meta_MDP.std_payoff))- meta_MDP.cost_per_click;
@@ -904,13 +907,13 @@ return VOC
 
 }
 
-function myopicVOCMaxUnknown(mu_prior,a){
-    
+function myopicVOCMaxUnknown(mu_prior,a){    
 //This function evaluates the VOC of inspecting a leaf cell
 //downstream of the current state where the values of the other leaf(s) is/are known.
 //mu_prior: prior means of returns of available actions            
 //a: action about which more information is being collected
 //known_alternative: maximum of the other known leafs
+//This function should behave identically to the method myopicVOCMaxUnknown of MouselabMDPMetaMDPNIPS.m
 
 mu_sorted = mu_prior.slice(0).sort(function(a, b){return b - a})
 mu_alpha = mu_sorted[0]
@@ -943,6 +946,11 @@ return VOC
 }
 
 function myopicVOCMaxKnown(mu_prior,a,known_alternative){
+    //computes the myopic VOC of inspecting a leaf when the rewards of all other leafs are known
+    //mu_prior: prior means of the actions available in the current state
+    //number of object level action about which information would be collected (branch of the leaf)
+    //known_alternative: max. of the rewards of the siblings of the leaf node
+//This function should behave identically to the method myopicVOCMaxKnown of MouselabMDPMetaMDPNIPS.m
     
     mu_sorted = mu_prior.slice(0).sort(function(a, b){return b - a})
     mu_alpha = mu_sorted[0]
@@ -967,8 +975,7 @@ function myopicVOCMaxKnown(mu_prior,a,known_alternative){
         }                                                
     }
     else{
-        //information is valuable if it reveals that action is optimal                
-
+        //information is valuable if it reveals that action is optimal       
         //To change the decision, the sampled value would have to be larger than lb
         lb=mu_alpha-mu_prior[a-1]+E_max;
 
@@ -978,9 +985,9 @@ function myopicVOCMaxKnown(mu_prior,a,known_alternative){
     return VOC
 }
 
-
-
 function computeVPI(state,metalevel_action){
+//returns the value of perfect information (Equation 5 in the NIPS paper)
+//This function's input-output behavior should agree with the method computeVPI of MouselabMDPMetaMDPNIPS.m
 
 if (metalevel_action.is_move)
     return 0
