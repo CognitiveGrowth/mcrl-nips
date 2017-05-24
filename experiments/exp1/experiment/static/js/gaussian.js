@@ -50,7 +50,12 @@ function normPDF(x,mu,sigma) {
 
 function maxOfGaussiansPDF(x,mu,sigma){
     //returns the probability density p(max {X_0,...,X_n}) where X_i ~ N(mu[i],sigma[i]).
-    //This function should always return the same value as MatlabTools/pdfOfMaxOfGaussians.m
+    //This function should always return approximately the same value as MatlabTools/pdfOfMaxOfGaussians.m
+    //This functions expects that all elements of sigma are greater than zero and throws an error otherwise.
+    
+    if (sigma.some(function(x){return x<=0})){
+        throw new Error('maxOfGaussiansPDF: All sigmas have to be greater than 0.','gaussian.js',56)
+    }
     
     if (typeof(x)=="number"){
 		x=[x]
