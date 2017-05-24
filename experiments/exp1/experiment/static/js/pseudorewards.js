@@ -43,8 +43,6 @@ Array.prototype.diff = function(a) {
 Object.defineProperty(Array.prototype, "diff", {enumerable: false});
 
 
-
-
 meta_MDP=metaMDP()
 
 
@@ -156,7 +154,7 @@ function getPR(state,action_sequence){
         var Q_values = new Array()
         for (var a in available_actions)
         {
-            Q_values.push(predictQValue(current_state,available_actions[a],current_state)) 
+            Q_values.push(predictQValue(current_state,available_actions[a])) 
         }
         var V_s = _.max(Q_values)
         
@@ -484,7 +482,7 @@ function getClicks(state){
             click={
                 is_move: false,
                 is_click: true,
-                cell: parseInt(o),
+                cell: parseInt(o)+1,
                 move: []
             }
             
@@ -521,7 +519,8 @@ function getLocations(problem_nr){
 
 function getTrials(){
     var experiment = loadJson("static/json/condition_1.json");
-    var trials=experiment.trials;
+    //var experiment = loadJson("static/json/condition_0_0.json");
+    var trials=experiment.trials//experiment.blocks.standard
     
     //TODO: Move this information into the JSON file. Otherwise this code won't generalize to other layouts.
     for (t in trials){
@@ -1255,18 +1254,7 @@ function test(){
         
 }
 
-function test2(){
-    
-    var condition=1
-    meta_MDP.init(2)    
-
-    registerClick(2)
-    registerClick(3)
-    registerClick(4)
-    registerClick(5)
-    registerMove("up")
-}
-
+/*
 function recomputeDelays(){
     
     var temp_condition=condition
@@ -1321,6 +1309,7 @@ function recomputeDelays(){
     download(JSON.stringify(clicks_and_paths), 'clicks_and_paths.json', 'text/plain');
 
 }
+*/
 
 String.prototype.replaceAll = function(search, replacement) {
     var target = this;

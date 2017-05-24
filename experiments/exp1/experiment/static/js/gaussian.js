@@ -171,7 +171,7 @@ function integral(a, b, dx, f) {
 }
 
 function ETruncatedNormal(mu,sigma,x_min,x_max){
-    //ETruncatedNormal(mu,sigma,x_min,x_max) returns the value of $\int_a^b normpdf(x,mu)*x dx$
+    //ETruncatedNormal(mu,sigma,x_min,x_max) returns the value of $\int_a^b normpdf(x,mu)*min(max(x,x_min),x_max) dx$
     
     realmax=1000000;
     
@@ -181,6 +181,8 @@ function ETruncatedNormal(mu,sigma,x_min,x_max){
     int_middle=mu*(normCDF(x_max,mu,sigma)-normCDF(x_min,mu,sigma))-sigma**2*(normPDF(x_max,mu,sigma)-normPDF(x_min,mu,sigma));
     
     EV=int_below+int_middle+int_above;
+    
+    return EV
     
 }
                      
