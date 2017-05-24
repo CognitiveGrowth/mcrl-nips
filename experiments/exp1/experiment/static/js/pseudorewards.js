@@ -939,7 +939,7 @@ if (appears_best){
     lb=meta_MDP.mean_payoff-3*meta_MDP.std_payoff;
     ub=meta_MDP.mean_payoff;
     delta_x=meta_MDP.std_payoff/20.0;
-    VOC=integral(lb,ub,delta_x,function(x){return normPDF(x,meta_MDP.mean_payoff,meta_MDP.std_payoff)*_.max([0,  mu_beta - (mu_alpha-E_max+ETruncatedNormal(meta_MDP.mean_payoff,meta_MDP.std_payoff, x,meta_MDP.mean_payoff+5*meta_MDP.std_payoff))])})-meta_MDP.cost_per_click; 
+    VOC=integral(lb,ub,delta_x,function(x){return normPDF(x,meta_MDP.mean_payoff,meta_MDP.std_payoff)*_.max([0,  mu_beta - (mu_alpha-E_max[0]+ETruncatedNormal(meta_MDP.mean_payoff,meta_MDP.std_payoff, x,meta_MDP.mean_payoff+5*meta_MDP.std_payoff))])})-meta_MDP.cost_per_click; 
 }
 else{
     //information is valuable if it reveals that action is optimal                
