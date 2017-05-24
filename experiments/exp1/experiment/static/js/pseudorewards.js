@@ -825,7 +825,7 @@ function computeMyopicVOC(state,c){
             return -meta_MDP.cost_per_click
         }
         
-        if ((isNaN(state.observations[c.cell]) || state.observations[c.cell]==null)  && c.cell>1){
+        if ((isNaN(state.observations[c.cell-1]) || state.observations[c.cell-1]==null)  && c.cell>1){
 
             if (_.contains(getDownStreamStates(state),c.cell)){
                 locations=getLocations(0)
