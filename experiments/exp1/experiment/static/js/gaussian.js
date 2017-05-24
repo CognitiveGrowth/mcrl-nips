@@ -171,7 +171,7 @@ function integral(a, b, dx, f) {
 }
 
 function ETruncatedNormal(mu,sigma,x_min,x_max){
-    //ETruncatedNormal(mu,sigma,x_min,x_max) returns the value of $\int_a^b normpdf(x,mu)*min(max(x,x_min),x_max) dx$
+    //ETruncatedNormal(mu,sigma,x_min,x_max) returns the value of $\int_a^b normpdf(x,mu)*min(max(x,x_min),x_max)    dx$
     
     realmax=1000000;
     

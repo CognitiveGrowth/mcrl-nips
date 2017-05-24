@@ -848,11 +848,11 @@ function computeMyopicVOC(state,c){
                     for (s in siblings){
                         //if (!isNaN(state.observations[siblings[s]])){
                         
-                        if (state.observations[siblings[s]]==null){
+                        if (state.observations[siblings[s]-1]==null){
                             sibling_rewards.push(NaN)
                         }
                         else{
-                            sibling_rewards.push(state.observations[siblings[s]])
+                            sibling_rewards.push(state.observations[siblings[s]-1])
                         }
                         //}
                     }
@@ -947,7 +947,7 @@ else{
     ub=meta_MDP.mean_payoff+3*meta_MDP.std_payoff;
     delta_x=meta_MDP.std_payoff/20.0;
     
-    VOC=integral(lb,ub,delta_x,function(x){return normPDF(x,meta_MDP.mean_payoff,meta_MDP.std_payoff)*_.max([0, (mu_prior[a-1]-E_max+ETruncatedNormal(meta_MDP.mean_payoff,meta_MDP.std_payoff,x,meta_MDP.mean_payoff+5*meta_MDP.std_payoff))-mu_alpha])})-meta_MDP.cost_per_click;                                
+    VOC=integral(lb,ub,delta_x,function(x){return normPDF(x,meta_MDP.mean_payoff,meta_MDP.std_payoff)*_.max([0, (mu_prior[a-1]-E_max[0]+ETruncatedNormal(meta_MDP.mean_payoff,meta_MDP.std_payoff,x,meta_MDP.mean_payoff+5*meta_MDP.std_payoff))-mu_alpha])})-meta_MDP.cost_per_click;                                
 }
 
 return VOC
@@ -974,21 +974,21 @@ function myopicVOCMaxKnown(mu_prior,a,known_alternative){
 
         //The decision can only change if E[max{known_alternative,x}]-k>mu_alpha-mu_beta
 
-        if (E_max-known_alternative<= mu_alpha-mu_beta){
+        if (E_max[0]-known_alternative<= mu_alpha-mu_beta){
             VOC=0-meta_MDP.cost_per_click;
         }
         else{
             //to change the decision x would have to be less than the known alternative
             ub=known_alternative;                    
-            VOC=normCDF(ub,meta_MDP.mean_payoff,meta_MDP.std_payoff) * (mu_beta-(mu_alpha-E_max+known_alternative))-meta_MDP.cost_per_click;                    
+            VOC=normCDF(ub,meta_MDP.mean_payoff,meta_MDP.std_payoff) * (mu_beta-(mu_alpha-E_max[0]+known_alternative))-meta_MDP.cost_per_click;                    
         }                                                
     }
     else{
         //information is valuable if it reveals that action is optimal       
         //To change the decision, the sampled value would have to be larger than lb
-        lb=mu_alpha-mu_prior[a-1]+E_max;
+        lb=mu_alpha-mu_prior[a-1]+E_max[0];
 
-        VOC=meta_MDP.std_payoff^2*normPDF(lb,meta_MDP.mean_payoff,meta_MDP.std_payoff)-(mu_alpha-mu_prior[a-1]-E_max-meta_MDP.mean_payoff)*(1-normCDF(lb,meta_MDP.mean_payoff,meta_MDP.std_payoff))-meta_MDP.cost_per_click;
+        VOC=meta_MDP.std_payoff**2*normPDF(lb,meta_MDP.mean_payoff,meta_MDP.std_payoff)-(mu_alpha-mu_prior[a-1]-E_max[0]-meta_MDP.mean_payoff)*(1-normCDF(lb,meta_MDP.mean_payoff,meta_MDP.std_payoff))-meta_MDP.cost_per_click;
     }
 
     return VOC
