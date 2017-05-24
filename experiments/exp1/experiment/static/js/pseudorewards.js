@@ -1088,7 +1088,7 @@ function getDownStreamStates(state){
     var path_length=current_path.length
 
     if (current_path.length==0){
-        downstream=_.range(1,Object.size(states));
+        downstream=_.range(1,Object.size(states)+1);
     }
     else{                    
         for (s=1; s<=Object.size(states); s++){
