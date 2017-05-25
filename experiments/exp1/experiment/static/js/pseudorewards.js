@@ -726,10 +726,12 @@ function valueFunction(state,environment_model){
     switch(PARAMS.PR_type){
         case 1: //PRs based on the full-observation policy
             var current_location=state.s;
-            var planning_horizon=state.nr_steps-state.step+1;
-            var planning_cost=0;
             var step=state.step-1;
     
+            /*
+            var planning_horizon=state.nr_steps-state.step+1;
+            var planning_cost=0;
+
             for (var ph=planning_horizon; ph>0; ph--){
                 var start_location=meta_MDP.locations_by_step[step++][0]
                 var start_state = {
@@ -745,6 +747,7 @@ function valueFunction(state,environment_model){
                 }
                 planning_cost+=costOfPlanning(start_state,ph);
             }
+            */
 
             var downstream=getDownStreamStates(state);
 
@@ -759,7 +762,8 @@ function valueFunction(state,environment_model){
 
             var information_cost=meta_MDP.cost_per_click*to_be_observed
 
-            var V=environment_model.mu_V[current_location-1]-planning_cost-information_cost;
+            //var V=environment_model.mu_V[current_location-1]-planning_cost-information_cost;
+            var V=environment_model.mu_V[current_location-1]-information_cost;
             
             break;
         case 2: //feature-based PRs
@@ -768,7 +772,7 @@ function valueFunction(state,environment_model){
             
             available_actions=getActions(state)
             for (a in available_actions){
-                Q_hat.push(predictQValue(state,available_actions[a],environment_model))
+                Q_hat.push(predictQValue(state,available_actions[a]))
             }
             
             console.log('Q_hat', Q_hat)
