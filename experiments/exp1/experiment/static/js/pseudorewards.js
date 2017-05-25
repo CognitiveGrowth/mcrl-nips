@@ -1219,8 +1219,9 @@ function getUpStreamStates(observed_states){
 
         }
     }
-
-    return upstream
+    
+    //remove duplicate entries and return the result
+    return Array.from(new Set(upstream))
                 
 }
 
