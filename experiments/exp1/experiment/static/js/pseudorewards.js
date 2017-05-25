@@ -76,7 +76,7 @@ function metaMDP(){
         std_payoff: 10.6,        
         object_level_MDPs: trials,
         object_level_MDP: [],
-        locations: [],
+        locations: [], //contains all the states in the meta_MDP; the initial position corresponds to 1
         state: [],
         previous_state: [],
         locations_by_step: [],
@@ -100,7 +100,7 @@ function metaMDP(){
                 s: 1,
                 nr_steps: 3,
                 step: 1,
-                observations: getObservations(clicks,this.locations),
+                observations: getObservations(clicks,this.locations), //outputs an array of the observed rewards; the initial position corresponds to index 0
                 moves: new Array(Object.size(this.locations))
             }
             
