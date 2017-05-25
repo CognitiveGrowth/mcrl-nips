@@ -1195,7 +1195,8 @@ function getDownStreamStates(state){
 }
 
 function getUpStreamStates(observed_states){
-    //returns all states from which any of the observed_states can be reached
+    //returns an array with the numbers of all states from which any of the observed_states can be reached
+    //observed_states is an array of state numbers    
     
     var upstream=[];
 
