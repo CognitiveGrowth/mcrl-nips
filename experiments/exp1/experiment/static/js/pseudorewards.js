@@ -87,6 +87,8 @@ function metaMDP(){
             //This function sets the representation of the planning problem (meta_MDP.object_level_MDP) to that of the current trial.
             //It sets the conversation rate from points to seconds.
             //It initializes the state as well as locations_by_step and locations_by_path.
+            //meta_MDP.locations_path_step[k] contains the locations that can be reached in k moves from the initial location.
+            //meta_MDP.locations_by_path["1,1,2"] contains the state reached by taking action 1 twice and then taking action 2.
             
             this.object_level_MDP=this.object_level_MDPs[problem_nr]
             this.locations=getLocations(problem_nr)            
