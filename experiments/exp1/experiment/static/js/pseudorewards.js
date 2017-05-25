@@ -122,9 +122,22 @@ function metaMDP(){
             var current_location = meta_MDP.locations[meta_MDP.state.s]            
             var action_index=argmax(belief_state.mu_Q[belief_state.s-1])
             
+            var available_moves = belief_state.moves[belief_state.s-1]
+            var action_nrs = new Array()
+            for (var a in available_moves){
+                action_nrs.push(meta_MDP.action_nrs[available_moves[a]])
+            }
+            action_nrs.sort()
+                                    
             var rational_moves = new Array()
             for (var i=0; i<action_index.length; i++){
-                rational_moves.push(belief_state.moves[belief_state.s-1][action_index[i]])
+                var action_nr = action_nrs[action_index[i]]
+                for (a in available_moves){
+                    if (meta_MDP.action_nrs[available_moves[a]]==action_nr){
+                        var direction = available_moves[a]
+                    }
+                }                
+                rational_moves.push(direction)
             }
             return rational_moves
         }
@@ -283,8 +296,10 @@ function registerMove(direction){
     //updates the state of meta_MDP
     //direction is a string ("right","up","left", or "down")
     
+    
     var last_move=action_was_move.lastIndexOf(true)
     
+    //record information
     action_was_click.push(false)
     action_was_move.push(true)
 
@@ -293,7 +308,7 @@ function registerMove(direction){
     
     var action_nr=meta_MDP.action_nrs[direction]
     
-    
+    //add move to array moves
     for (a in available_moves){
         
         if (available_moves[a].move.action_nr==action_nr){
@@ -314,15 +329,54 @@ function registerMove(direction){
         }
     }
     
+    //Compute the delay
     var delay=computeDelay(meta_MDP.state,clicks.concat([move]))
     
-    var last_move = moves.slice(-1).pop()
-    
+    //Update the belief state
+    var last_move = moves.slice(-1).pop()    
     var updated_belief=deepCopy(meta_MDP.state)
-    updated_belief.observations=getObservations(clicks,meta_MDP.locations)
+    updated_belief.observations=addObservations(clicks,meta_MDP.locations,updated_belief.observations)   
     updated_belief=updateBelief(meta_MDP,updated_belief,_.range(1,updated_belief.observations.length+1))
     var information_used_correctly= _.contains(meta_MDP.rational_moves(updated_belief), last_move.move.direction)
 
+    //The participant collected too much information if there was a click that had a lower Q-value than one of the moves
+    var observed_too_much = false
+    var intermediate_state = meta_MDP.state
+    for (var c in clicks){
+        var Q_click=predictQValue(intermediate_state,clicks[c])
+        
+        var Q_moves = new Array()
+        var actions = getActions(intermediate_state)
+        for (var a in actions){
+            if (actions[a].is_move){
+                Q_moves.push(predictQValue(intermediate_state,actions[a]))
+            }
+        }
+        
+        if (_.max(Q_moves)>Q_click){
+            observed_too_much = true;
+        }
+        
+        intermediate_state=getNextState(intermediate_state,clicks[c])
+    }
+    
+    //The participant observed too little information if when they chose a move, when the best move had a lower Q-value than the best click
+    var Q_moves = new Array()
+    var Q_clicks = new Array()    
+    var available_actions = getActions(intermediate_state)
+    for (var a in available_actions){
+        if (available_actions[a].is_click){
+            Q_clicks.push(predictQValue(intermediate_state,available_actions[a]))
+        }
+        
+        if (available_actions[a].is_move){
+            Q_moves.push(predictQValue(intermediate_state,available_actions[a]))
+        }        
+    }    
+    var observed_too_little= (_.max(Q_clicks)> _.max(Q_moves))
+    
+    /*
+    //feedback message based on full-observation policy:
     //check if all of the successor states have been inspected
     var downstream=getDownStreamStates(meta_MDP.state)
         
@@ -341,10 +395,6 @@ function registerMove(direction){
         var inevitable= [available_moves[0].move.next_state];
     }
     
-    
-    if (available_moves.length==1){
-        
-    }
     var relevant=setDiff(downstream,inevitable)
     var planned_too_much=false
     for (c in clicks){
@@ -353,15 +403,18 @@ function registerMove(direction){
             planned_too_much=true
         }
     }
+    */
     
+    //update the state of the meta-MDP
     meta_MDP.state=getNextState(meta_MDP.state,clicks.concat([move]),true)    
     
+    //reset clicks so that it will contain only the clicks since the last move when the registerMove is called again
     clicks=[]
 
     
     return {delay: delay,
-            planned_too_little: planned_too_little,
-            planned_too_much: planned_too_much,
+            planned_too_little: observed_too_little,
+            planned_too_much: observed_too_much,
             information_used_correctly: information_used_correctly
            }
 }
@@ -574,6 +627,15 @@ function getObservations(clicks,locations){
     
     for (c in clicks){
             observations[clicks[c].cell-1] = locations[clicks[c].cell].reward           
+    }
+    
+    return observations
+}
+
+function addObservations(clicks,locations,observations){
+    
+    for (c in clicks){
+        observations[clicks[c].cell-1] = locations[clicks[c].cell].reward 
     }
     
     return observations
@@ -956,14 +1018,14 @@ if (appears_best){
 
     lb=meta_MDP.mean_payoff-3*meta_MDP.std_payoff;
     ub=meta_MDP.mean_payoff;
-    delta_x=meta_MDP.std_payoff/20.0;
+    delta_x=meta_MDP.std_payoff/100.0;
     VOC=integral(lb,ub,delta_x,function(x){return normPDF(x,meta_MDP.mean_payoff,meta_MDP.std_payoff)*_.max([0,  mu_beta - (mu_alpha-E_max[0]+ETruncatedNormal(meta_MDP.mean_payoff,meta_MDP.std_payoff, x,meta_MDP.mean_payoff+5*meta_MDP.std_payoff))])})-meta_MDP.cost_per_click; 
 }
 else{
     //information is valuable if it reveals that action is optimal                
     lb=meta_MDP.mean_payoff;
     ub=meta_MDP.mean_payoff+3*meta_MDP.std_payoff;
-    delta_x=meta_MDP.std_payoff/20.0;
+    delta_x=meta_MDP.std_payoff/100.0;
     
     VOC=integral(lb,ub,delta_x,function(x){return normPDF(x,meta_MDP.mean_payoff,meta_MDP.std_payoff)*_.max([0, (mu_prior[a-1]-E_max[0]+ETruncatedNormal(meta_MDP.mean_payoff,meta_MDP.std_payoff,x,meta_MDP.mean_payoff+5*meta_MDP.std_payoff))-mu_alpha])})-meta_MDP.cost_per_click;                                
 }
