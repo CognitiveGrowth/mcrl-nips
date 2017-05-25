@@ -84,6 +84,10 @@ function metaMDP(){
         action_nrs: {right: 1, up: 2, left: 3, down: 4},
         delay_per_point: [],        
         init: function(problem_nr){
+            //This function sets the representation of the planning problem (meta_MDP.object_level_MDP) to that of the current trial.
+            //It sets the conversation rate from points to seconds.
+            //It initializes the state as well as locations_by_step and locations_by_path.
+            
             this.object_level_MDP=this.object_level_MDPs[problem_nr]
             this.locations=getLocations(problem_nr)            
             
@@ -729,6 +733,8 @@ function valueFunction(state,environment_model){
             var step=state.step-1;
     
             /*
+            //We originally assumed that there was an additional cost of planning beyond the cost associated with observing information and updating once belief accordingly.
+            
             var planning_horizon=state.nr_steps-state.step+1;
             var planning_cost=0;
 
