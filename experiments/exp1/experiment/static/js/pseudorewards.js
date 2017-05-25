@@ -383,6 +383,7 @@ function registerClick(cell_nr){
 function getNextState(state,actions,update_belief){
     //getNextState(s,actions,update_belief) returns the state that results from taking a series of actions in state s without changing state s
     //If update_belief is false, then the location will be udpated but mu_Q and sigma_Q won't be updated.
+    //The location in the next state is determined by the location in move.action. Currently, there is no check that that action is available in the current state. This function
     
     
     if (update_belief === undefined){
@@ -401,8 +402,9 @@ function getNextState(state,actions,update_belief){
     var observed_outcomes = new Array()
     
     for (a in actions){
-
+        
         action= actions[a]
+        
         
         if (action.is_click){        
             next_state.observations[action.cell-1]=meta_MDP.locations[action.cell].reward
@@ -416,6 +418,22 @@ function getNextState(state,actions,update_belief){
         }
     
         if (action.is_move){            
+            
+            //check if the action is available in the current state
+            var available_actions= getActions(next_state)
+            var action_nrs= new Array()
+            for (a in available_actions){
+                if (available_actions[a].is_move){
+                    action_nrs.push(available_actions[a].move.action_nr)
+                }
+                    
+            }
+
+            if (!(_.contains(action_nrs,action.move.action_nr))){
+                throw new Error('Attempted to execute illegal action.','pseudorewards.js',411)
+            }
+
+            
             next_state.s=action.move.next_state
             next_state.observations[next_state.s-1]=meta_MDP.locations[next_state.s].reward
             observed_outcomes.push(next_state.s)
